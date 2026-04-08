@@ -1,0 +1,18 @@
+# Environment
+.env
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+#Database things
+*.db
+*.sqlite
+
+#Testing 
+.pytest_cache/
+.coverage
+
+# IDE
+.vscode/
+.idea/
