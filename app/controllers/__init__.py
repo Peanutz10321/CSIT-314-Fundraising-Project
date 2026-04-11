@@ -1,0 +1,7 @@
+from .createUserProfileController import createUserProfile
+from .viewUserProfileController import getUserProfileByID
+from .updateUserProfileController import updateUserProfile
+from .suspendUserProfileController import suspendUserProfile
+from .searchUserProfileController import searchUserProfile
+from .loginController import validateCredentials
+from .logoutController import invalidateSession

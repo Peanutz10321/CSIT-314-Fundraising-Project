@@ -1,52 +1,25 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String, Enum
-import enum
+from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy.orm import relationship
+from app.database import Base
 
-Base = declarative_base()
-
-class Role(str, enum.Enum):
-    USER_ADMIN = "USER_ADMIN"
-    PLATFORM_MANAGER = "PLATFORM_MANAGER"
-    FUNDRAISER = "FUNDRAISER"
-    DONEE = "DONEE"
-
-class Status(str, enum.Enum):
-    ACTIVE = "ACTIVE"
-    SUSPENDED = "SUSPENDED"
 
 class UserProfile(Base):
     __tablename__ = "user_profiles"
-    id = Column(String, primary_key=True)
-    name = Column(String)
-    description = Column(String)
-    status = Column(Enum(Status), default=Status.ACTIVE)
 
-    def get_password(self): 
-        pass
+    id = Column(Integer, primary_key=True, index=True)
+    name_of_role = Column(String(50), unique=True, nullable=False)
+    description = Column(Text, nullable=True)
+    status = Column(String(20), default="ACTIVE", nullable=False)
 
-    def set_password(self, p): 
-        pass
+    accounts = relationship("UserAccount", back_populates="user_profile")
 
-    def suspend(self): 
-        pass
+    def suspend(self):
+        self.status = "SUSPENDED"
 
-    def to_dict(self): 
-        return {}
-    
-    def get_dashboard_info(self): 
-        return {}
-
-class Fundraiser(UserProfile): 
-    pass
-
-class Donee(UserProfile): 
-    pass
-
-class PlatformManager(UserProfile): 
-    pass
-
-class UserAdmin(UserProfile): 
-    pass
-
-def create_user_by_role(name, email, password, role, description=None):
-    pass
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name_of_role": self.name_of_role,
+            "description": self.description,
+            "status": self.status,
+        }

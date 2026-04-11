@@ -1,19 +1,32 @@
 from fastapi import FastAPI
-from app.routes import user, auth
-from app.database import create_tables
-from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
+from app.models.user_profile import UserProfile
+from app.models.user_account import UserAccount
+from app.database import Base, engine, SessionLocal
+from app.routes import user_profile, auth
+from app.seeds.seed_user_profiles import seed_user_profiles
+from app.seeds.seed_test_admin import seed_test_admin
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Fundraising API")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
-create_tables()
+def run_startup_seeds():
+    db: Session = SessionLocal()
+    try:
+        seed_user_profiles(db)
+        seed_test_admin(db)
+    finally:
+        db.close()
 
-app.include_router(auth.router)        
-app.include_router(user.router)
+
+run_startup_seeds()
+
+app.include_router(user_profile.router)
+app.include_router(auth.router)
+
+
+@app.get("/")
+def root():
+    return {"message": "Fundraising API is running"}
