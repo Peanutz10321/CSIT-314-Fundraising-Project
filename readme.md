@@ -19,8 +19,8 @@ frontend/
 ```
 
 ## Running the Backend
-cd backend
-uvicorn app.main:app --reload
+- cd backend
+- uvicorn app.main:app --reload
 
 ### Backend docs
 http://127.0.0.1:8000/docs
