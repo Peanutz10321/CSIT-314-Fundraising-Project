@@ -1,39 +1,32 @@
-from fastapi import APIRouter, Depends, HTTPException, Header, status
-from sqlalchemy.orm import Session
-
-from app.database import get_db
+from fastapi import APIRouter, Header, HTTPException, status
 from app.schemas.auth import LoginRequest, LoginResponse, LogoutResponse
-from app.controllers.AuthController import AuthController
+from app.controllers.user_account import loginController, logoutController
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
+
 @router.post("/login", response_model=LoginResponse)
-def login(payload: LoginRequest, db: Session = Depends(get_db)):
-    controller = AuthController(db)
+def login(payload: LoginRequest):
+    controller = loginController()
     result = controller.validateCredentials(payload.email, payload.password)
 
-    if not result["success"]:
-        if result["reason"] == "suspended":
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="User account is suspended",
-            )
+    if result == "suspended":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is suspended",
+        )
+
+    if result == "invalid_credentials":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
         )
 
-    return {
-        "token": result["token"],
-        "role": result["role"],
-    }
+    return result
 
 
 @router.post("/logout", response_model=LogoutResponse)
-def logout(
-    authorization: str | None = Header(default=None),
-    db: Session = Depends(get_db),
-):
+def logout(authorization: str | None = Header(default=None)):
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -42,7 +35,7 @@ def logout(
 
     token = authorization.replace("Bearer ", "", 1).strip()
 
-    controller = AuthController(db)
+    controller = logoutController()
     success = controller.invalidateSession(token)
 
     if not success:
@@ -51,6 +44,4 @@ def logout(
             detail="Invalid or expired token",
         )
 
-    return {
-        "message": "Logout successful"
-    }
+    return {"message": "Logout successful"}

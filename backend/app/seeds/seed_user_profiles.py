@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.models.user_profile import UserProfile
+from app.entities.UserProfile import UserProfile
 
 
 DEFAULT_USER_PROFILES = [

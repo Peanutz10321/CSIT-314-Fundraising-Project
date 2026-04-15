@@ -15,7 +15,9 @@ backend/
   app/
   tests/
 frontend/
-  1.html
+  index.html
+  style.css
+  app.js
 ```
 
 ## Running the Backend

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from app.models.user_profile import UserProfile
-from app.models.user_account import UserAccount
+from app.entities.UserProfile import UserProfile
+from app.entities.UserAccount import UserAccount
 from app.middleware.auth import hash_password
 
 
@@ -19,7 +19,6 @@ def seed_test_admin(db: Session) -> None:
         return
 
     admin = UserAccount(
-        username="admin",
         email="admin@test.com",
         password_hash=hash_password("admin123"),
         user_profile_id=admin_profile.id,

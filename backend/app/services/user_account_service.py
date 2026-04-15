@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
-from app.models.user_account import UserAccount
+from backend.app.entities.userAccount import UserAccount
 from app.models.user_profile import UserProfile
 from app.middleware.auth import hash_password
 
