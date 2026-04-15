@@ -460,7 +460,7 @@ async function showDashboard() {
         </div>
 
         <div class="dashboard-container">
-            <button class="create-user-btn" onclick="showCreateModal()">+ Create User</button>
+            <button class="create-user-btn" onclick="showCreateModal()">+ Create User Profile</button>
 
             <div class="stats-row">
                 <div class="stat-card">
