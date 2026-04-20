@@ -85,14 +85,18 @@ def get_or_create_profile(db, role_name: str):
     return profile
 
 
-def create_test_user(db, email: str, password: str, role_name: str, status: str = "ACTIVE"):
+def create_test_user(db,name: str, email: str,  password: str,  role_name: str, status: str = "ACTIVE", phone_no: str = None, address: str = None, dob: str = None):
     profile = get_or_create_profile(db, role_name)
 
     user = UserAccount(
+        name=name,
         email=email,
         password_hash=hash_password(password),
         user_profile_id=profile.id,
         status=status,
+        phone_no=phone_no,
+        address=address,
+        dob=dob
     )
     db.add(user)
     db.commit()
