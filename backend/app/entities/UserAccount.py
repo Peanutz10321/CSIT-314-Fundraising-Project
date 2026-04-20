@@ -1,19 +1,39 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from app.database import Base, SessionLocal
-from app.middleware.auth import verify_password, decode_access_token, create_access_token
+from app.middleware.auth import verify_password, decode_access_token, create_access_token, hash_password
+
 
 
 class UserAccount(Base):
     __tablename__ = "user_accounts"
 
     id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
     email = Column(String(255), unique=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
     status = Column(String(20), default="ACTIVE", nullable=False)
     user_profile_id = Column(Integer, ForeignKey("user_profiles.id"), nullable=False)
+    phone_no = Column(String(20), nullable=True)
+    address = Column(String(255), nullable=True)
+    dob = Column(String(10), nullable=True)
 
     user_profile = relationship("UserProfile", back_populates="accounts")
+
+    def suspend(self):
+        self.status = "SUSPENDED"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "phone_no": self.phone_no,
+            "address": self.address,
+            "dob": self.dob,
+            "name_of_role": self.name_of_role,
+            "status": self.status,
+        }
 
     @staticmethod
     def _open_db():
@@ -56,5 +76,119 @@ class UserAccount(Base):
         try:
             user = db.query(UserAccount).filter(UserAccount.id == int(user_id)).first()
             return user is not None
+        finally:
+            db.close()
+    
+    @staticmethod
+    def createUserAccount(name: str, email: str, password: str, user_profile: str, phone_no: str = None, address: str = None, dob: str = None, status: str = "ACTIVE"):
+        from app.entities.UserProfile import UserProfile
+        db = UserAccount._open_db()
+        try:
+            existing = db.query(UserAccount).filter(UserAccount.email == email).first()
+
+            if existing:
+                return "duplicate_email"
+            
+            profile = db.query(UserProfile).filter(UserProfile.name_of_role == user_profile).first()
+
+            if not profile:
+                return "invalid_profile"
+
+            user = UserAccount(
+                name=name,
+                email=email,
+                password_hash=hash_password(password),
+                user_profile_id=profile.id,
+                phone_no=phone_no,
+                address=address,
+                dob=dob,
+                status=status
+            )
+
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+            return user
+        finally:
+            db.close()
+    
+    @staticmethod
+    def viewUserAccount(user_id: int):
+        db = UserAccount._open_db()
+        try:
+            return db.query(UserAccount).filter(UserAccount.id == user_id).first()
+        finally:
+            db.close()
+
+    @staticmethod
+    def updateUserAccount(user_id: int, name: str = None, email: str = None, password: str = None, user_profile: str = None, phone_no: str = None, address: str = None, dob: str = None, status: str = None):
+        from app.entities.UserProfile import UserProfile
+        db = UserAccount._open_db()
+        try:
+            user = db.query(UserAccount).filter(UserAccount.id == user_id).first()
+            if not user:
+                return "not_found"
+
+            if email is not None:
+                existing = db.query(UserAccount).filter(UserAccount.email == email, UserAccount.id != user_id).first()
+
+                if existing:
+                    return "duplicate_email"
+                
+                user.email = email
+            
+            if user_profile is not None:
+                profile = db.query(UserProfile).filter(UserProfile.name_of_role == user_profile).first()
+
+                if not profile:
+                    return "invalid_profile"
+                
+                user.user_profile_id = profile.id
+
+            if name is not None:
+                user.name = name
+            if password is not None:
+                user.password_hash = hash_password(password)
+            if phone_no is not None:
+                user.phone_no = phone_no
+            if address is not None:
+                user.address = address
+            if dob is not None:
+                user.dob = dob
+            if status is not None:
+                user.status = status
+
+            db.commit()
+            db.refresh(user)
+            return user
+        finally:
+            db.close()
+    
+    @staticmethod
+    def suspendUserAccount(user_id: int):
+        db = UserAccount._open_db()
+        try:
+            user = db.query(UserAccount).filter(UserAccount.id == user_id).first()
+            if not user:
+                return False
+            
+            user.suspend()
+            db.commit()
+            db.refresh(user)
+            return True
+        finally:
+            db.close()
+
+    @staticmethod
+    def searchUserAccount(keyword: str):
+        db = UserAccount._open_db()
+        try:
+            query = db.query(UserAccount)
+            if keyword:
+                query = query.filter(
+                    (UserAccount.name.ilike(f"%{keyword}%")) |
+                    (UserAccount.email.ilike(f"%{keyword}%"))
+                )
+            return query.all()
         finally:
             db.close()

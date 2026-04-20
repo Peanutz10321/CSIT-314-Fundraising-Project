@@ -5,7 +5,7 @@ class TestLogin:
 
     # TC-Login-1
     def test_user_admin_login_success(self, db, client):
-        create_test_user(db, "user123@test.com", "testing123", "USER_ADMIN")
+        create_test_user(db, "Bob", "user123@test.com", "testing123", "USER_ADMIN")
 
         response = client.post("/api/auth/login", json={
             "email": "user123@test.com",
@@ -20,7 +20,7 @@ class TestLogin:
 
     # TC-Login-2
     def test_fundraiser_login_success(self, db, client):
-        create_test_user(db, "fundraiser123@test.com", "testing123", "FUNDRAISER")
+        create_test_user(db, "Bob", "fundraiser123@test.com", "testing123", "FUNDRAISER")
 
         response = client.post("/api/auth/login", json={
             "email": "fundraiser123@test.com",
@@ -33,7 +33,7 @@ class TestLogin:
 
     # TC-Login-3
     def test_donee_login_success(self, db, client):
-        create_test_user(db, "donee123@test.com", "testing123", "DONEE")
+        create_test_user(db, "Bob", "donee123@test.com", "testing123", "DONEE")
 
         response = client.post("/api/auth/login", json={
             "email": "donee123@test.com",
@@ -46,7 +46,7 @@ class TestLogin:
 
     # TC-Login-4
     def test_platform_manager_login_success(self, db, client):
-        create_test_user(db, "platform123@test.com", "testing123", "PLATFORM_MANAGER")
+        create_test_user(db, "Bob", "platform123@test.com", "testing123", "PLATFORM_MANAGER")
 
         response = client.post("/api/auth/login", json={
             "email": "platform123@test.com",
@@ -59,7 +59,7 @@ class TestLogin:
 
     # TC-Login-5
     def test_login_wrong_password(self, db, client):
-        create_test_user(db, "user123@test.com", "correctpassword", "USER_ADMIN")
+        create_test_user(db, "Bob", "user123@test.com", "correctpassword", "USER_ADMIN")
 
         response = client.post("/api/auth/login", json={
             "email": "user123@test.com",
@@ -89,7 +89,7 @@ class TestLogin:
 
     # TC-Login-8
     def test_suspended_user_cannot_login(self, db, client):
-        create_test_user(db, "user123@test.com", "testing123", "FUNDRAISER", "SUSPENDED")
+        create_test_user(db, "Bob", "user123@test.com", "testing123", "FUNDRAISER", "SUSPENDED")
 
         response = client.post("/api/auth/login", json={
             "email": "user123@test.com",
@@ -102,8 +102,8 @@ class TestLogin:
 # Test Case for logout
 class TestLogout:
 
-    def get_token(self, db, client, email="user@test.com", password="pass123", role="FUNDRAISER"):
-        create_test_user(db, email, password, role)
+    def get_token(self, db, client, name="Bob", email="user@test.com", password="pass123", role="FUNDRAISER"):
+        create_test_user(db, name, email, password, role)
         response = client.post("/api/auth/login", json={
             "email": email,
             "password": password
@@ -113,7 +113,7 @@ class TestLogout:
 
     #TC-Logout-1
     def test_user_admin_logout_success(self, db, client):
-        token = self.get_token(db, client, "admin@test.com", "admin123", "USER_ADMIN")
+        token = self.get_token(db, client, "Bob", "admin@test.com", "admin123", "USER_ADMIN")
 
         response = client.post(
             "/api/auth/logout",
@@ -125,7 +125,7 @@ class TestLogout:
 
     #TC-Logout-2
     def test_fundraiser_logout_success(self, db, client):
-        token = self.get_token(db, client, "fundraiser123@test.com", "testing123", "FUNDRAISER")
+        token = self.get_token(db, client, "Bob", "fundraiser123@test.com", "testing123", "FUNDRAISER")
 
         response = client.post(
             "/api/auth/logout",
@@ -137,7 +137,7 @@ class TestLogout:
 
     #TC-Logout-3
     def test_donee_logout_success(self, db, client):
-        token = self.get_token(db, client, "donee123@test.com", "testing123", "DONEE")
+        token = self.get_token(db, client, "Bob", "donee123@test.com", "testing123", "DONEE")
 
         response = client.post(
             "/api/auth/logout",
@@ -149,7 +149,7 @@ class TestLogout:
 
     #TC-Logout-4
     def test_platform_manager_logout_success(self, db, client):
-        token = self.get_token(db, client, "platform123@test.com", "testing123", "PLATFORM_MANAGER")
+        token = self.get_token(db, client, "Bob", "platform123@test.com", "testing123", "PLATFORM_MANAGER")
 
         response = client.post(
             "/api/auth/logout",

@@ -26,6 +26,7 @@ class TestCreateUserAccount:
     
     # TC-241-2
     def test_create_duplicate_email_rejected(self, client, db):
+        get_or_create_profile(db, "FUNDRAISER")
         create_test_user(
             db,
             name= "John",
@@ -47,7 +48,7 @@ class TestCreateUserAccount:
         assert response.status_code == 400
     
     # TC-241-3
-    def test_create_duplicate_email_rejected(self, client, db):
+    def test_create_user_account_missing_fields(self, client, db):
 
         response = client.post("/api/user_account/", json={
             "email": "tester123@test.com",
@@ -81,9 +82,10 @@ class TestViewUserAccount:
     
 #50 Update User Account
 class TestUpdateUserAccount:
-
+    
     # TC-221-1
     def test_update_all_fields_success(self, client, db):
+        get_or_create_profile(db, "FUNDRAISER")
         create_test_user(
             db,
             name= "Bob",
@@ -142,7 +144,7 @@ class TestUpdateUserAccount:
         assert body["email"] == account.email
     
     #TC-221-3
-    def test_partial_update_only_changes_provided_fields(self, client, db):
+    def test_update_rejects_duplicate_email(self, client, db):
         create_test_user(
             db,
             name="Bob",
@@ -186,7 +188,7 @@ class TestSuspendUserAccount:
         )
         account = db.query(UserAccount).filter(UserAccount.email == "tester123@test.com").first()
     
-        response = client.post(f"/api/user_account/{account.id}/suspend")
+        response = client.patch(f"/api/user_account/{account.id}/suspend")
 
         assert response.status_code == 200
         db.expire_all()
@@ -221,7 +223,7 @@ class TestSearchUserAccounts:
         assert response.status_code == 200
         body = response.json()
         assert body["total"] >= 1
-        assert all("Bob" in a["name"].lower() for a in body["data"])
+        assert all("bob" in a["name"].lower() for a in body["data"])
     
     # TC-231-2
     def test_search_filter_by_name_not_found(self, client, db):

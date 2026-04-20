@@ -19,6 +19,7 @@ def seed_test_admin(db: Session) -> None:
         return
 
     admin = UserAccount(
+        name="Admin",
         email="admin@test.com",
         password_hash=hash_password("admin123"),
         user_profile_id=admin_profile.id,

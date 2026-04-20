@@ -1,1 +1,1 @@
-from . import user_account, user_profile
+from . import auth, user_profile, user_account
