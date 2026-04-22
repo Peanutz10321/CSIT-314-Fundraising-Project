@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, joinedload
 from app.database import Base, SessionLocal
 from app.middleware.auth import verify_password, decode_access_token, create_access_token, hash_password
 
@@ -20,6 +20,10 @@ class UserAccount(Base):
 
     user_profile = relationship("UserProfile", back_populates="accounts")
 
+    @property
+    def name_of_role(self):
+        return self.user_profile.name_of_role if self.user_profile else None
+
     def suspend(self):
         self.status = "SUSPENDED"
 
@@ -31,7 +35,7 @@ class UserAccount(Base):
             "phone_no": self.phone_no,
             "address": self.address,
             "dob": self.dob,
-            "name_of_role": self.name_of_role,
+            "name_of_role": self.user_profile.name_of_role if self.user_profile else None,
             "status": self.status,
         }
 
@@ -108,29 +112,40 @@ class UserAccount(Base):
             db.add(user)
             db.commit()
             db.refresh(user)
+            user = (
+                db.query(UserAccount)
+                .options(joinedload(UserAccount.user_profile))
+                .filter(UserAccount.id == user.id)
+                .first()
+            )
             return user
         finally:
             db.close()
     
     @staticmethod
-    def viewUserAccount(user_id: int):
+    def viewUserAccount(accountID: int):
         db = UserAccount._open_db()
         try:
-            return db.query(UserAccount).filter(UserAccount.id == user_id).first()
+            return (
+                db.query(UserAccount)
+                .options(joinedload(UserAccount.user_profile))
+                .filter(UserAccount.id == accountID)
+                .first()
+            )
         finally:
             db.close()
 
     @staticmethod
-    def updateUserAccount(user_id: int, name: str = None, email: str = None, password: str = None, user_profile: str = None, phone_no: str = None, address: str = None, dob: str = None, status: str = None):
+    def updateUserAccount(accountID: int, name: str = None, email: str = None, password: str = None, user_profile: str = None, phone_no: str = None, address: str = None, dob: str = None, status: str = None):
         from app.entities.UserProfile import UserProfile
         db = UserAccount._open_db()
         try:
-            user = db.query(UserAccount).filter(UserAccount.id == user_id).first()
+            user = db.query(UserAccount).filter(UserAccount.id == accountID).first()
             if not user:
                 return "not_found"
 
             if email is not None:
-                existing = db.query(UserAccount).filter(UserAccount.email == email, UserAccount.id != user_id).first()
+                existing = db.query(UserAccount).filter(UserAccount.email == email, UserAccount.id != accountID).first()
 
                 if existing:
                     return "duplicate_email"
@@ -160,15 +175,21 @@ class UserAccount(Base):
 
             db.commit()
             db.refresh(user)
+            user = (
+                db.query(UserAccount)
+                .options(joinedload(UserAccount.user_profile))
+                .filter(UserAccount.id == user.id)
+                .first()
+            )
             return user
         finally:
             db.close()
     
     @staticmethod
-    def suspendUserAccount(user_id: int):
+    def suspendUserAccount(profileID: int):
         db = UserAccount._open_db()
         try:
-            user = db.query(UserAccount).filter(UserAccount.id == user_id).first()
+            user = db.query(UserAccount).filter(UserAccount.id == profileID).first()
             if not user:
                 return False
             
@@ -183,7 +204,7 @@ class UserAccount(Base):
     def searchUserAccount(keyword: str):
         db = UserAccount._open_db()
         try:
-            query = db.query(UserAccount)
+            query = db.query(UserAccount).options(joinedload(UserAccount.user_profile))
             if keyword:
                 query = query.filter(
                     (UserAccount.name.ilike(f"%{keyword}%")) |

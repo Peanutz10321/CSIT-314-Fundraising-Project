@@ -15,16 +15,16 @@ class createUserAccountController:
         return UserAccount.createUserAccount(name, email, password, user_profile, phone_no, address, dob, status)
 
 class viewUserAccountController:
-    def viewUserAccount(self, user_id: int):
-        return UserAccount.viewUserAccount(user_id)
+    def viewUserAccount(self, accountID: int):
+        return UserAccount.viewUserAccount(accountID)
 
 class updateUserAccountController:
-    def updateUserAccount(self, user_id: int, name: str = None, email: str = None, password: str = None, user_profile: str = None, phone_no: str = None, address: str = None, dob: str = None, status: str = None):
-        return UserAccount.updateUserAccount(user_id, name, email, password, user_profile, phone_no, address, dob, status)
+    def updateUserAccount(self, accountID: int, name: str = None, email: str = None, password: str = None, user_profile: str = None, phone_no: str = None, address: str = None, dob: str = None, status: str = None):
+        return UserAccount.updateUserAccount(accountID, name, email, password, user_profile, phone_no, address, dob, status)
 
 class suspendUserAccountController:
-    def suspendUserAccount(self, user_id: int):
-        return UserAccount.suspendUserAccount(user_id)
+    def suspendUserAccount(self, profileID: int):
+        return UserAccount.suspendUserAccount(profileID)
 
 class searchUserAccountController:
     def searchUserAccount(self, keyword: str):

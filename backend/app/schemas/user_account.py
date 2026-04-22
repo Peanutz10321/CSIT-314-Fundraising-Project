@@ -30,6 +30,7 @@ class UserAccountResponse(BaseModel):
     dob: Optional[str]
     status: str
     user_profile_id: int
+    name_of_role: Optional[str] = None
 
     class Config:
         from_attributes = True

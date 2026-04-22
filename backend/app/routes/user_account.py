@@ -98,7 +98,7 @@ def suspend_user_account(user_id: int,
 
 @router.get("/", response_model=UserAccountSearchResponse)
 def search_user_accounts(
-    keyword: str = Query(..., min_length=1, max_length=100),
+    keyword: str | None = Query(default=None),
     _: None = Depends(require_user_admin),
 ):
     controller = searchUserAccountController()
