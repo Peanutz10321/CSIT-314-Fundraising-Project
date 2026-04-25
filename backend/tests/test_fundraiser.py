@@ -339,18 +339,20 @@ class TestViewCompletedFundraisingActivity:
             password="pass123",
             role_name="FUNDRAISER"
         )
-        create_test_activity(client, fundraiser.id, status="COMPLETED")
+        
+        created = create_test_activity(client, fundraiser.id, status="COMPLETED")
+        activity_id = created.json()["id"]
 
-        response = client.get(f"/api/fundraising_activity/completed?fundraiser_id={fundraiser.id}")
+        response = client.get(f"/api/fundraising_activity/completed/{activity_id}")
         assert response.status_code == 200
         body = response.json()
-        assert body["data"][0]["title"] == "Building a School"
-        assert body["data"][0]["description"] == "Raising funds to help build a primary school"    
-        assert body["data"][0]["currency"] == "SGD"
-        assert body["data"][0]["goal_amount"] == 5000.0
-        assert body["data"][0]["category"] == "Education"
-        assert body["data"][0]["location"] == "Singapore"
-        assert body["data"][0]["beneficiary_name"] == "Bob"
-        assert body["data"][0]["fundraiser_name"] == "John"
-        assert body["data"][0]["deadline"] == "29-05-2026"
-        assert body["data"][0]["status"] == "COMPLETED"
+        assert body["title"] == "Building a School"
+        assert body["description"] == "Raising funds to help build a primary school"    
+        assert body["currency"] == "SGD"
+        assert body["goal_amount"] == 5000.0
+        assert body["category"] == "Education"
+        assert body["location"] == "Singapore"
+        assert body["beneficiary_name"] == "Bob"
+        assert body["fundraiser_name"] == "John"
+        assert body["deadline"] == "29-05-2026"
+        assert body["status"] == "COMPLETED"
