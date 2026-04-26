@@ -11,6 +11,10 @@ from app.controllers.fundraising_activity import (
     createFundraisingActivityController,
     viewFundraisingActivityController,
     updateFundraisingActivityController,
+    suspendFundraisingActivityController,
+    searchFundraisingActivityController,
+    searchCompletedActivitiesController,
+    viewCompletedActivityController,
     getViewCountController,
     getShortlistCountController,
 )
@@ -19,6 +23,30 @@ router = APIRouter(prefix="/api/fundraising_activity", tags=["Fundraising Activi
 
 def require_fundraiser():
     return None
+
+@router.get("/", response_model=FundraisingActivitySearchResponse)
+def search_fundraising_activities(
+    fundraiser_id: int = Query(default=None),
+    keyword: str = Query(default=None),
+):
+    controller = searchFundraisingActivityController()
+    return controller.searchFundraisingActivities(fundraiser_id, keyword)
+
+
+@router.get("/completed", response_model=FundraisingActivitySearchResponse)
+def search_completed_activities(fundraiser_id: int = Query(default=None)):
+    controller = searchCompletedActivitiesController()
+    return controller.searchCompletedActivities(fundraiser_id)
+
+
+@router.get("/completed/{activity_id}", response_model=FundraisingActivityResponse)
+def get_completed_activity(activity_id: int):
+    controller = viewCompletedActivityController()
+    result = controller.viewCompletedActivity(activity_id)
+    if result == "not_found":
+        raise HTTPException(status_code=404, detail="Completed activity not found")
+    return result
+
 
 @router.post("/", response_model=FundraisingActivityResponse, status_code=201)
 def create_fundraising_activity(payload: FundraisingActivityCreate):
@@ -52,6 +80,15 @@ def get_fundraising_activity(activity_id: int):
         raise HTTPException(status_code=404, detail="Activity not found")
 
     return result
+
+@router.patch("/{activity_id}/suspend", response_model=FundraisingActivityResponse)
+def suspend_fundraising_activity(activity_id: int):
+    controller = suspendFundraisingActivityController()
+    result = controller.suspendFundraisingActivity(activity_id)
+    if result == "not_found":
+        raise HTTPException(status_code=404, detail="Activity not found")
+    return result
+
 
 @router.patch("/{activity_id}", response_model=FundraisingActivityResponse)
 def update_fundraising_activity(activity_id: int, payload: FundraisingActivityUpdate):

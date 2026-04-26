@@ -299,6 +299,7 @@ class TestSearchCompletedFundraisingActivities:
             currency="SGD",
             goal_amount=5000.0,
             status="COMPLETED",
+            category="Education",
         )
         db.add(completed)
         db.commit()

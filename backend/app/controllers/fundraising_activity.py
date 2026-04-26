@@ -48,10 +48,24 @@ class updateFundraisingActivityController:
         )
     
 class suspendFundraisingActivityController:
-    pass
+
+    def suspendFundraisingActivity(self, activityID: int):
+        return FundraisingActivity.suspendFundraisingActivity(activityID)
 
 class searchFundraisingActivityController:
-    pass
+
+    def searchFundraisingActivities(self, fundraiserID: int = None, keyword: str = None):
+        return FundraisingActivity.searchFundraisingActivities(fundraiserID, keyword)
+
+class searchCompletedActivitiesController:
+
+    def searchCompletedActivities(self, fundraiserID: int = None):
+        return FundraisingActivity.searchCompletedActivities(fundraiserID)
+
+class viewCompletedActivityController:
+
+    def viewCompletedActivity(self, activityID: int):
+        return FundraisingActivity.viewCompletedActivity(activityID)
 
 class getViewCountController:
 

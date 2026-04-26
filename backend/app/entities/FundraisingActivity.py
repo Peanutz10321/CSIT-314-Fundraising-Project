@@ -184,7 +184,60 @@ class FundraisingActivity(Base):
            activity = db.query(FundraisingActivity).filter(FundraisingActivity.id == activityID).first()
 
            return activity.shortlist_count
-    
+
         finally:
             db.close()
 
+    @staticmethod
+    def suspendFundraisingActivity(activityID: int):
+        db = FundraisingActivity._open_db()
+        try:
+            activity = db.query(FundraisingActivity).filter(FundraisingActivity.id == activityID).first()
+            if not activity:
+                return "not_found"
+            activity.suspend()
+            db.commit()
+            db.refresh(activity)
+            return activity
+        finally:
+            db.close()
+
+    @staticmethod
+    def searchFundraisingActivities(fundraiserID: int = None, keyword: str = None):
+        db = FundraisingActivity._open_db()
+        try:
+            query = db.query(FundraisingActivity)
+            if fundraiserID is not None:
+                query = query.filter(FundraisingActivity.fundraiser_id == fundraiserID)
+            if keyword:
+                query = query.filter(FundraisingActivity.title.ilike(f"%{keyword}%"))
+            results = query.all()
+            return {"total": len(results), "data": results}
+        finally:
+            db.close()
+
+    @staticmethod
+    def searchCompletedActivities(fundraiserID: int = None):
+        db = FundraisingActivity._open_db()
+        try:
+            query = db.query(FundraisingActivity).filter(FundraisingActivity.status == "COMPLETED")
+            if fundraiserID is not None:
+                query = query.filter(FundraisingActivity.fundraiser_id == fundraiserID)
+            results = query.all()
+            return {"total": len(results), "data": results}
+        finally:
+            db.close()
+
+    @staticmethod
+    def viewCompletedActivity(activityID: int):
+        db = FundraisingActivity._open_db()
+        try:
+            activity = db.query(FundraisingActivity).filter(
+                FundraisingActivity.id == activityID,
+                FundraisingActivity.status == "COMPLETED"
+            ).first()
+            if not activity:
+                return "not_found"
+            return activity
+        finally:
+            db.close()
