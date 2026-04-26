@@ -10,10 +10,9 @@ def create_test_activity(client, fundraiser_id: int, title: str = "Building a Sc
         "goal_amount": 5000.0,
         "category": "Education",
         "location": "Singapore",
-        "beneficiary_name": "Bob",
-        "fundraiser_name": "John",
+        "beneficiaryName": "Bob",
+        "fundraiserName": "John",
         "deadline": "29-05-2026",
-        "status": "ACTIVE"
     }
     payload.update(overrides)
     return client.post("/api/fundraising_activity/", json=payload)
@@ -42,8 +41,8 @@ class TestCreateFundraisingActivity:
         assert body["goal_amount"] == 5000.0
         assert body["category"] == "Education"
         assert body["location"] == "Singapore"
-        assert body["beneficiary_name"] == "Bob"
-        assert body["fundraiser_name"] == "John"
+        assert body["beneficiaryName"] == "Bob"
+        assert body["fundraiserName"] == "John"
         assert body["deadline"] == "29-05-2026"
         assert body["status"] == "ACTIVE"
     
@@ -113,8 +112,8 @@ class TestUpdateFundraisingActivity:
             "goal_amount": 10000.0,
             "category": "Health",
             "location": "Singapore",
-            "beneficiary_name": "Felix",
-            "fundraiser_name": "Jack",
+            "beneficiaryName": "Felix",
+            "fundraiserName": "Jack",
             "deadline": "20-05-2026",
             })
         
@@ -126,8 +125,8 @@ class TestUpdateFundraisingActivity:
         assert body["goal_amount"] == 10000.0
         assert body["category"] == "Health"
         assert body["location"] == "Singapore"
-        assert body["beneficiary_name"] == "Felix"
-        assert body["fundraiser_name"] == "Jack"
+        assert body["beneficiaryName"] == "Felix"
+        assert body["fundraiserName"] == "Jack"
         assert body["deadline"] == "20-05-2026"
 
     # TC-291-2
@@ -294,8 +293,16 @@ class TestSearchCompletedFundraisingActivities:
             password="pass123",
             role_name="FUNDRAISER"
         )
-        completed = create_test_activity(client, fundraiser.id, status="COMPLETED")
-        active = create_test_activity(client, fundraiser.id, title ="Building a Hospital" , status="ACTIVE")
+        completed = FundraisingActivity(
+            fundraiser_id=fundraiser.id,
+            title="Building a School",
+            currency="SGD",
+            goal_amount=5000.0,
+            status="COMPLETED",
+        )
+        db.add(completed)
+        db.commit()
+        active = create_test_activity(client, fundraiser.id, title ="Building a Hospital")
 
         response = client.get(
             f"/api/fundraising_activity/completed?fundraiser_id={fundraiser.id}"
@@ -315,8 +322,8 @@ class TestSearchCompletedFundraisingActivities:
             password="pass123",
             role_name="FUNDRAISER"
         )
-        create_test_activity(client, fundraiser.id, status="ACTIVE")
-        create_test_activity(client, fundraiser.id, title ="Building a Hospital" , status="ACTIVE")
+        create_test_activity(client, fundraiser.id)
+        create_test_activity(client, fundraiser.id, title ="Building a Hospital")
 
         response = client.get(
             f"/api/fundraising_activity/completed?fundraiser_id={fundraiser.id}"
@@ -340,8 +347,23 @@ class TestViewCompletedFundraisingActivity:
             role_name="FUNDRAISER"
         )
         
-        created = create_test_activity(client, fundraiser.id, status="COMPLETED")
-        activity_id = created.json()["id"]
+        completed = FundraisingActivity(
+            fundraiser_id=fundraiser.id,
+            title="Building a School",
+            description="Raising funds to help build a primary school",
+            currency="SGD",
+            goal_amount=5000.0,
+            status="COMPLETED",
+            category="Education",
+            location="Singapore",
+            beneficiaryName="Bob",
+            fundraiserName="John",
+            deadline="29-05-2026"
+        )
+        db.add(completed)
+        db.commit()
+        db.refresh(completed)
+        activity_id = completed.id
 
         response = client.get(f"/api/fundraising_activity/completed/{activity_id}")
         assert response.status_code == 200
@@ -352,7 +374,7 @@ class TestViewCompletedFundraisingActivity:
         assert body["goal_amount"] == 5000.0
         assert body["category"] == "Education"
         assert body["location"] == "Singapore"
-        assert body["beneficiary_name"] == "Bob"
-        assert body["fundraiser_name"] == "John"
+        assert body["beneficiaryName"] == "Bob"
+        assert body["fundraiserName"] == "John"
         assert body["deadline"] == "29-05-2026"
         assert body["status"] == "COMPLETED"

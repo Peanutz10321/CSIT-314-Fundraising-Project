@@ -19,6 +19,7 @@ class UserAccount(Base):
     dob = Column(String(10), nullable=True)
 
     user_profile = relationship("UserProfile", back_populates="accounts")
+    activities = relationship("FundraisingActivity", back_populates="fundraiser")
 
     @property
     def name_of_role(self):

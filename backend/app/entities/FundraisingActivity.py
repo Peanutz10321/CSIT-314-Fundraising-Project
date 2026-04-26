@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, Text, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, Float, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from app.database import Base, SessionLocal
+from datetime import datetime
 
 class FundraisingActivity(Base):
     __tablename__ = "fundraising_activities"
@@ -13,12 +14,177 @@ class FundraisingActivity(Base):
     current_amount = Column(Float, default=0.0)
     category = Column(String(100), nullable=True)
     location = Column(String(255), nullable=True)
-    beneficiary_name = Column(String(255), nullable=True)
-    fundraiser_name = Column(String(255), nullable=True)
+    beneficiaryName = Column(String(255), nullable=True)
+    fundraiserName = Column(String(255), nullable=True)
     deadline = Column(String(20), nullable=True)
     status = Column(String(20), default="ACTIVE")
     view_count = Column(Integer, default=0)
     shortlist_count = Column(Integer, default=0)
     fundraiser_id = Column(Integer, ForeignKey("user_accounts.id"), nullable=False)
+    date_created = Column(DateTime, default=datetime.now, nullable=False)
 
+    fundraiser = relationship("UserAccount", back_populates="activities")
+
+    def suspend(self):
+        self.status = "SUSPENDED"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "description": self.description,
+            "currency": self.currency,
+            "goal amount": self.goal_amount,
+            "current amount": self.current_amount,
+            "category": self.category,
+            "location": self.location,
+            "beneficiary Name": self.beneficiaryName,
+            "fundraiser Name": self.fundraiserName,
+            "deadline": self.deadline,
+            "view count": self.view_count,
+            "shortlist count": self.shortlist_count,
+            "status": self.status,
+        }
     
+    @staticmethod
+    def _open_db():
+        return SessionLocal()
+
+    @staticmethod
+    def createFundraisingActivity(
+        fundraiserID: int,
+        title: str,
+        currency: str,
+        goal_amount: float,
+        category: str,
+        description: str = None,
+        location: str = None,
+        beneficiaryName: str = None,
+        fundraiserName: str = None,
+        deadline: str = None,
+    ):
+        from app.entities.UserAccount import UserAccount
+        db = FundraisingActivity._open_db()
+        try:
+            fundraiser = db.query(UserAccount).filter(
+                UserAccount.id == fundraiserID
+            ).first()
+
+            if not fundraiser:
+                return "fundraiser_not_found"
+ 
+            if goal_amount <= 0:
+                return "invalid_amount"
+
+            activity = FundraisingActivity(
+                fundraiser_id=fundraiserID,
+                title=title,
+                currency=currency,
+                goal_amount=goal_amount,
+                category=category,
+                description=description,
+                location=location,
+                beneficiaryName=beneficiaryName,
+                fundraiserName=fundraiserName,
+                deadline=deadline,
+                status="ACTIVE",
+                view_count=0,
+                shortlist_count=0,
+                current_amount=0.0,
+                date_created= datetime.now()
+            )
+            db.add(activity)
+            db.commit()
+            db.refresh(activity)
+            return activity
+        finally:
+            db.close()
+    
+    @staticmethod
+    def viewFundraisingActivity(activityID: str):
+
+        db = FundraisingActivity._open_db()
+        try:
+            activity = db.query(FundraisingActivity).filter(FundraisingActivity.id == activityID).first()
+            if not activity:
+                return "not_found"
+            activity.view_count += 1
+            db.commit()
+            db.refresh(activity)
+            return activity
+        finally:
+            db.close()
+    
+    @staticmethod
+    def updateFundraisingActivity(
+        activityID: int,
+        title: str = None,
+        currency: str = None,
+        goal_amount: float = None,
+        category: str = None,
+        description: str = None,
+        location: str = None,
+        beneficiaryName: str = None,
+        fundraiserName: str = None,
+        deadline: str = None,
+    ):
+        db = FundraisingActivity._open_db()
+        try:
+            activity = db.query(FundraisingActivity).filter(FundraisingActivity.id == activityID).first()
+            
+            if not activity:
+                return "not_found"
+
+            if goal_amount is not None and goal_amount <= 0:
+                return "invalid_amount"
+            
+            if title is not None:
+                activity.title = title
+            if currency is not None:
+                activity.currency = currency
+            if goal_amount is not None:
+                activity.goal_amount = goal_amount
+            if description is not None:
+                activity.description = description
+            if category is not None:
+                activity.category = category
+            if location is not None:
+                activity.location = location
+            if beneficiaryName is not None:
+                activity.beneficiaryName = beneficiaryName
+            if fundraiserName is not None:
+                activity.fundraiserName = fundraiserName
+            if deadline is not None:
+                activity.deadline = deadline
+ 
+            db.commit()
+            db.refresh(activity)
+            return activity
+        
+        finally:
+            db.close()
+
+    @staticmethod
+    def getViewCount(activityID: int):
+        db = FundraisingActivity._open_db()
+
+        try:
+            activity = db.query(FundraisingActivity).filter(FundraisingActivity.id == activityID).first()
+
+            return activity.view_count
+
+        finally:
+            db.close()
+    
+    @staticmethod
+    def getShortlistCount(activityID: int):
+        db = FundraisingActivity._open_db()
+
+        try:
+           activity = db.query(FundraisingActivity).filter(FundraisingActivity.id == activityID).first()
+
+           return activity.shortlist_count
+    
+        finally:
+            db.close()
+
