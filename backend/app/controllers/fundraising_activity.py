@@ -23,7 +23,7 @@ class createFundraisingActivityController:
     
 class viewFundraisingActivityController:
 
-    def viewFundraisingActivity(self, activityID: str):
+    def viewFundraisingActivity(self, activityID: int):
         return FundraisingActivity.viewFundraisingActivity(activityID)
 
 class updateFundraisingActivityController:
@@ -59,17 +59,17 @@ class searchFundraisingActivityController:
 
 class searchCompletedActivitiesController:
 
-    def searchCompletedActivities(self, fundraiserID: int = None):
+    def searchCompletedActivities(self, fundraiserID: int = None, keyword: str = None):
         return FundraisingActivity.searchCompletedActivities(fundraiserID)
 
 class viewCompletedActivityController:
 
-    def viewCompletedActivity(self, activityID: int):
-        return FundraisingActivity.viewCompletedActivity(activityID)
+    def getCompletedActivity(self, activityID: int):
+        return FundraisingActivity.getCompletedActivity(activityID)
 
-class getViewCountController:
+class viewActivityViewsController:
 
-    def getViewCount(self, activityID: int):
+    def viewActivityViews(self, activityID: int):
         return FundraisingActivity.getViewCount(activityID)
     
 class getShortlistCountController:

@@ -101,7 +101,7 @@ class FundraisingActivity(Base):
             db.close()
     
     @staticmethod
-    def viewFundraisingActivity(activityID: str):
+    def viewFundraisingActivity(activityID: int):
 
         db = FundraisingActivity._open_db()
         try:
@@ -165,7 +165,7 @@ class FundraisingActivity(Base):
             db.close()
 
     @staticmethod
-    def getViewCount(activityID: int):
+    def viewActivityViews(activityID: int):
         db = FundraisingActivity._open_db()
 
         try:
@@ -212,24 +212,26 @@ class FundraisingActivity(Base):
             if keyword:
                 query = query.filter(FundraisingActivity.title.ilike(f"%{keyword}%"))
             results = query.all()
-            return {"total": len(results), "data": results}
+            return results
         finally:
             db.close()
 
     @staticmethod
-    def searchCompletedActivities(fundraiserID: int = None):
+    def searchCompletedActivities(fundraiserID: int = None, keyword: str = None):
         db = FundraisingActivity._open_db()
         try:
             query = db.query(FundraisingActivity).filter(FundraisingActivity.status == "COMPLETED")
             if fundraiserID is not None:
                 query = query.filter(FundraisingActivity.fundraiser_id == fundraiserID)
+            if keyword:
+                query = query.filter(FundraisingActivity.title.ilike(f"%{keyword}%"))
             results = query.all()
-            return {"total": len(results), "data": results}
+            return results
         finally:
             db.close()
 
     @staticmethod
-    def viewCompletedActivity(activityID: int):
+    def getCompletedActivity(activityID: int):
         db = FundraisingActivity._open_db()
         try:
             activity = db.query(FundraisingActivity).filter(

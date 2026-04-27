@@ -15,7 +15,7 @@ from app.controllers.fundraising_activity import (
     searchFundraisingActivityController,
     searchCompletedActivitiesController,
     viewCompletedActivityController,
-    getViewCountController,
+    viewActivityViewsController,
     getShortlistCountController,
 )
 
@@ -30,19 +30,27 @@ def search_fundraising_activities(
     keyword: str = Query(default=None),
 ):
     controller = searchFundraisingActivityController()
-    return controller.searchFundraisingActivities(fundraiser_id, keyword)
+    activities = controller.searchFundraisingActivities(fundraiser_id, keyword)
+    return {
+        "total": len(activities),
+        "data": activities,
+    }
 
 
 @router.get("/completed", response_model=FundraisingActivitySearchResponse)
-def search_completed_activities(fundraiser_id: int = Query(default=None)):
+def search_completed_activities(fundraiser_id: int = Query(default=None), keyword: str = Query(default=None),):
     controller = searchCompletedActivitiesController()
-    return controller.searchCompletedActivities(fundraiser_id)
+    activities = controller.searchCompletedActivities(fundraiser_id, keyword)
+    return {
+        "total": len(activities),
+        "data": activities,
+    }
 
 
 @router.get("/completed/{activity_id}", response_model=FundraisingActivityResponse)
 def get_completed_activity(activity_id: int):
     controller = viewCompletedActivityController()
-    result = controller.viewCompletedActivity(activity_id)
+    result = controller.getCompletedActivity(activity_id)
     if result == "not_found":
         raise HTTPException(status_code=404, detail="Completed activity not found")
     return result
@@ -115,8 +123,8 @@ def update_fundraising_activity(activity_id: int, payload: FundraisingActivityUp
 
 @router.get("/{activity_id}/view_count", response_model=ViewCountResponse)
 def get_view_count(activity_id: int):
-    controller = getViewCountController()
-    result = controller.getViewCount(activity_id)
+    controller = viewActivityViewsController()
+    result = controller.viewActivityViews(activity_id)
 
     if result == "not_found":
         raise HTTPException(status_code=404, detail="Activity not found")
