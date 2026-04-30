@@ -63,7 +63,7 @@ class UserProfile(Base):
             db.close()
 
     @staticmethod
-    def updateUserProfile(profile_id: int, name_of_role: str, description: str, status: str = "ACTIVE"):
+    def updateUserProfile(profile_id: int, name: str, description: str, status: str = "ACTIVE"):
         db = UserProfile._open_db()
         try:
             profile = db.query(UserProfile).filter(UserProfile.id == profile_id).first()
@@ -71,14 +71,14 @@ class UserProfile(Base):
                 return "not_found"
 
             duplicate = db.query(UserProfile).filter(
-                UserProfile.name_of_role == name_of_role,
+                UserProfile.name_of_role == name,
                 UserProfile.id != profile_id
             ).first()
 
             if duplicate:
                 return "duplicate_name"
 
-            profile.name_of_role = name_of_role
+            profile.name_of_role = name
             profile.description = description
             profile.status = status
 

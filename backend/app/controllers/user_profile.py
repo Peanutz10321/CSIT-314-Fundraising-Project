@@ -12,8 +12,8 @@ class viewUserProfileController:
 
 
 class updateUserProfileController:
-    def updateUserProfile(self, profile_id: int, name_of_role: str, description: str, status: str = "ACTIVE"):
-        return UserProfile.updateUserProfile(profile_id, name_of_role, description, status)
+    def updateUserProfile(self, profile_id: int, name: str, description: str, status: str = "ACTIVE"):
+        return UserProfile.updateUserProfile(profile_id, name, description, status)
 
 
 class suspendUserProfileController:
