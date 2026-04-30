@@ -165,40 +165,16 @@ class FundraisingActivity(Base):
             db.close()
 
     @staticmethod
-    def viewActivityViews(activityID: int):
-        db = FundraisingActivity._open_db()
-
-        try:
-            activity = db.query(FundraisingActivity).filter(FundraisingActivity.id == activityID).first()
-
-            return activity.view_count
-
-        finally:
-            db.close()
-    
-    @staticmethod
-    def getShortlistCount(activityID: int):
-        db = FundraisingActivity._open_db()
-
-        try:
-           activity = db.query(FundraisingActivity).filter(FundraisingActivity.id == activityID).first()
-
-           return activity.shortlist_count
-
-        finally:
-            db.close()
-
-    @staticmethod
     def suspendFundraisingActivity(activityID: int):
         db = FundraisingActivity._open_db()
         try:
             activity = db.query(FundraisingActivity).filter(FundraisingActivity.id == activityID).first()
             if not activity:
-                return "not_found"
+                return False
             activity.suspend()
             db.commit()
             db.refresh(activity)
-            return activity
+            return True
         finally:
             db.close()
 
@@ -217,21 +193,21 @@ class FundraisingActivity(Base):
             db.close()
 
     @staticmethod
-    def searchCompletedActivities(fundraiserID: int = None, keyword: str = None):
+    def searchCompletedActivity(fundraiserID: int = None, query: str = None):
         db = FundraisingActivity._open_db()
         try:
-            query = db.query(FundraisingActivity).filter(FundraisingActivity.status == "COMPLETED")
+            dbquery = db.query(FundraisingActivity).filter(FundraisingActivity.status == "COMPLETED")
             if fundraiserID is not None:
-                query = query.filter(FundraisingActivity.fundraiser_id == fundraiserID)
-            if keyword:
-                query = query.filter(FundraisingActivity.title.ilike(f"%{keyword}%"))
-            results = query.all()
+                dbquery = dbquery.filter(FundraisingActivity.fundraiser_id == fundraiserID)
+            if query:
+                dbquery = dbquery.filter(FundraisingActivity.title.ilike(f"%{query}%"))
+            results = dbquery.all()
             return results
         finally:
             db.close()
 
     @staticmethod
-    def getCompletedActivity(activityID: int):
+    def getCompletedActivities(activityID: int):
         db = FundraisingActivity._open_db()
         try:
             activity = db.query(FundraisingActivity).filter(

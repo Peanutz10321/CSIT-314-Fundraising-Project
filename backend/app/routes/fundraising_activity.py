@@ -4,8 +4,6 @@ from app.schemas.fundraising_activity import (
     FundraisingActivityUpdate,
     FundraisingActivityResponse,
     FundraisingActivitySearchResponse,
-    ViewCountResponse,
-    ShortlistCountResponse,
 )
 from app.controllers.fundraising_activity import (
     createFundraisingActivityController,
@@ -15,8 +13,6 @@ from app.controllers.fundraising_activity import (
     searchFundraisingActivityController,
     searchCompletedActivitiesController,
     viewCompletedActivityController,
-    viewActivityViewsController,
-    getShortlistCountController,
 )
 
 router = APIRouter(prefix="/api/fundraising_activity", tags=["Fundraising Activities"])
@@ -40,7 +36,7 @@ def search_fundraising_activities(
 @router.get("/completed", response_model=FundraisingActivitySearchResponse)
 def search_completed_activities(fundraiser_id: int = Query(default=None), keyword: str = Query(default=None),):
     controller = searchCompletedActivitiesController()
-    activities = controller.searchCompletedActivities(fundraiser_id, keyword)
+    activities = controller.searchCompletedActivity(fundraiser_id, keyword)
     return {
         "total": len(activities),
         "data": activities,
@@ -50,7 +46,7 @@ def search_completed_activities(fundraiser_id: int = Query(default=None), keywor
 @router.get("/completed/{activity_id}", response_model=FundraisingActivityResponse)
 def get_completed_activity(activity_id: int):
     controller = viewCompletedActivityController()
-    result = controller.getCompletedActivity(activity_id)
+    result = controller.getCompletedActivities(activity_id)
     if result == "not_found":
         raise HTTPException(status_code=404, detail="Completed activity not found")
     return result
@@ -89,13 +85,14 @@ def get_fundraising_activity(activity_id: int):
 
     return result
 
-@router.patch("/{activity_id}/suspend", response_model=FundraisingActivityResponse)
+@router.patch("/{activity_id}/suspend")
 def suspend_fundraising_activity(activity_id: int):
     controller = suspendFundraisingActivityController()
-    result = controller.suspendFundraisingActivity(activity_id)
-    if result == "not_found":
+    success = controller.suspendFundraisingActivity(activity_id)
+    if not success:
         raise HTTPException(status_code=404, detail="Activity not found")
-    return result
+
+    return {"success": True}
 
 
 @router.patch("/{activity_id}", response_model=FundraisingActivityResponse)
@@ -120,24 +117,3 @@ def update_fundraising_activity(activity_id: int, payload: FundraisingActivityUp
         raise HTTPException(status_code=400, detail="goal_amount must be greater than 0")
 
     return result
-
-@router.get("/{activity_id}/view_count", response_model=ViewCountResponse)
-def get_view_count(activity_id: int):
-    controller = viewActivityViewsController()
-    result = controller.viewActivityViews(activity_id)
-
-    if result == "not_found":
-        raise HTTPException(status_code=404, detail="Activity not found")
-
-    return {"activity_id": activity_id, "view_count": result}
-
-
-@router.get("/{activity_id}/shortlist_count", response_model=ShortlistCountResponse)
-def get_shortlist_count(activity_id: int):
-    controller = getShortlistCountController()
-    result = controller.getShortlistCount(activity_id)
-
-    if result == "not_found":
-        raise HTTPException(status_code=404, detail="Activity not found")
-
-    return {"activity_id": activity_id, "shortlist_count": result}

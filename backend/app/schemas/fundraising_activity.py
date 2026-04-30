@@ -54,13 +54,3 @@ class FundraisingActivityResponse(BaseModel):
 class FundraisingActivitySearchResponse(BaseModel):
     total: int
     data: list[FundraisingActivityResponse]
-
-
-class ViewCountResponse(BaseModel):
-    activity_id: int
-    view_count: int
-
-
-class ShortlistCountResponse(BaseModel):
-    activity_id: int
-    shortlist_count: int
