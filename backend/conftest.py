@@ -15,6 +15,7 @@ from app.entities.UserAccount import UserAccount
 from app.middleware.auth import hash_password
 
 
+
 TEST_DATABASE_URL = "sqlite:///./test.db"
 
 engine = create_engine(
@@ -102,3 +103,29 @@ def create_test_user(db,name: str, email: str,  password: str,  role_name: str, 
     db.commit()
     db.refresh(user)
     return user
+
+def create_test_activity(client, fundraiser_id: int, title: str = "Building a School", **overrides):
+    payload = {
+        "fundraiser_id": fundraiser_id,
+        "title": title,
+        "description": "Raising funds to help build a primary school",
+        "currency": "SGD",
+        "goal_amount": 5000.0,
+        "category": "Education",
+        "location": "Singapore",
+        "beneficiaryName": "Bob",
+        "fundraiserName": "John",
+        "deadline": "29-05-2026",
+    }
+    payload.update(overrides)
+    return client.post("/api/fundraising_activity/", json=payload)
+
+def create_fundraiser(db, name = "John", email = "john@test.com", password = "pass123", role_name = "FUNDRAISER"):
+    return create_test_user(
+            db,
+            name=name,
+            email=email,
+            password=password,
+            role_name=role_name
+        )
+

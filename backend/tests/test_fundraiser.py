@@ -1,35 +1,12 @@
-from conftest import create_test_user, get_or_create_profile
+from conftest import create_test_user, get_or_create_profile, create_test_activity, create_fundraiser
 from app.entities.FundraisingActivity import FundraisingActivity
-
-def create_test_activity(client, fundraiser_id: int, title: str = "Building a School", **overrides):
-    payload = {
-        "fundraiser_id": fundraiser_id,
-        "title": title,
-        "description": "Raising funds to help build a primary school",
-        "currency": "SGD",
-        "goal_amount": 5000.0,
-        "category": "Education",
-        "location": "Singapore",
-        "beneficiaryName": "Bob",
-        "fundraiserName": "John",
-        "deadline": "29-05-2026",
-    }
-    payload.update(overrides)
-    return client.post("/api/fundraising_activity/", json=payload)
-
 
 #55 Creating Fundraising Activity
 class TestCreateFundraisingActivity:
 
     # TC-271-1
     def test_create_activity_success(self, db, client):
-        fundraiser = create_test_user(
-            db,
-            name="John",
-            email="john@test.com",
-            password="pass123",
-            role_name="FUNDRAISER"
-        )
+        fundraiser = create_fundraiser(db)
  
         response = create_test_activity(client, fundraiser.id)
  
@@ -62,13 +39,7 @@ class TestViewFundraisingActivity:
 
     # TC-281-1
     def test_view_activity_success(self, db, client):
-        fundraiser = create_test_user(
-            db,
-            name="John",
-            email="john@test.com",
-            password="pass123",
-            role_name="FUNDRAISER"
-        )
+        fundraiser = create_fundraiser(db)
 
         created = create_test_activity(client, fundraiser.id)
         activity_id = created.json()["id"]
@@ -94,13 +65,7 @@ class TestUpdateFundraisingActivity:
 
     # TC-291-1
     def test_update_all_fields_success(self, db, client):
-        fundraiser = create_test_user(
-            db,
-            name="John",
-            email="john@test.com",
-            password="pass123",
-            role_name="FUNDRAISER"
-        )
+        fundraiser = create_fundraiser(db)
 
         created = create_test_activity(client, fundraiser.id)
         activity_id = created.json()["id"]
@@ -131,13 +96,7 @@ class TestUpdateFundraisingActivity:
 
     # TC-291-2
     def test_partial_update_only_changes_provided_files(self, db, client):
-        fundraiser = create_test_user(
-            db,
-            name="John",
-            email="john@test.com",
-            password="pass123",
-            role_name="FUNDRAISER"
-        )
+        fundraiser = create_fundraiser(db)
 
         created = create_test_activity(client, fundraiser.id)
         activity_id = created.json()["id"]
@@ -161,13 +120,7 @@ class TestSuspendFundraisingActivity:
 
     # TC-301-1
     def test_suspend_activity_success(self, db, client):
-        fundraiser = create_test_user(
-            db,
-            name="John",
-            email="john@test.com",
-            password="pass123",
-            role_name="FUNDRAISER"
-        )
+        fundraiser = create_fundraiser(db)
 
         created = create_test_activity(client, fundraiser.id)
         activity_id = created.json()["id"]
@@ -184,13 +137,7 @@ class TestSearchFundraisingActivities:
 
     # TC-311-1
     def test_search_activities_by_title(self, db, client):
-        fundraiser = create_test_user(
-            db,
-            name="John",
-            email="john@test.com",
-            password="pass123",
-            role_name="FUNDRAISER"
-        )
+        fundraiser = create_fundraiser(db)
 
         create_test_activity(client, fundraiser.id, title="Building a School")
         create_test_activity(client, fundraiser.id, title="Building a Hospital")
@@ -206,13 +153,7 @@ class TestSearchFundraisingActivities:
 
     #TC-311-2
     def test_search_no_match_returns_empty(self, db, client):
-        fundraiser = create_test_user(
-            db,
-            name="John",
-            email="john@test.com",
-            password="pass123",
-            role_name="FUNDRAISER"
-        )
+        fundraiser = create_fundraiser(db)
 
         create_test_activity(client, fundraiser.id, title="Building a School")
         create_test_activity(client, fundraiser.id, title="Building a Hospital")
@@ -231,13 +172,7 @@ class TestActivityViewCount:
 
     # TC-321-1
     def test_view_increments_view_count(self, db, client):
-        fundraiser = create_test_user(
-            db,
-            name="John",
-            email="john@test.com",
-            password="pass123",
-            role_name="FUNDRAISER"
-        )
+        fundraiser = create_fundraiser(db)
 
         created = create_test_activity(client, fundraiser.id)
         activity_id = created.json()["id"]
@@ -250,13 +185,7 @@ class TestActivityViewCount:
 
     # TC-321-2
     def test_view_count_starts_at_zero(self, db, client):
-        fundraiser = create_test_user(
-            db,
-            name="John",
-            email="john@test.com",
-            password="pass123",
-            role_name="FUNDRAISER"
-        )
+        fundraiser = create_fundraiser(db)
 
         response = create_test_activity(client, fundraiser.id)
 
@@ -268,13 +197,7 @@ class TestActivityShortlistCount:
 
     # TC-331-1
     def test_shortlist_count_starts_at_zero(self, db, client):
-        fundraiser = create_test_user(
-            db,
-            name="John",
-            email="john@test.com",
-            password="pass123",
-            role_name="FUNDRAISER"
-        )
+        fundraiser = create_fundraiser(db)
 
         response = create_test_activity(client, fundraiser.id)
 
@@ -286,13 +209,8 @@ class TestSearchCompletedFundraisingActivities:
 
     # TC-341-1
     def test_search_completed_activities_return_only_completed_activities(self, db, client):
-        fundraiser = create_test_user(
-            db,
-            name="John",
-            email="john@test.com",
-            password="pass123",
-            role_name="FUNDRAISER"
-        )
+        fundraiser = create_fundraiser(db)
+
         completed = FundraisingActivity(
             fundraiser_id=fundraiser.id,
             title="Building a School",
@@ -316,13 +234,8 @@ class TestSearchCompletedFundraisingActivities:
     
     # TC-341-2
     def test_search_completed_activities_no_completed_returns_empty(self, db, client):
-        fundraiser = create_test_user(
-            db,
-            name="John",
-            email="john@test.com",
-            password="pass123",
-            role_name="FUNDRAISER"
-        )
+        fundraiser = create_fundraiser(db)
+
         create_test_activity(client, fundraiser.id)
         create_test_activity(client, fundraiser.id, title ="Building a Hospital")
 
@@ -340,13 +253,7 @@ class TestViewCompletedFundraisingActivity:
 
     # TC-351-1
     def test_view_completed_activity_details_success(self, db, client):
-        fundraiser = create_test_user(
-            db,
-            name="John",
-            email="john@test.com",
-            password="pass123",
-            role_name="FUNDRAISER"
-        )
+        fundraiser = create_fundraiser(db)
         
         completed = FundraisingActivity(
             fundraiser_id=fundraiser.id,
