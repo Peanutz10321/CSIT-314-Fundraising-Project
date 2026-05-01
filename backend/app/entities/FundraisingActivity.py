@@ -209,7 +209,9 @@ class FundraisingActivity(Base):
 
         try:
 
-            query = db.query(FundraisingActivity)
+            query = db.query(FundraisingActivity).filter(
+                FundraisingActivity.status != "COMPLETED"
+            )
 
             if fundraiserID is not None:
                 query = query.filter(FundraisingActivity.fundraiser_id == fundraiserID)
