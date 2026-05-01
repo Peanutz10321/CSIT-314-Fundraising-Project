@@ -152,5 +152,18 @@ def create_auth_headers_for_role(
 
     return auth_headers(user.id)
 
+def create_donee(db, name = "Jerry", email = "jerry@test.com", password = "testing123", role_name = "DONEE"):
+    return create_test_user(
+            db,
+            name=name,
+            email=email,
+            password=password,
+            role_name=role_name
+        )
 
+def create_test_category(client, name = "Education", description = "Schools and learning resources"):
+    return client.post("/api/category", json={
+        "name" : name,
+        "description" : description
+    })
 
