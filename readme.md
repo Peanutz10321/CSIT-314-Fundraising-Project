@@ -5,7 +5,7 @@ This project is an online fundraising platform developed for the **CSIT314 Softw
 
 ## Tech Stack
 - **Backend:** FastAPI, SQLAlchemy, Python
-- **Frontend:** HTML, CSS, JavaScript
+- **Frontend:** React, Vite, CSS
 - **Testing:** Pytest
 - **CI:** GitHub Actions
 
@@ -15,9 +15,12 @@ backend/
   app/
   tests/
 frontend/
-  index.html
-  style.css
-  app.js
+  src/
+    api/
+    components/
+    pages/
+  package.json
+  vite.config.js
 ```
 
 ## Running the Backend
@@ -28,4 +31,9 @@ frontend/
 http://127.0.0.1:8000/docs
 
 ## Running the frontend
-Open the html file in the browser after starting the backend
+- cd frontend
+- npm install
+- npm run dev
+
+### Frontend Server(usually)
+http://localhost:5173
