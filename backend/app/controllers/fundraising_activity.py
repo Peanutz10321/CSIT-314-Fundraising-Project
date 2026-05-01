@@ -23,14 +23,15 @@ class createFundraisingActivityController:
     
 class viewFundraisingActivityController:
 
-    def viewFundraisingActivity(self, activityID: int):
-        return FundraisingActivity.viewFundraisingActivity(activityID)
+    def viewFundraisingActivity(self, activityID: int, fundraiserID: int):
+        return FundraisingActivity.viewFundraisingActivity(activityID, fundraiserID)
 
 class updateFundraisingActivityController:
 
     def updateFundraisingActivity(
         self,
         activityID: int,
+        fundraiserID: int,
         title: str = None,
         currency: str = None,
         goal_amount: float = None,
@@ -42,15 +43,15 @@ class updateFundraisingActivityController:
         deadline: str = None,
     ):
         return FundraisingActivity.updateFundraisingActivity(
-            activityID, title, currency, goal_amount,
+            activityID, fundraiserID, title, currency, goal_amount,
             category, description, location,
             beneficiaryName, fundraiserName, deadline,
         )
     
 class suspendFundraisingActivityController:
 
-    def suspendFundraisingActivity(self, activityID: int):
-        return FundraisingActivity.suspendFundraisingActivity(activityID)
+    def suspendFundraisingActivity(self, activityID: int, fundraiserID: int):
+        return FundraisingActivity.suspendFundraisingActivity(activityID, fundraiserID)
 
 class searchFundraisingActivityController:
 
@@ -60,9 +61,9 @@ class searchFundraisingActivityController:
 class searchCompletedActivitiesController:
 
     def searchCompletedActivity(self, fundraiserID: int = None, query: str = None):
-        return FundraisingActivity.searchCompletedActivity(fundraiserID)
+        return FundraisingActivity.searchCompletedActivity(fundraiserID, query)
 
 class viewCompletedActivityController:
 
-    def getCompletedActivities(self, activityID: int):
-        return FundraisingActivity.getCompletedActivities(activityID)
+    def getCompletedActivities(self, activityID: int, fundraiserID: int):
+        return FundraisingActivity.getCompletedActivities(activityID, fundraiserID)

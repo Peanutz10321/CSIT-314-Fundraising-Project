@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 
+from app.middleware.access_control import require_roles
+
 from app.schemas.user_profile import (
     UserProfileCreate,
     UserProfileUpdate,
@@ -16,9 +18,7 @@ from app.controllers.user_profile import (
 
 router = APIRouter(prefix="/api/user_profile", tags=["User Profiles"])
 
-
-def require_user_admin():
-    return None
+require_user_admin = require_roles("USER_ADMIN")
 
 
 @router.post("/", response_model=UserProfileResponse, status_code=201)
@@ -38,7 +38,7 @@ def create_user_profile(
 @router.get("/{profile_id}", response_model=UserProfileResponse)
 def get_user_profile(
     profile_id: int,
-    _: None = Depends(require_user_admin),
+    _: None = Depends(require_user_admin)
 ):
     controller = viewUserProfileController()
     result = controller.getUserProfileByID(profile_id)
@@ -53,7 +53,7 @@ def get_user_profile(
 def update_user_profile(
     profile_id: int,
     payload: UserProfileUpdate,
-    _: None = Depends(require_user_admin),
+    _: None = Depends(require_user_admin)
 ):
     controller = updateUserProfileController()
     result = controller.updateUserProfile(
@@ -64,6 +64,7 @@ def update_user_profile(
 
     if result == "not_found":
         raise HTTPException(status_code=404, detail="User profile not found")
+    
     if result == "duplicate_name":
         raise HTTPException(status_code=400, detail="The user profile name already exists")
 
@@ -73,7 +74,7 @@ def update_user_profile(
 @router.patch("/{profile_id}/suspend")
 def suspend_user_profile(
     profile_id: int,
-    _: None = Depends(require_user_admin),
+    _: None = Depends(require_user_admin)
 ):
     controller = suspendUserProfileController()
     success = controller.suspendUserProfile(profile_id)
@@ -87,7 +88,7 @@ def suspend_user_profile(
 @router.get("/", response_model=UserProfileSearchResponse)
 def search_user_profiles(
     keyword: str | None = Query(default=None),
-    _: None = Depends(require_user_admin),
+    _: None = Depends(require_user_admin)
 ):
     controller = searchUserProfileController()
     profiles = controller.searchUserProfile(keyword)

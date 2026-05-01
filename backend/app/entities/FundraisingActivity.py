@@ -66,6 +66,7 @@ class FundraisingActivity(Base):
         from app.entities.UserAccount import UserAccount
         db = FundraisingActivity._open_db()
         try:
+
             fundraiser = db.query(UserAccount).filter(
                 UserAccount.id == fundraiserID
             ).first()
@@ -93,6 +94,7 @@ class FundraisingActivity(Base):
                 current_amount=0.0,
                 date_created= datetime.now()
             )
+
             db.add(activity)
             db.commit()
             db.refresh(activity)
@@ -101,16 +103,19 @@ class FundraisingActivity(Base):
             db.close()
     
     @staticmethod
-    def viewFundraisingActivity(activityID: int):
+    def viewFundraisingActivity(activityID: int, fundraiserID: int):
 
         db = FundraisingActivity._open_db()
         try:
-            activity = db.query(FundraisingActivity).filter(FundraisingActivity.id == activityID).first()
+
+            activity = db.query(FundraisingActivity).filter(
+                FundraisingActivity.id == activityID,
+                FundraisingActivity.fundraiser_id == fundraiserID
+                ).first()
+            
             if not activity:
                 return "not_found"
-            activity.view_count += 1
-            db.commit()
-            db.refresh(activity)
+            
             return activity
         finally:
             db.close()
@@ -118,6 +123,7 @@ class FundraisingActivity(Base):
     @staticmethod
     def updateFundraisingActivity(
         activityID: int,
+        fundraiserID: int,
         title: str = None,
         currency: str = None,
         goal_amount: float = None,
@@ -130,7 +136,11 @@ class FundraisingActivity(Base):
     ):
         db = FundraisingActivity._open_db()
         try:
-            activity = db.query(FundraisingActivity).filter(FundraisingActivity.id == activityID).first()
+
+            activity = db.query(FundraisingActivity).filter(
+                FundraisingActivity.id == activityID,
+                FundraisingActivity.fundraiser_id == fundraiserID
+                ).first()
             
             if not activity:
                 return "not_found"
@@ -140,20 +150,28 @@ class FundraisingActivity(Base):
             
             if title is not None:
                 activity.title = title
+
             if currency is not None:
                 activity.currency = currency
+
             if goal_amount is not None:
                 activity.goal_amount = goal_amount
+
             if description is not None:
                 activity.description = description
+
             if category is not None:
                 activity.category = category
+
             if location is not None:
                 activity.location = location
+
             if beneficiaryName is not None:
                 activity.beneficiaryName = beneficiaryName
+
             if fundraiserName is not None:
                 activity.fundraiserName = fundraiserName
+
             if deadline is not None:
                 activity.deadline = deadline
  
@@ -165,12 +183,19 @@ class FundraisingActivity(Base):
             db.close()
 
     @staticmethod
-    def suspendFundraisingActivity(activityID: int):
+    def suspendFundraisingActivity(activityID: int, fundraiserID: int):
         db = FundraisingActivity._open_db()
+
         try:
-            activity = db.query(FundraisingActivity).filter(FundraisingActivity.id == activityID).first()
+
+            activity = db.query(FundraisingActivity).filter(
+                FundraisingActivity.id == activityID,
+                FundraisingActivity.fundraiser_id == fundraiserID
+                ).first()
+            
             if not activity:
                 return False
+            
             activity.suspend()
             db.commit()
             db.refresh(activity)
@@ -181,13 +206,18 @@ class FundraisingActivity(Base):
     @staticmethod
     def searchFundraisingActivities(fundraiserID: int = None, keyword: str = None):
         db = FundraisingActivity._open_db()
+
         try:
+
             query = db.query(FundraisingActivity)
+
             if fundraiserID is not None:
                 query = query.filter(FundraisingActivity.fundraiser_id == fundraiserID)
+
             if keyword:
                 query = query.filter(FundraisingActivity.title.ilike(f"%{keyword}%"))
             results = query.all()
+
             return results
         finally:
             db.close()
@@ -197,25 +227,34 @@ class FundraisingActivity(Base):
         db = FundraisingActivity._open_db()
         try:
             dbquery = db.query(FundraisingActivity).filter(FundraisingActivity.status == "COMPLETED")
+
             if fundraiserID is not None:
                 dbquery = dbquery.filter(FundraisingActivity.fundraiser_id == fundraiserID)
+
             if query:
                 dbquery = dbquery.filter(FundraisingActivity.title.ilike(f"%{query}%"))
+
             results = dbquery.all()
+
             return results
         finally:
             db.close()
 
     @staticmethod
-    def getCompletedActivities(activityID: int):
+    def getCompletedActivities(activityID: int, fundraiserID: int):
         db = FundraisingActivity._open_db()
+
         try:
+            
             activity = db.query(FundraisingActivity).filter(
                 FundraisingActivity.id == activityID,
+                FundraisingActivity.fundraiser_id == fundraiserID,
                 FundraisingActivity.status == "COMPLETED"
             ).first()
+
             if not activity:
                 return "not_found"
+            
             return activity
         finally:
             db.close()

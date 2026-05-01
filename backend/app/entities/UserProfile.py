@@ -31,7 +31,9 @@ class UserProfile(Base):
     @staticmethod
     def createUserProfile(name_of_role: str, description: str, status: str = "ACTIVE"):
         db = UserProfile._open_db()
+
         try:
+
             existing = db.query(UserProfile).filter(
                 UserProfile.name_of_role == name_of_role
             ).first()
@@ -44,17 +46,22 @@ class UserProfile(Base):
                 description=description,
                 status=status,
             )
+
             db.add(profile)
             db.commit()
             db.refresh(profile)
+
             return profile
+        
         finally:
             db.close()
 
     @staticmethod
     def getUserProfileByID(profile_id: int):
         db = UserProfile._open_db()
+
         try:
+
             profile = db.query(UserProfile).filter(UserProfile.id == profile_id).first()
             if not profile:
                 return "not_found"
@@ -65,8 +72,11 @@ class UserProfile(Base):
     @staticmethod
     def updateUserProfile(profile_id: int, name: str, description: str, status: str = "ACTIVE"):
         db = UserProfile._open_db()
+
         try:
+
             profile = db.query(UserProfile).filter(UserProfile.id == profile_id).first()
+
             if not profile:
                 return "not_found"
 
@@ -85,27 +95,34 @@ class UserProfile(Base):
             db.commit()
             db.refresh(profile)
             return profile
+        
         finally:
             db.close()
 
     @staticmethod
     def suspendUserProfile(profile_id: int) -> bool:
         db = UserProfile._open_db()
+
         try:
+
             profile = db.query(UserProfile).filter(UserProfile.id == profile_id).first()
+
             if not profile:
                 return False
 
             profile.suspend()
             db.commit()
             return True
+        
         finally:
             db.close()
 
     @staticmethod
     def searchUserProfile(keyword: str | None = None):
         db = UserProfile._open_db()
+
         try:
+            
             query = db.query(UserProfile)
 
             if keyword:

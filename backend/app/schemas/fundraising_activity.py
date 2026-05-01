@@ -4,7 +4,6 @@ from datetime import datetime
 
 
 class FundraisingActivityCreate(BaseModel):
-    fundraiser_id: int
     title: str = Field(..., min_length=1, max_length=255)
     description: Optional[str] = None
     currency: str = Field(..., min_length=1, max_length=10)
@@ -25,7 +24,6 @@ class FundraisingActivityUpdate(BaseModel):
     location: Optional[str] = Field(default=None, max_length=255)
     beneficiaryName: Optional[str] = Field(default=None, max_length=255)
     fundraiserName: Optional[str] = Field(default=None, max_length=255)
-    email: Optional[str] = Field(default=None, max_length=255)
     deadline: Optional[str] = None
 
 

@@ -13,7 +13,6 @@ class UserAccountCreate(BaseModel):
 
 class UserAccountUpdate(BaseModel):
     name: Optional[str] = Field(default=None, min_length=1, max_length=255)
-    email: Optional[EmailStr] = None
     password: Optional[str] = Field(default=None, min_length=6, max_length=100)
     phone_no: Optional[str] = Field(default=None, max_length=20)
     address: Optional[str] = Field(default=None, max_length=255)

@@ -47,7 +47,9 @@ class UserAccount(Base):
     @staticmethod
     def validateCredentials(email: str, password: str):
         db = UserAccount._open_db()
+
         try:
+
             user = db.query(UserAccount).filter(UserAccount.email == email).first()
 
             if not user:
@@ -78,7 +80,9 @@ class UserAccount(Base):
             return False
 
         db = UserAccount._open_db()
+
         try:
+
             user = db.query(UserAccount).filter(UserAccount.id == int(user_id)).first()
             return user is not None
         finally:
@@ -88,7 +92,9 @@ class UserAccount(Base):
     def createUserAccount(name: str, email: str, password: str, user_profile: str, phone_no: str = None, address: str = None, dob: str = None, status: str = "ACTIVE"):
         from app.entities.UserProfile import UserProfile
         db = UserAccount._open_db()
+
         try:
+
             existing = db.query(UserAccount).filter(UserAccount.email == email).first()
 
             if existing:
@@ -126,7 +132,9 @@ class UserAccount(Base):
     @staticmethod
     def viewUserAccount(accountID: int):
         db = UserAccount._open_db()
+
         try:
+
             return (
                 db.query(UserAccount)
                 .options(joinedload(UserAccount.user_profile))
@@ -137,21 +145,15 @@ class UserAccount(Base):
             db.close()
 
     @staticmethod
-    def updateUserAccount(accountID: int, name: str = None, email: str = None, password: str = None, user_profile: str = None, phone_no: str = None, address: str = None, dob: str = None, status: str = None):
+    def updateUserAccount(accountID: int, name: str = None, password: str = None, user_profile: str = None, phone_no: str = None, address: str = None, dob: str = None, status: str = None):
         from app.entities.UserProfile import UserProfile
         db = UserAccount._open_db()
+
         try:
+
             user = db.query(UserAccount).filter(UserAccount.id == accountID).first()
             if not user:
                 return "not_found"
-
-            if email is not None:
-                existing = db.query(UserAccount).filter(UserAccount.email == email, UserAccount.id != accountID).first()
-
-                if existing:
-                    return "duplicate_email"
-                
-                user.email = email
             
             if user_profile is not None:
                 profile = db.query(UserProfile).filter(UserProfile.name_of_role == user_profile).first()
@@ -163,14 +165,19 @@ class UserAccount(Base):
 
             if name is not None:
                 user.name = name
+
             if password is not None:
                 user.password_hash = hash_password(password)
+
             if phone_no is not None:
                 user.phone_no = phone_no
+
             if address is not None:
                 user.address = address
+
             if dob is not None:
                 user.dob = dob
+
             if status is not None:
                 user.status = status
 
@@ -189,7 +196,9 @@ class UserAccount(Base):
     @staticmethod
     def suspendUserAccount(profileID: int):
         db = UserAccount._open_db()
+        
         try:
+
             user = db.query(UserAccount).filter(UserAccount.id == profileID).first()
             if not user:
                 return False
@@ -204,7 +213,9 @@ class UserAccount(Base):
     @staticmethod
     def searchUserAccount(keyword: str):
         db = UserAccount._open_db()
+
         try:
+
             query = db.query(UserAccount).options(joinedload(UserAccount.user_profile))
             if keyword:
                 query = query.filter(

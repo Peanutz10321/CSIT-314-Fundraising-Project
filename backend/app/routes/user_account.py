@@ -1,4 +1,4 @@
-from unittest import result
+from app.middleware.access_control import require_roles
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.schemas.user_account import (
@@ -17,8 +17,8 @@ from app.controllers.user_account import (
 
 router = APIRouter(prefix="/api/user_account", tags=["User Accounts"])
 
-def require_user_admin():
-    return None
+require_user_admin = require_roles("USER_ADMIN")
+
 
 @router.post("/", response_model=UserAccountResponse, status_code=201)
 def create_user_account(
@@ -43,8 +43,10 @@ def create_user_account(
     return result
 
 @router.get("/{user_id}", response_model=UserAccountResponse)
-def view_user_account(user_id: int,
-                      _: None = Depends(require_user_admin),):
+def view_user_account(
+    user_id: int,
+    _: None = Depends(require_user_admin)
+):
     controller = viewUserAccountController()
     result = controller.viewUserAccount(user_id)
 
@@ -58,13 +60,12 @@ def view_user_account(user_id: int,
 def update_user_account(
     user_id: int,
     payload: UserAccountUpdate,
-    _: None = Depends(require_user_admin),
+    _: None = Depends(require_user_admin)
 ):
     controller = updateUserAccountController()
     result = controller.updateUserAccount(
         user_id,
         payload.name,
-        payload.email,
         payload.password,
         payload.user_profile,
         payload.phone_no,
@@ -85,9 +86,10 @@ def update_user_account(
     return result
 
 @router.patch("/{user_id}/suspend")
-def suspend_user_account(user_id: int,
-                         _: None = Depends(require_user_admin)):
-    
+def suspend_user_account(
+    user_id: int,
+    _: None = Depends(require_user_admin)
+):
     controller = suspendUserAccountController()
     success = controller.suspendUserAccount(user_id)
 
@@ -99,7 +101,7 @@ def suspend_user_account(user_id: int,
 @router.get("/", response_model=UserAccountSearchResponse)
 def search_user_accounts(
     keyword: str | None = Query(default=None),
-    _: None = Depends(require_user_admin),
+    _: None = Depends(require_user_admin)
 ):
     controller = searchUserAccountController()
     accounts = controller.searchUserAccount(keyword)

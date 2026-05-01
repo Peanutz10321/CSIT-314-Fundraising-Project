@@ -1,4 +1,4 @@
-from conftest import create_test_user, get_or_create_profile
+from conftest import create_test_user, get_or_create_profile, create_auth_headers_for_role
 from app.entities.UserAccount import UserAccount
 
 #48 Creating User Account
@@ -6,17 +6,23 @@ class TestCreateUserAccount:
 
     # TC-241-1
     def test_create_user_account_success(self, client, db):
+        headers = create_auth_headers_for_role(db, email="admin1@test.com")
+
         get_or_create_profile(db, "USER_ADMIN")
 
-        response = client.post("/api/user_account/", json={
-            "name": "Bob",
-            "email": "tester123@test.com",
-            "password": "tester123",
-            "phone_no": "12345678",
-            "address": "Clementi Avenue 2",
-            "dob": "02-02-2005",
-            "user_profile": "USER_ADMIN"
-        })
+        response = client.post(
+            "/api/user_account/",
+            json={
+                "name": "Bob",
+                "email": "tester123@test.com",
+                "password": "tester123",
+                "phone_no": "12345678",
+                "address": "Clementi Avenue 2",
+                "dob": "02-02-2005",
+                "user_profile": "USER_ADMIN"
+            },
+            headers=headers
+        )
 
         assert response.status_code == 201
         body = response.json()
@@ -26,7 +32,10 @@ class TestCreateUserAccount:
     
     # TC-241-2
     def test_create_duplicate_email_rejected(self, client, db):
+        headers = create_auth_headers_for_role(db, email="admin2@test.com")
+
         get_or_create_profile(db, "FUNDRAISER")
+        
         create_test_user(
             db,
             name= "John",
@@ -35,26 +44,35 @@ class TestCreateUserAccount:
             role_name= "FUNDRAISER"
         )
 
-        response = client.post("/api/user_account/", json={
-            "name": "Bob",
-            "email": "tester123@test.com",
-            "password": "tester123",
-            "phone_no": "12345678",
-            "address": "Clementi Avenue 2",
-            "dob": "02-02-2005",
-            "user_profile": "USER_ADMIN"
-        })
+        response = client.post(
+            "/api/user_account/",
+            json={
+                "name": "Bob",
+                "email": "tester123@test.com",
+                "password": "tester123",
+                "phone_no": "12345678",
+                "address": "Clementi Avenue 2",
+                "dob": "02-02-2005",
+                "user_profile": "USER_ADMIN"
+            },
+            headers=headers
+        )
 
         assert response.status_code == 400
     
     # TC-241-3
     def test_create_user_account_missing_fields(self, client, db):
+        headers = create_auth_headers_for_role(db, email="admin3@test.com")
 
-        response = client.post("/api/user_account/", json={
+        response = client.post(
+            "/api/user_account/",
+            json={
             "email": "tester123@test.com",
             "password": "tester123",
             "user_profile": "USER_ADMIN"
-        })
+            },
+            headers=headers
+        )
 
         assert response.status_code == 422
 
@@ -63,6 +81,8 @@ class TestViewUserAccount:
 
     # TC-251-1
     def test_view_user_account_success(self, client, db):
+        headers = create_auth_headers_for_role(db, email="admin4@test.com")
+
         user = create_test_user(
             db,
             name= "Bob",
@@ -72,7 +92,9 @@ class TestViewUserAccount:
         )
         account = db.query(UserAccount).filter(UserAccount.email == "tester123@test.com").first()
 
-        response = client.get(f"/api/user_account/{user.id}")
+        response = client.get(
+            f"/api/user_account/{user.id}",
+            headers=headers)
 
         assert response.status_code == 200
         body = response.json()
@@ -85,6 +107,8 @@ class TestUpdateUserAccount:
     
     # TC-221-1
     def test_update_all_fields_success(self, client, db):
+        headers = create_auth_headers_for_role(db, email="admin5@test.com")
+
         get_or_create_profile(db, "FUNDRAISER")
         create_test_user(
             db,
@@ -94,16 +118,20 @@ class TestUpdateUserAccount:
             role_name= "USER_ADMIN"
         )
         account = db.query(UserAccount).filter(UserAccount.email == "tester123@test.com").first()
- 
-        response = client.patch(f"/api/user_account/{account.id}", json={
-            "name": "Updated name",
-            "email": "tester124@test.com",
-            "password": "newpassword123",
-            "phone_no": "98765432",
-            "address": "Clementi Avenue 3",
-            "dob": "01-01-2005",
-            "user_profile": "FUNDRAISER"
-        })
+
+
+        response = client.patch(
+            f"/api/user_account/{account.id}",
+            json={
+                "name": "Updated name",
+                "password": "newpassword123",
+                "phone_no": "98765432",
+                "address": "Clementi Avenue 3",
+                "dob": "01-01-2005",
+                "user_profile": "FUNDRAISER"
+            },
+            headers=headers
+        )
  
         assert response.status_code == 200
         body = response.json()
@@ -117,6 +145,8 @@ class TestUpdateUserAccount:
     
     #TC-221-2
     def test_partial_update_only_changes_provided_fields(self, client, db):
+        headers = create_auth_headers_for_role(db, email="admin6@test.com")
+
         create_test_user(
             db,
             name="Bob",
@@ -128,12 +158,16 @@ class TestUpdateUserAccount:
             role_name="USER_ADMIN"
         )
         account = db.query(UserAccount).filter(UserAccount.email == "tester123@test.com").first()
- 
-        response = client.patch(f"/api/user_account/{account.id}", json={
-            "name": "Updated name",
-            "password": "newpassword123",
-            "phone_no": "98765432"
-        })
+
+        response = client.patch(
+            f"/api/user_account/{account.id}",
+            json={
+                "name": "Updated name",
+                "password": "newpassword123",
+                "phone_no": "98765432"
+            },
+            headers=headers
+        )
  
         assert response.status_code == 200
         body = response.json()
@@ -142,40 +176,14 @@ class TestUpdateUserAccount:
         assert body["address"] == account.address
         assert body["status"] == account.status
         assert body["email"] == account.email
-    
-    #TC-221-3
-    def test_update_rejects_duplicate_email(self, client, db):
-        create_test_user(
-            db,
-            name="Bob",
-            email="tester123@test.com",
-            password="tester123",
-            phone_no="12345678",
-            address="Clementi Avenue 2",
-            dob="02-02-2005",
-            role_name="USER_ADMIN"
-        )
-        create_test_user(
-            db,
-            name="John",
-            email="tester124@test.com",
-            password="tester124",
-            role_name="FUNDRAISER"
-        )
-        account = db.query(UserAccount).filter(UserAccount.email == "tester124@test.com").first()
- 
-        response = client.patch(f"/api/user_account/{account.id}", json={
-            "email" : "tester123@test.com"
-        })
- 
-        assert response.status_code == 400
-        assert "already" in response.json()["detail"].lower()
 
 #51 Suspend User Account
 class TestSuspendUserAccount:
 
     # TC-261-1
     def test_suspend_user_account_success(self, client, db):
+        headers = create_auth_headers_for_role(db, email="admin7@test.com")
+
         create_test_user(
             db,
             name="Bob",
@@ -187,8 +195,10 @@ class TestSuspendUserAccount:
             role_name="USER_ADMIN"
         )
         account = db.query(UserAccount).filter(UserAccount.email == "tester123@test.com").first()
-    
-        response = client.patch(f"/api/user_account/{account.id}/suspend")
+
+        response = client.patch(
+            f"/api/user_account/{account.id}/suspend",
+            headers=headers)
 
         assert response.status_code == 200
         db.expire_all()
@@ -200,6 +210,8 @@ class TestSearchUserAccounts:
 
     # TC-231-1
     def test_search_user_accounts_by_name(self, client, db):
+        headers = create_auth_headers_for_role(db, email="admin8@test.com")
+
         create_test_user(
             db,
             name="Bob",
@@ -210,6 +222,7 @@ class TestSearchUserAccounts:
             dob="02-02-2005",
             role_name="USER_ADMIN"
         )
+
         create_test_user(
             db,
             name="John",
@@ -218,7 +231,9 @@ class TestSearchUserAccounts:
             role_name="FUNDRAISER"
         )
 
-        response = client.get("/api/user_account/?keyword=Bob")
+        response = client.get(
+            "/api/user_account/?keyword=Bob",
+            headers=headers)
  
         assert response.status_code == 200
         body = response.json()
@@ -227,6 +242,8 @@ class TestSearchUserAccounts:
     
     # TC-231-2
     def test_search_filter_by_name_not_found(self, client, db):
+        headers = create_auth_headers_for_role(db, email="admin9@test.com")
+
         create_test_user(
             db,
             name="Bob",
@@ -237,6 +254,7 @@ class TestSearchUserAccounts:
             dob="02-02-2005",
             role_name="USER_ADMIN"
         )
+
         create_test_user(
             db,
             name="John",
@@ -245,7 +263,9 @@ class TestSearchUserAccounts:
             role_name="FUNDRAISER"
         )
 
-        response = client.get("/api/user_account/?keyword=random")
+        response = client.get(
+            "/api/user_account/?keyword=random",
+            headers=headers)
  
         assert response.status_code == 200
         body = response.json()

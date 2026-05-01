@@ -3,7 +3,7 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
-
+from app.middleware.auth import hash_password, create_access_token
 
 os.environ["DATABASE_URL"] = "sqlite:///./test.db"
 os.environ["JWT_SECRET"] = "test-secret"
@@ -12,7 +12,6 @@ from app.main import app
 from app.database import Base, get_db
 from app.entities.UserProfile import UserProfile
 from app.entities.UserAccount import UserAccount
-from app.middleware.auth import hash_password
 
 
 
@@ -36,7 +35,6 @@ def override_get_db():
         yield db
     finally:
         db.close()
-
 
 app.dependency_overrides[get_db] = override_get_db
 
@@ -72,8 +70,13 @@ def sample_user_profile_data():
     }
 
 
+def auth_headers(user_id: int):
+    token = create_access_token({"sub": str(user_id)})
+    return {"Authorization": f"Bearer {token}"}
+
 def get_or_create_profile(db, role_name: str):
     profile = db.query(UserProfile).filter(UserProfile.name_of_role == role_name).first()
+
     if not profile:
         profile = UserProfile(
             name_of_role=role_name,
@@ -83,6 +86,7 @@ def get_or_create_profile(db, role_name: str):
         db.add(profile)
         db.commit()
         db.refresh(profile)
+
     return profile
 
 
@@ -106,7 +110,6 @@ def create_test_user(db,name: str, email: str,  password: str,  role_name: str, 
 
 def create_test_activity(client, fundraiser_id: int, title: str = "Building a School", **overrides):
     payload = {
-        "fundraiser_id": fundraiser_id,
         "title": title,
         "description": "Raising funds to help build a primary school",
         "currency": "SGD",
@@ -118,7 +121,10 @@ def create_test_activity(client, fundraiser_id: int, title: str = "Building a Sc
         "deadline": "29-05-2026",
     }
     payload.update(overrides)
-    return client.post("/api/fundraising_activity/", json=payload)
+    return client.post("/api/fundraising_activity/", 
+                       json=payload,
+                       headers=auth_headers(fundraiser_id),
+                       )
 
 def create_fundraiser(db, name = "John", email = "john@test.com", password = "pass123", role_name = "FUNDRAISER"):
     return create_test_user(
@@ -128,4 +134,23 @@ def create_fundraiser(db, name = "John", email = "john@test.com", password = "pa
             password=password,
             role_name=role_name
         )
+
+def create_auth_headers_for_role(
+    db,
+    name: str = "admin",
+    password="admin123",
+    role_name: str = "USER_ADMIN",
+    email: str = "admin@test.com",
+):
+    user = create_test_user(
+        db=db,
+        name=name,
+        email=email,
+        password=password,
+        role_name=role_name,
+    )
+
+    return auth_headers(user.id)
+
+
 
