@@ -1,0 +1,862 @@
+/* =========================
+   Theme
+========================= */
+:root {
+  --color-bg: #f3f0ec;
+  --color-page-bg: #f5f4f2;
+  --color-primary: #00512a;
+  --color-primary-dark: #0e4f26;
+  --color-border: #d8d0b8;
+  --color-input-border: #cfc7ad;
+  --color-error: #b3261e;
+
+  --color-active-bg: #c9f2c9;
+  --color-active-border: #54a754;
+  --color-active-text: #408040;
+
+  --color-suspended-bg: #fde7dd;
+  --color-suspended-border: #cc7a6d;
+  --color-suspended-text: #b75f52;
+
+  --font-main: Georgia, "Times New Roman", serif;
+  --font-ui: Arial, sans-serif;
+}
+
+/* =========================
+   Base
+========================= */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  background: var(--color-page-bg);
+  color: #111;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* =========================
+   Login Page
+========================= */
+.login-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.wireframe-note,
+.page-label {
+  color: #aaa;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  margin: 0 0 20px;
+}
+
+.login-page .wireframe-note {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+}
+
+.login-box {
+  width: 360px;
+  min-height: 390px;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  padding: 48px 34px;
+}
+
+.login-box h1 {
+  margin-top: 0;
+  font-family: var(--font-ui);
+  font-size: 30px;
+}
+
+.login-box label {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 18px;
+  margin-top: 16px;
+}
+
+.login-box input {
+  width: 100%;
+  height: 44px;
+  border: 1px solid var(--color-input-border);
+  margin-top: 8px;
+  padding: 8px;
+  font-size: 16px;
+}
+
+/* =========================
+   Buttons
+========================= */
+.primary-btn {
+  width: 100%;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  margin-top: 30px;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.small-btn {
+  width: 220px;
+  margin-top: 0;
+  font-size: 22px;
+}
+
+.secondary-btn {
+  min-width: 130px;
+  border: 1px solid var(--color-border);
+  background: white;
+  padding: 12px 20px;
+  font-size: 15px;
+}
+
+.primary-action-btn {
+  min-width: 170px;
+  border: none;
+  background: var(--color-primary-dark);
+  color: white;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.error-message {
+  color: var(--color-error);
+  font-family: var(--font-ui);
+  margin-top: 14px;
+}
+
+/* =========================
+   Dashboard Layout
+========================= */
+.dashboard-page {
+  min-height: 100vh;
+  display: flex;
+  background: var(--color-bg);
+}
+
+.sidebar {
+  width: 255px;
+  background: var(--color-primary);
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  font-size: 32px;
+  padding: 38px 24px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.login-info {
+  padding: 28px 24px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  font-size: 22px;
+  line-height: 1.05;
+}
+
+.login-info p {
+  margin: 0;
+}
+
+.sidebar nav {
+  padding: 20px 18px;
+}
+
+.sidebar nav button {
+  display: block;
+  width: 100%;
+  background: transparent;
+  color: white;
+  border: none;
+  text-align: left;
+  padding: 14px 16px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.sidebar nav button.active {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.logout-btn {
+  margin-top: auto;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  background: transparent;
+  color: white;
+  padding: 18px 48px;
+  text-align: left;
+  font-size: 24px;
+}
+
+.main-content {
+  flex: 1;
+  padding: 120px 90px;
+}
+
+/* =========================
+   Page Header
+========================= */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  max-width: 1380px;
+}
+
+.page-header h1 {
+  font-size: 48px;
+  margin: 0;
+}
+
+.divider {
+  max-width: 1380px;
+  border-bottom: 2px solid var(--color-border);
+  margin: 18px 0 48px;
+}
+
+.search-input {
+  width: 920px;
+  height: 44px;
+  border: 1px solid var(--color-border);
+  background: white;
+  padding: 10px 14px;
+  font-size: 16px;
+  margin-bottom: 48px;
+}
+
+/* =========================
+   Table
+========================= */
+.data-table {
+  width: 920px;
+  border-collapse: collapse;
+  background: white;
+  border: 1px solid var(--color-border);
+}
+
+.data-table th,
+.data-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: middle;
+  font-size: 18px;
+}
+
+.data-table th {
+  font-size: 22px;
+  font-weight: normal;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.actions button {
+  min-width: 78px;
+  background: white;
+  border: 1px solid var(--color-border);
+  padding: 9px 12px;
+}
+
+.actions .danger-btn {
+  border-color: #d55;
+}
+
+/* =========================
+   Status Badge
+========================= */
+.status {
+  display: inline-block;
+  min-width: 110px;
+  padding: 9px 14px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.active-status {
+  background: var(--color-active-bg);
+  border: 1px solid var(--color-active-border);
+  color: var(--color-active-text);
+}
+
+.suspended-status {
+  background: var(--color-suspended-bg);
+  border: 1px solid var(--color-suspended-border);
+  color: var(--color-suspended-text);
+}
+
+/* =========================
+   Modal Base
+========================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  padding: 24px;
+}
+
+.modal-container {
+  background: #f7f5f1;
+  border: 1px solid var(--color-border);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 26px 28px 18px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.modal-close-btn {
+  border: none;
+  background: transparent;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 22px 28px 28px;
+}
+
+.modal-divider {
+  border-top: 1px solid var(--color-border);
+  margin-top: 18px;
+  margin-bottom: 18px;
+}
+
+.modal-footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+/* =========================
+   Profile Form Modal
+========================= */
+.profile-form label {
+  display: block;
+  margin-bottom: 8px;
+  margin-top: 14px;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.profile-form input,
+.profile-form textarea {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  background: white;
+  padding: 12px 14px;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+.profile-form textarea {
+  resize: none;
+}
+
+/* =========================
+   Profile View Modal
+========================= */
+.profile-view-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-view-row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.profile-view-label {
+  font-weight: 500;
+}
+
+.profile-view-value {
+  display: flex;
+  align-items: center;
+}
+
+/* =========================
+   Confirm Modal
+========================= */
+.confirm-modal-content p {
+  font-size: 18px;
+  margin-bottom: 28px;
+}
+
+/* =========================
+   Error message
+========================= */
+
+.modal-error-message {
+  background: #fde7dd;
+  border: 1px solid #cc7a6d;
+  color: #9f3d32;
+  padding: 10px 12px;
+  margin: 12px 0;
+  font-size: 14px;
+}
+
+/* =========================
+   User Account Form Modal
+========================= */
+.account-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px 70px;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+  height: 64px;
+  border: 1px solid var(--color-border);
+  background: white;
+  padding: 12px 14px;
+  font-size: 24px;
+  font-family: inherit;
+}
+
+.full-width-field {
+  margin-top: 28px;
+}
+
+.full-width-field select {
+  width: 100%;
+}
+
+/* =========================
+   Date Input CSS
+========================= */
+
+.date-picker-input {
+  width: 100%;
+  height: 64px;
+  border: 1px solid var(--color-border);
+  background: white;
+  padding: 12px 14px;
+  font-size: 24px;
+  font-family: inherit;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container {
+  width: 100%;
+}
+
+/* =========================
+   Empty Table CSS
+========================= */
+
+.empty-table-message {
+  text-align: center !important;
+  padding: 32px 16px !important;
+  color: #777;
+  font-family: var(--font-ui);
+  font-size: 16px;
+}
+
+/* =========================
+   Fundraising Activity Form
+========================= */
+.fundraising-form .full-width-field {
+  margin-top: 8px;
+}
+
+.fundraising-form .form-field label {
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+.fundraising-form .form-field input,
+.fundraising-form .form-field select,
+.fundraising-form .date-picker-input {
+  height: 48px;
+  font-size: 18px;
+  padding: 8px 12px;
+}
+
+.fundraising-form textarea {
+  width: 100%;
+  height: 82px;
+  border: 1px solid var(--color-border);
+  background: white;
+  padding: 10px 12px;
+  font-size: 16px;
+  font-family: inherit;
+  resize: none;
+}
+
+.fundraising-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 48px;
+  margin-top: 8px;
+}
+
+.fundraising-form .modal-divider {
+  margin-top: 14px;
+  margin-bottom: 14px;
+}
+
+/* =========================
+   Fundraising Activity View
+========================= */
+.activity-view-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.category-badge {
+  min-width: 110px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-active-border);
+  background: var(--color-active-bg);
+  color: var(--color-active-text);
+  text-align: center;
+  font-size: 13px;
+}
+
+.beneficiary-name {
+  margin-left: auto;
+}
+
+.activity-description {
+  margin: 14px 0;
+}
+
+.activity-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--color-border);
+}
+
+.activity-stats-grid > div {
+  padding: 10px;
+  border-right: 1px solid var(--color-border);
+}
+
+.activity-stats-grid > div:last-child {
+  border-right: none;
+}
+
+.activity-stats-grid span,
+.activity-meta-grid span {
+  display: block;
+  font-size: 12px;
+}
+
+.activity-stats-grid strong {
+  display: block;
+  font-size: 24px;
+}
+
+.activity-stats-grid p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.activity-progress-bar {
+  height: 12px;
+  background: #ffefb8;
+  margin-top: 24px;
+}
+
+.activity-progress-bar div {
+  height: 100%;
+  background: var(--color-primary);
+}
+
+.activity-goal-line {
+  margin: 6px 0 0;
+}
+
+.activity-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.activity-meta-grid strong {
+  display: block;
+  font-size: 14px;
+}
+
+/* =========================
+   Fundraising Page Toolbar
+========================= */
+.fundraising-toolbar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.fundraising-search-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  opacity: 0.55;
+}
+
+.fundraising-search-input {
+  width: 100%;
+  height: 56px;
+  border: 1px solid var(--color-border);
+  background: white;
+  padding: 0 16px 0 42px;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+.fundraising-category-filter {
+  width: 190px;
+  height: 56px;
+  border: 1px solid var(--color-border);
+  background: white;
+  padding: 0 14px;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+/* =========================
+   Fundraising Cards
+========================= */
+.activity-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.activity-card {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+}
+
+.activity-card-main {
+  padding: 18px 18px 16px;
+}
+
+.activity-card-side {
+  background: #f7f0dd;
+  border-left: 1px solid var(--color-border);
+  padding: 16px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.activity-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.activity-badges {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.activity-category-badge,
+.activity-status-badge {
+  min-width: 98px;
+  padding: 7px 12px;
+  font-size: 13px;
+  text-align: center;
+  border: 1px solid var(--color-border);
+}
+
+.activity-category-badge {
+  background: #f6f2dc;
+  color: #667444;
+}
+
+.activity-status-badge.active {
+  background: #cfeac7;
+  color: #597852;
+  border-color: #8cb483;
+}
+
+.activity-status-badge.suspended {
+  background: #f7e8e2;
+  color: #b16e59;
+  border-color: #d59a88;
+}
+
+.activity-status-badge.completed {
+  background: #e7e3d1;
+  color: #5f5841;
+  border-color: #bcb49a;
+}
+
+.activity-beneficiary {
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.activity-title {
+  margin: 0 0 6px;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.activity-description-text {
+  margin: 0 0 18px;
+  font-size: 14px;
+  color: #444;
+}
+
+.activity-meta-row {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  font-size: 12px;
+  color: #555;
+}
+
+.activity-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.activity-actions button {
+  min-width: 76px;
+  height: 36px;
+  border: 1px solid var(--color-border);
+  background: white;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.activity-actions .danger-btn {
+  border: 1px solid #d28f86;
+  color: #8b4d47;
+}
+
+.raised-label {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: #6d7545;
+}
+
+.raised-amount {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.raised-goal-text {
+  margin: 4px 0 14px;
+  font-size: 14px;
+  color: #444;
+}
+
+.activity-progress-wrap {
+  margin-top: 6px;
+}
+
+.activity-progress-track {
+  width: 100%;
+  height: 10px;
+  background: #eedf9b;
+}
+
+.activity-progress-fill {
+  height: 100%;
+  background: #14512c;
+}
+
+.activity-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #5d6c43;
+}
+
+.activity-location {
+  margin: 18px 0 0;
+  text-align: right;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.empty-card-state {
+  border: 1px solid var(--color-border);
+  background: white;
+  padding: 28px;
+  text-align: center;
+  color: #777;
+}
+
+
+

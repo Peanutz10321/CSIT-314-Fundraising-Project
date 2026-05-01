@@ -38,3 +38,18 @@ htmlcov/
 *.swo
 .DS_Store
 Thumbs.db
+
+# Node/React
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# React/Vite build output
+frontend/dist/
+frontend/build/
+
+# Vite / local frontend env
+frontend/.env
+frontend/.env.*
