@@ -55,8 +55,8 @@ class suspendFundraisingActivityController:
 
 class searchFundraisingActivityController:
 
-    def searchFundraisingActivities(self, fundraiserID: int = None, keyword: str = None):
-        return FundraisingActivity.searchFundraisingActivities(fundraiserID, keyword)
+    def searchFundraisingActivity(self, fundraiserID: int = None, keyword: str = None):
+        return FundraisingActivity.searchFundraisingActivity(fundraiserID, keyword)
 
 class searchCompletedActivitiesController:
 

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from sqlalchemy.orm import Session
 from app.database import Base, engine, SessionLocal
-from app.routes import user_profile, user_account, auth, fundraising_activity
+from app.routes import user_profile, user_account, auth, fundraising_activity, donee
 from app.seeds.seed_user_profiles import seed_user_profiles
 from app.seeds.seed_test_admin import seed_test_admin
 from fastapi.middleware.cors import CORSMiddleware
@@ -33,6 +33,7 @@ app.include_router(user_account.router)
 app.include_router(user_profile.router)
 app.include_router(auth.router)
 app.include_router(fundraising_activity.router)
+app.include_router(donee.router)
 
 
 @app.get("/")

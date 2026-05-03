@@ -35,7 +35,7 @@ class FundraisingActivityResponse(BaseModel):
     currency: str
     goal_amount: float
     current_amount: float
-    category: str
+    category: Optional[str]
     location: Optional[str]
     beneficiaryName: Optional[str]
     fundraiserName: Optional[str]

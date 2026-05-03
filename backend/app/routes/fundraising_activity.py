@@ -28,7 +28,7 @@ def search_fundraising_activities(
     current_user = Depends(require_fundraiser)
 ):
     controller = searchFundraisingActivityController()
-    activities = controller.searchFundraisingActivities(current_user.id, keyword)
+    activities = controller.searchFundraisingActivity(current_user.id, keyword)
 
     return {
         "total": len(activities),

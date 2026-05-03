@@ -36,7 +36,7 @@ class TestCreateCategory:
 class TestViewCategory:
 
     #TC-451-1
-    def view_category_success(self, client):
+    def test_view_category_success(self, client):
 
         created = create_test_category(client)
         category_id = created.json()["id"]
@@ -134,7 +134,7 @@ class TestGenerateDailyReport:
         fundraiser = create_fundraiser(db)
         create_test_activity(client, fundraiser.id)
 
-        response = client.get("/api/report/daily?date=10-05-2026")
+        response = client.get("/api/report/daily?date=2025-05-10")
  
         assert response.status_code == 200
         body = response.json()
@@ -151,7 +151,7 @@ class TestGenerateWeeklyReport:
         fundraiser = create_fundraiser(db)
         create_test_activity(client, fundraiser.id)
 
-        response = client.get("/api/report/daily?week_start=10-05-2026")
+        response = client.get("/api/report/weekly?week_start=2026-05-10")
  
         assert response.status_code == 200
         body = response.json()
@@ -168,7 +168,7 @@ class TestGenerateMonthlyReport:
         fundraiser = create_fundraiser(db)
         create_test_activity(client, fundraiser.id)
 
-        response = client.get("/api/report/daily?month=05-2026")
+        response = client.get("/api/report/monthly?month=2026-05")
  
         assert response.status_code == 200
         body = response.json()

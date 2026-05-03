@@ -40,7 +40,7 @@ class TestDoneeViewFundraisingActivity:
         created = create_test_activity(client, fundraiser.id, title = "Building a School")
         activity_id = created.json()["id"]
 
-        response = client.get(f"api/donee/fundraising_activity/{activity_id}")
+        response = client.get(f"/api/donee/fundraising_activity/{activity_id}")
 
         assert response.status_code == 200
         body = response.json()
@@ -62,7 +62,7 @@ class TestDoneeViewFundraisingActivity:
         created = create_test_activity(client, fundraiser.id, title = "Building a School")
         activity_id = created.json()["id"]
 
-        response = client.get(f"api/donee/fundraising_activity/{activity_id}")
+        response = client.get(f"/api/donee/fundraising_activity/{activity_id}")
 
         assert response.status_code == 200
         body = response.json()
@@ -209,28 +209,31 @@ class TestDoneeSearchCompletedActivities:
     def test_search_completed_returns_only_completed_activities_with_matching_keyword(self, db, client):
         fundraiser = create_fundraiser(db)
 
-        completed = FundraisingActivity(
+        completed1 = FundraisingActivity(
             fundraiser_id=fundraiser.id,
             title="Building a School",
             currency="SGD",
             goal_amount=5000.0,
+            category="Education",
             status="COMPLETED",
         )
 
-        completed = FundraisingActivity(
+        completed2 = FundraisingActivity(
             fundraiser_id=fundraiser.id,
             title="Building a Hospital",
             currency="SGD",
             goal_amount=5000.0,
+            category="Healthcare",
             status="COMPLETED",
         )
+        db.add_all([completed1, completed2])
+        db.commit()
 
         response = client.get("/api/donee/fundraising_activity/completed?keyword=School")
         
         assert response.status_code == 200
         body = response.json()
         assert body["total"] >= 1
-        assert body["data"] == []
         assert all("school" in a["title"].lower() for a in body["data"])
         assert all(a["status"] == "COMPLETED" for a in body["data"])
 
@@ -243,10 +246,14 @@ class TestDoneeSearchCompletedActivities:
             title="Building a School",
             currency="SGD",
             goal_amount=5000.0,
+            category="Education",
             status="COMPLETED",
         )
 
         create_test_activity(client, fundraiser.id, title = "Building a Hospital")
+
+        db.add(completed)
+        db.commit()
 
         response = client.get("/api/donee/fundraising_activity/completed?keyword=Random")
         

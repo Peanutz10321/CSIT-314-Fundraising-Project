@@ -20,6 +20,7 @@ class UserAccount(Base):
 
     user_profile = relationship("UserProfile", back_populates="accounts")
     activities = relationship("FundraisingActivity", back_populates="fundraiser")
+    shortlists = relationship("FavoriteList", back_populates="donee")
 
     @property
     def name_of_role(self):

@@ -24,6 +24,7 @@ class FundraisingActivity(Base):
     date_created = Column(DateTime, default=datetime.now, nullable=False)
 
     fundraiser = relationship("UserAccount", back_populates="activities")
+    shortlists = relationship("FavoriteList", back_populates="activity")
 
     def suspend(self):
         self.status = "SUSPENDED"
@@ -121,6 +122,26 @@ class FundraisingActivity(Base):
             db.close()
     
     @staticmethod
+    def doneeViewFundraisingActivity(activityID: int):
+        db = FundraisingActivity._open_db()
+        try:
+
+            activity = db.query(FundraisingActivity).filter(
+                FundraisingActivity.id == activityID,
+                ).first()
+            
+            if not activity:
+                return "not_found"
+        
+            activity.view_count += 1
+            db.commit()
+            db.refresh(activity)
+            
+            return activity
+        finally:
+            db.close()
+    
+    @staticmethod
     def updateFundraisingActivity(
         activityID: int,
         fundraiserID: int,
@@ -204,7 +225,7 @@ class FundraisingActivity(Base):
             db.close()
 
     @staticmethod
-    def searchFundraisingActivities(fundraiserID: int = None, keyword: str = None):
+    def searchFundraisingActivity(fundraiserID: int = None, keyword: str = None):
         db = FundraisingActivity._open_db()
 
         try:
@@ -243,16 +264,19 @@ class FundraisingActivity(Base):
             db.close()
 
     @staticmethod
-    def getCompletedActivities(activityID: int, fundraiserID: int):
+    def getCompletedActivities(activityID: int, fundraiserID: int = None):
         db = FundraisingActivity._open_db()
 
         try:
             
-            activity = db.query(FundraisingActivity).filter(
+            query = db.query(FundraisingActivity).filter(
                 FundraisingActivity.id == activityID,
-                FundraisingActivity.fundraiser_id == fundraiserID,
                 FundraisingActivity.status == "COMPLETED"
-            ).first()
+            )
+            
+            if fundraiserID is not None:
+                query = query.filter(FundraisingActivity.fundraiser_id == fundraiserID)
+            activity = query.first()
 
             if not activity:
                 return "not_found"
