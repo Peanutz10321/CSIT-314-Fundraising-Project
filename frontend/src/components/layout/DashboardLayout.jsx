@@ -11,7 +11,13 @@ function DashboardLayout({ children, activePage, onLogout, setCurrentPage, role 
 
         <div className="login-info">
           <p>Logged in as</p>
-          <strong>{role === "FUNDRAISER" ? "Fundraiser" : "User Admin"}</strong>
+          <strong>
+            {role === "FUNDRAISER"
+              ? "Fundraiser"
+              : role === "PLATFORM_MANAGER"
+              ? "Platform Management"
+              : "User Admin"}
+          </strong>
         </div>
 
         <nav>
@@ -47,6 +53,24 @@ function DashboardLayout({ children, activePage, onLogout, setCurrentPage, role 
                 onClick={() => setCurrentPage("completedActivities")}
               >
                 Activities History
+              </button>
+            </>
+          )}
+
+          {role === "PLATFORM_MANAGER" && (
+            <>
+              <button
+                className={activePage === "categories" ? "active" : ""}
+                onClick={() => setCurrentPage("categories")}
+              >
+                Categories
+              </button>
+
+              <button
+                className={activePage === "reports" ? "active" : ""}
+                onClick={() => setCurrentPage("reports")}
+              >
+                Reports
               </button>
             </>
           )}

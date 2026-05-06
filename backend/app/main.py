@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from sqlalchemy.orm import Session
 from app.database import Base, engine, SessionLocal
-from app.routes import user_profile, user_account, auth, fundraising_activity, donee
+from app.routes import user_profile, user_account, auth, fundraising_activity, donee, fundraising_category, reports
 from app.seeds.seed_user_profiles import seed_user_profiles
 from app.seeds.seed_test_admin import seed_test_admin
+from app.seeds.seed_categories import seed_categories
+from app.seeds.seed_platform_manager import seed_platform_manager
 from fastapi.middleware.cors import CORSMiddleware
 
 Base.metadata.create_all(bind=engine)
@@ -12,7 +14,7 @@ app = FastAPI(title="Fundraising API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -23,6 +25,8 @@ def run_startup_seeds():
     try:
         seed_user_profiles(db)
         seed_test_admin(db)
+        seed_categories(db)
+        seed_platform_manager(db)
     finally:
         db.close()
 
@@ -34,6 +38,8 @@ app.include_router(user_profile.router)
 app.include_router(auth.router)
 app.include_router(fundraising_activity.router)
 app.include_router(donee.router)
+app.include_router(fundraising_category.router)
+app.include_router(reports.router)
 
 
 @app.get("/")

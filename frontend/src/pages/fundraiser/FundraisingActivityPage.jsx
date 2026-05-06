@@ -9,11 +9,13 @@ import {
   updateFundraisingActivity,
   suspendFundraisingActivity,
 } from "../../api/fundraisingActivityApi";
+import { getActiveCategories } from "../../api/categoryApi";
 
 function FundraisingActivityPage({ onLogout, setCurrentPage }) {
   const [activities, setActivities] = useState([]);
   const [keyword, setKeyword] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [availableCategories, setAvailableCategories] = useState([]);
   const [error, setError] = useState("");
   const [modalError, setModalError] = useState("");
   const [modalType, setModalType] = useState(null);
@@ -32,6 +34,9 @@ function FundraisingActivityPage({ onLogout, setCurrentPage }) {
 
   useEffect(() => {
     loadActivities();
+    getActiveCategories()
+      .then((res) => setAvailableCategories((res.data || []).filter((c) => c.status === "ACTIVE")))
+      .catch(() => {});
   }, []);
 
   function closeModal() {
@@ -163,11 +168,9 @@ function FundraisingActivityPage({ onLogout, setCurrentPage }) {
           onChange={(e) => setSelectedCategory(e.target.value)}
         >
           <option value="">All categories</option>
-          <option value="Community">Community</option>
-          <option value="Education">Education</option>
-          <option value="Medical">Medical</option>
-          <option value="Healthcare">Healthcare</option>
-          <option value="Emergency">Emergency</option>
+          {availableCategories.map((c) => (
+            <option key={c.id} value={c.name}>{c.name}</option>
+          ))}
         </select>
       </div>
 

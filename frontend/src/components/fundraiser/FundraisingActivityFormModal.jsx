@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Modal from "../common/Modal";
+import { getActiveCategories } from "../../api/categoryApi";
 
 function parseDate(dateString) {
   if (!dateString) return null;
@@ -39,6 +40,16 @@ const [goalAmount, setGoalAmount] = useState(activity?.goal_amount || "");
 const [category, setCategory] = useState(activity?.category || "");
 const [location, setLocation] = useState(activity?.location || "");
 const [deadline, setDeadline] = useState(parseDate(activity?.deadline));
+const [availableCategories, setAvailableCategories] = useState([]);
+
+useEffect(() => {
+  getActiveCategories()
+    .then((res) => {
+      const active = (res.data || []).filter((c) => c.status === "ACTIVE");
+      setAvailableCategories(active);
+    })
+    .catch(() => {});
+}, []);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -127,10 +138,9 @@ const [deadline, setDeadline] = useState(parseDate(activity?.deadline));
               required
             >
               <option value="">Select category</option>
-              <option value="COMMUNITY">Community</option>
-              <option value="EDUCATION">Education</option>
-              <option value="HEALTHCARE">Healthcare</option>
-              <option value="EMERGENCY">Emergency</option>
+              {availableCategories.map((c) => (
+                <option key={c.id} value={c.name}>{c.name}</option>
+              ))}
             </select>
           </div>
 

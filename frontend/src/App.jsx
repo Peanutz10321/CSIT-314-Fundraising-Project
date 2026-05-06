@@ -4,6 +4,8 @@ import UserProfilePage from "./pages/userAdmin/UserProfilePage";
 import UserAccountPage from "./pages/userAdmin/UserAccountPage";
 import FundraisingActivityPage from "./pages/fundraiser/FundraisingActivityPage";
 import CompletedFundraisingActivityPage from "./pages/fundraiser/CompletedFundraisingActivityPage";
+import CategoriesPage from "./pages/platformManagement/CategoriesPage";
+import ReportsPage from "./pages/platformManagement/ReportsPage";
 import "./App.css";
 
 function App() {
@@ -12,10 +14,13 @@ function App() {
   );
 
   const [role, setRole] = useState(localStorage.getItem("role"));
-  const [currentPage, setCurrentPage] = useState("profiles");
+  const [currentPage, setCurrentPage] = useState(
+    role === "PLATFORM_MANAGER" ? "categories" : "profiles"
+  );
 
   const handleLogin = (loginRole) => {
     setRole(loginRole);
+    setCurrentPage(loginRole === "PLATFORM_MANAGER" ? "categories" : "profiles");
     setIsLoggedIn(true);
   };
 
@@ -68,6 +73,23 @@ function App() {
     );
   }
   
+  if (role === "PLATFORM_MANAGER") {
+    if (currentPage === "reports") {
+      return (
+        <ReportsPage
+          onLogout={handleLogout}
+          setCurrentPage={setCurrentPage}
+        />
+      );
+    }
+    return (
+      <CategoriesPage
+        onLogout={handleLogout}
+        setCurrentPage={setCurrentPage}
+      />
+    );
+  }
+
   return (
     <div style={{ padding: "40px" }}>
       <h1>Dashboard not ready yet</h1>
