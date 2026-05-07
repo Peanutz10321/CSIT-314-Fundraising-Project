@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { apiRequest } from "../../api/apiClient";
 
+function getUserIdFromToken(token) {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.sub;
+  } catch {
+    return null;
+  }
+}
+
 function LoginPage({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,6 +27,11 @@ function LoginPage({ onLogin }) {
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.role);
+
+      const userId = data.user_id || getUserIdFromToken(data.token);
+      if (userId) {
+        localStorage.setItem("userId", userId);
+      }
 
       onLogin(data.role);
     } catch (err) {

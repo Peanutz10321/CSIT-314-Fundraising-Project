@@ -11,6 +11,31 @@ import {
 } from "../../api/fundraisingActivityApi";
 import { getActiveCategories } from "../../api/categoryApi";
 
+
+function getCurrentUserId() {
+  return localStorage.getItem("userId");
+}
+
+function activityBelongsToCurrentFundraiser(activity) {
+  const currentUserId = getCurrentUserId();
+  if (!currentUserId) return true;
+
+  const possibleOwnerIds = [
+    activity.fundraiser_id,
+    activity.fundraiserId,
+    activity.user_account_id,
+    activity.userAccountId,
+    activity.created_by,
+    activity.owner_id,
+  ].filter((value) => value !== undefined && value !== null);
+
+  if (possibleOwnerIds.length === 0) return true;
+
+  return possibleOwnerIds.some(
+    (ownerId) => String(ownerId) === String(currentUserId)
+  );
+}
+
 function FundraisingActivityPage({ onLogout, setCurrentPage }) {
   const [activities, setActivities] = useState([]);
   const [keyword, setKeyword] = useState("");
@@ -26,7 +51,7 @@ function FundraisingActivityPage({ onLogout, setCurrentPage }) {
     try {
       setError("");
       const result = await getFundraisingActivities(searchKeyword);
-      setActivities(result.data || result || []);
+      setActivities((result.data || result || []).filter(activityBelongsToCurrentFundraiser));
     } catch (err) {
       setError(err.message);
     }

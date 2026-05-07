@@ -48,10 +48,22 @@ function UserProfilePage({ onLogout , setCurrentPage}) {
     setModalType("create");
   }
 
+  function openViewModal(profile) {
+    setSelectedProfile(profile);
+    setModalError("");
+    setModalType("view");
+  }
+
   function openEditModal(profile) {
     setSelectedProfile(profile);
     setModalError("");
     setModalType("edit");
+  }
+
+  function openSuspendModal(profile) {
+    setSelectedProfile(profile);
+    setModalError("");
+    setModalType("suspend");
   }
 
   async function handleCreate(payload) {

@@ -16,6 +16,8 @@ function DashboardLayout({ children, activePage, onLogout, setCurrentPage, role 
               ? "Fundraiser"
               : role === "PLATFORM_MANAGER"
               ? "Platform Management"
+              : role === "DONEE"
+              ? "Donee"
               : "User Admin"}
           </strong>
         </div>
@@ -71,6 +73,31 @@ function DashboardLayout({ children, activePage, onLogout, setCurrentPage, role 
                 onClick={() => setCurrentPage("reports")}
               >
                 Reports
+              </button>
+            </>
+          )}
+
+          {role === "DONEE" && (
+            <>
+              <button
+                className={activePage === "doneeBrowse" ? "active" : ""}
+                onClick={() => setCurrentPage("doneeBrowse")}
+              >
+                Browse Activities
+              </button>
+
+              <button
+                className={activePage === "doneeFavorites" ? "active" : ""}
+                onClick={() => setCurrentPage("doneeFavorites")}
+              >
+                My Favorites
+              </button>
+
+              <button
+                className={activePage === "doneeCompleted" ? "active" : ""}
+                onClick={() => setCurrentPage("doneeCompleted")}
+              >
+                Completed History
               </button>
             </>
           )}

@@ -389,6 +389,12 @@ button:disabled {
   color: var(--color-suspended-text);
 }
 
+.completed-status {
+  background: #e7e3d1;
+  border: 1px solid #bcb49a;
+  color: #5f5841;
+}
+
 /* =========================
    Modal Base
 ========================= */
@@ -1164,74 +1170,239 @@ button:disabled {
   margin: 0 0 16px;
 }
 
-/* Pie legend */
-.pie-legend {
+.report-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: stretch;
+  max-width: 1200px;
+}
+
+.report-chart-card {
+  min-height: 390px;
+  border: 1px solid var(--color-border);
+  background: white;
+  padding: 28px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+}
+
+.report-chart-card h3 {
+  margin: 0 0 20px;
+  font-size: 14px;
+  font-family: var(--font-ui);
+  letter-spacing: 0.04em;
+  color: #444;
+}
+
+.pie-chart-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pie-chart-center {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pie-chart-svg {
+  width: 240px;
+  height: 240px;
+}
+
+.pie-legend-bottom {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px 20px;
 }
 
 .pie-legend-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+}
+
+.pie-legend-color {
+  width: 13px;
+  height: 13px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.chart-note {
+  margin-top: 12px;
+  text-align: center;
   font-size: 13px;
+  color: #777;
   font-family: var(--font-ui);
 }
 
-.pie-legend-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
+
 
 /* Bar chart */
+/* Bar chart */
 .bar-chart {
+  flex: 1;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  justify-content: center;
 }
 
 .bar-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 120px 1fr 36px;
   align-items: center;
-  gap: 10px;
+  column-gap: 12px;
+  margin-bottom: 14px;
 }
 
 .bar-label {
-  width: 110px;
   font-size: 12px;
   font-family: var(--font-ui);
   color: #555;
   text-align: right;
-  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .bar-track {
-  flex: 1;
-  height: 20px;
+  width: 100%;
+  height: 22px;
   background: #f0ece0;
 }
 
 .bar-fill {
   height: 100%;
+  background: #c8a84b;
   transition: width 0.3s;
 }
 
 .bar-value {
-  width: 40px;
   font-size: 12px;
   font-family: var(--font-ui);
   color: #555;
+  text-align: left;
 }
 
 .bar-axis {
-  display: flex;
-  justify-content: space-between;
-  margin-left: 120px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  margin-left: 132px;
+  margin-right: 48px;
   margin-top: 4px;
   font-size: 10px;
   font-family: var(--font-ui);
   color: #999;
+}
+
+.bar-axis span {
+  text-align: center;
+}
+
+/* =========================
+   Donee Activity Pages
+========================= */
+.donee-page-header {
+  margin-top: 20px;
+}
+
+.donee-activity-card .activity-card-main {
+  min-height: 150px;
+}
+
+.donee-card-actions .saved-btn,
+.donee-card-actions .saved-btn:disabled {
+  background: #d99a10;
+  border-color: #d99a10;
+  color: #111;
+  opacity: 1;
+}
+
+/* =========================
+   Donee Cards
+========================= */
+
+.donee-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.donee-card-actions button {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 86px;
+  height: 34px;
+  padding: 0 18px;
+  border: 1px solid var(--color-border);
+  background: white;
+  color: #111;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.donee-card-actions .donee-save-btn {
+  background: white;
+  color: #111;
+}
+
+.donee-card-actions .saved-btn,
+.donee-card-actions .saved-btn:disabled {
+  background: #d99a10;
+  border-color: #d99a10;
+  color: #111;
+  opacity: 1;
+  cursor: default;
+}
+
+
+/* Donee card button alignment fix */
+.activity-actions.donee-card-actions {
+  width: fit-content;
+  max-width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.activity-actions.donee-card-actions .donee-view-btn,
+.activity-actions.donee-card-actions .donee-save-btn {
+  width: 86px !important;
+  min-width: 86px !important;
+  max-width: 86px !important;
+  height: 34px;
+  margin: 0 !important;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  color: #111;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.activity-actions.donee-card-actions .saved-btn,
+.activity-actions.donee-card-actions .saved-btn:disabled {
+  background: #d99a10;
+  border-color: #d99a10;
+  color: #111;
+  opacity: 1;
+  cursor: default;
 }

@@ -6,6 +6,7 @@ import FundraisingActivityPage from "./pages/fundraiser/FundraisingActivityPage"
 import CompletedFundraisingActivityPage from "./pages/fundraiser/CompletedFundraisingActivityPage";
 import CategoriesPage from "./pages/platformManagement/CategoriesPage";
 import ReportsPage from "./pages/platformManagement/ReportsPage";
+import DoneeActivitiesPage from "./pages/donee/DoneeActivitiesPage";
 import "./App.css";
 
 function App() {
@@ -15,18 +16,29 @@ function App() {
 
   const [role, setRole] = useState(localStorage.getItem("role"));
   const [currentPage, setCurrentPage] = useState(
-    role === "PLATFORM_MANAGER" ? "categories" : "profiles"
+    role === "PLATFORM_MANAGER" ? "categories" : role === "DONEE" ? "doneeBrowse" : "profiles"
   );
 
   const handleLogin = (loginRole) => {
     setRole(loginRole);
-    setCurrentPage(loginRole === "PLATFORM_MANAGER" ? "categories" : "profiles");
+
+    if (loginRole === "PLATFORM_MANAGER") {
+      setCurrentPage("categories");
+    } else if (loginRole === "FUNDRAISER") {
+      setCurrentPage("fundraisingActivities");
+    } else if (loginRole === "DONEE") {
+      setCurrentPage("doneeBrowse");
+    } else {
+      setCurrentPage("profiles");
+    }
+
     setIsLoggedIn(true);
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
+    localStorage.removeItem("userId");
     setRole(null);
     setIsLoggedIn(false);
   };
@@ -73,6 +85,37 @@ function App() {
     );
   }
   
+
+  if (role === "DONEE") {
+    if (currentPage === "doneeFavorites") {
+      return (
+        <DoneeActivitiesPage
+          mode="favorites"
+          onLogout={handleLogout}
+          setCurrentPage={setCurrentPage}
+        />
+      );
+    }
+
+    if (currentPage === "doneeCompleted") {
+      return (
+        <DoneeActivitiesPage
+          mode="completed"
+          onLogout={handleLogout}
+          setCurrentPage={setCurrentPage}
+        />
+      );
+    }
+
+    return (
+      <DoneeActivitiesPage
+        mode="browse"
+        onLogout={handleLogout}
+        setCurrentPage={setCurrentPage}
+      />
+    );
+  }
+
   if (role === "PLATFORM_MANAGER") {
     if (currentPage === "reports") {
       return (
