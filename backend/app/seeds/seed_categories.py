@@ -3,9 +3,9 @@ from app.entities.FundraisingCategory import FundraisingCategory
 
 DEFAULT_CATEGORIES = [
     {"name": "Community", "description": "Community development"},
-    {"name": "Education", "description": "Schools, scholarships, and learning resources"},
+    {"name": "Education", "description": "Schools and learning resources"},
     {"name": "Disaster", "description": "Disaster relief and recovery"},
-    {"name": "Medical", "description": "Healthcare, treatment, and medical equipment"},
+    {"name": "Medical", "description": "Healthcare and medical equipment"},
     {"name": "Animals", "description": "Animal welfare"},
 ]
 

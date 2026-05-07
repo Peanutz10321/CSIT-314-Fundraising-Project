@@ -161,9 +161,34 @@ def create_donee(db, name = "Jerry", email = "jerry@test.com", password = "testi
             role_name=role_name
         )
 
-def create_test_category(client, name = "Education", description = "Schools and learning resources"):
-    return client.post("/api/category", json={
-        "name" : name,
-        "description" : description
-    })
+def create_platform_manager(
+    db,
+    name="Platform Manager",
+    email="manager@test.com",
+    password="manager123",
+    role_name="PLATFORM_MANAGER",
+):
+    return create_test_user(
+        db,
+        name=name,
+        email=email,
+        password=password,
+        role_name=role_name,
+    )
+
+
+def create_platform_manager_headers(db):
+    manager = create_platform_manager(db)
+    return auth_headers(manager.id)
+
+
+def create_test_category(client, headers, name="Education", description="Schools and learning resources"):
+    return client.post(
+        "/api/category/",
+        json={
+            "name": name,
+            "description": description,
+        },
+        headers=headers,
+    )
 

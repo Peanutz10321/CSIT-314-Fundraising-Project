@@ -1,3 +1,54 @@
+from fastapi import APIRouter, Depends, HTTPException, Query
+from app.controllers.report import ReportController
+from app.middleware.access_control import require_roles
+
+router = APIRouter(prefix="/api/report", tags=["Platform Reports"])
+
+require_platform_manager = require_roles("PLATFORM_MANAGER")
+
+
+@router.get("/daily")
+def get_daily_report(
+    date: str = Query(..., description="Date in YYYY-MM-DD format"),
+    _: None = Depends(require_platform_manager),
+):
+    controller = ReportController()
+    result = controller.get_daily_report(date)
+
+    if result == "invalid_date":
+        raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD.")
+
+    return result
+
+
+@router.get("/weekly")
+def get_weekly_report(
+    week_start: str = Query(..., description="Week start date in YYYY-MM-DD format"),
+    _: None = Depends(require_platform_manager),
+):
+    controller = ReportController()
+    result = controller.get_weekly_report(week_start)
+
+    if result == "invalid_date":
+        raise HTTPException(status_code=400, detail="Invalid week_start format. Use YYYY-MM-DD.")
+
+    return result
+
+
+@router.get("/monthly")
+def get_monthly_report(
+    month: str = Query(..., description="Month in YYYY-MM format"),
+    _: None = Depends(require_platform_manager),
+):
+    controller = ReportController()
+    result = controller.get_monthly_report(month)
+
+    if result == "invalid_month":
+        raise HTTPException(status_code=400, detail="Invalid month format. Use YYYY-MM.")
+
+    return result
+
+'''
 from fastapi import APIRouter, Depends, Query
 from datetime import datetime, timedelta
 
@@ -67,3 +118,4 @@ def get_reports(
         }
     finally:
         db.close()
+'''
