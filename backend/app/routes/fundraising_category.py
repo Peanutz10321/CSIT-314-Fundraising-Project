@@ -18,7 +18,7 @@ from app.controllers.fundraising_category import (
 router = APIRouter(prefix="/api/category", tags=["Fundraising Categories"])
 
 require_platform_manager = require_roles("PLATFORM_MANAGER")
-require_platform_or_fundraiser = require_roles("PLATFORM_MANAGER", "FUNDRAISER")
+require_platform_fundraiser_or_donee = require_roles("PLATFORM_MANAGER", "FUNDRAISER", "DONEE")
 
 
 @router.post("/", response_model=FundraisingCategoryResponse, status_code=201)
@@ -38,7 +38,7 @@ def create_category(
 @router.get("/", response_model=FundraisingCategorySearchResponse)
 def search_categories(
     keyword: str | None = Query(default=None),
-    _: None = Depends(require_platform_or_fundraiser),
+    _: None = Depends(require_platform_fundraiser_or_donee),
 ):
     controller = searchFundraisingCategoryController()
     categories = controller.searchFundraisingCategory(keyword)

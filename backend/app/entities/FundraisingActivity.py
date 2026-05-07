@@ -128,6 +128,7 @@ class FundraisingActivity(Base):
 
             activity = db.query(FundraisingActivity).filter(
                 FundraisingActivity.id == activityID,
+                FundraisingActivity.status == "ACTIVE"
                 ).first()
             
             if not activity:
@@ -242,6 +243,21 @@ class FundraisingActivity(Base):
             results = query.all()
 
             return results
+        finally:
+            db.close()
+
+    @staticmethod
+    def doneeSearchFundraisingActivity(keyword: str = None):
+        db = FundraisingActivity._open_db()
+        try:
+            query = db.query(FundraisingActivity).filter(
+                FundraisingActivity.status == "ACTIVE"
+            )
+
+            if keyword:
+                query = query.filter(FundraisingActivity.title.ilike(f"%{keyword}%"))
+
+            return query.all()
         finally:
             db.close()
 

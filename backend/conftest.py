@@ -161,6 +161,10 @@ def create_donee(db, name = "Jerry", email = "jerry@test.com", password = "testi
             role_name=role_name
         )
 
+def create_donee_headers(db):
+    donee = create_donee(db)
+    return auth_headers(donee.id)
+
 def create_platform_manager(
     db,
     name="Platform Manager",

@@ -1,4 +1,4 @@
-from conftest import create_test_user, get_or_create_profile, create_test_activity, create_fundraiser, create_donee
+from conftest import create_test_activity, create_fundraiser, create_donee, create_donee_headers, auth_headers
 from app.entities.FundraisingActivity import FundraisingActivity
 
 #66 SearchFundraisingActivity
@@ -10,7 +10,9 @@ class TestDoneeSearchFundraisingActivity:
         create_test_activity(client, fundraiser.id, title = "Building a School")
         create_test_activity(client, fundraiser.id, title = "Building a Hospital")
 
-        response = client.get("/api/donee/fundraising_activity/?keyword=School")
+        headers = create_donee_headers(db)
+
+        response = client.get("/api/donee/fundraising_activity/?keyword=School", headers=headers,)
 
         assert response.status_code == 200
         body = response.json()
@@ -24,7 +26,14 @@ class TestDoneeSearchFundraisingActivity:
         create_test_activity(client, fundraiser.id, title = "Building a School")
         create_test_activity(client, fundraiser.id, title = "Building a Hospital")
 
-        response = client.get("/api/donee/fundraising_activity/?keyword=Random")
+        headers = create_donee_headers(db)
+
+        response = client.get(
+            "/api/donee/fundraising_activity/?keyword=School",
+            headers=headers,
+        )
+
+        response = client.get("/api/donee/fundraising_activity/?keyword=Random", headers=headers)
 
         assert response.status_code == 200
         body = response.json()
@@ -39,8 +48,9 @@ class TestDoneeViewFundraisingActivity:
         fundraiser = create_fundraiser(db)
         created = create_test_activity(client, fundraiser.id, title = "Building a School")
         activity_id = created.json()["id"]
-
-        response = client.get(f"/api/donee/fundraising_activity/{activity_id}")
+         
+        headers = create_donee_headers(db)
+        response = client.get(f"/api/donee/fundraising_activity/{activity_id}", headers=headers)
 
         assert response.status_code == 200
         body = response.json()
@@ -62,7 +72,8 @@ class TestDoneeViewFundraisingActivity:
         created = create_test_activity(client, fundraiser.id, title = "Building a School")
         activity_id = created.json()["id"]
 
-        response = client.get(f"/api/donee/fundraising_activity/{activity_id}")
+        headers = create_donee_headers(db)
+        response = client.get(f"/api/donee/fundraising_activity/{activity_id}", headers=headers)
 
         assert response.status_code == 200
         body = response.json()
@@ -79,10 +90,12 @@ class TestDoneeSaveFundraisingActivity:
         created = create_test_activity(client, fundraiser.id, title = "Building a School")
         activity_id = created.json()["id"]
 
-        response = client.post("/api/donee/shortlist/", json={
-            "donee_id": donee.id,
-            "activity_id": activity_id
-        })
+
+        response = client.post(
+            "/api/donee/shortlist/",
+            json={"activity_id": activity_id},
+            headers=auth_headers(donee.id),
+        )
 
         assert response.status_code == 201
         body = response.json()
@@ -92,14 +105,16 @@ class TestDoneeSaveFundraisingActivity:
     #TC-391-2
     def test_donee_save_activity_increments_shortlist_count(self, db, client):
         fundraiser = create_fundraiser(db)
-        donee = create_donee(db)
         created = create_test_activity(client, fundraiser.id, title = "Building a School")
         activity_id = created.json()["id"]
 
-        client.post("/api/donee/shortlist/", json={
-            "donee_id": donee.id,
-            "activity_id": activity_id
-        })
+        headers = create_donee_headers(db)
+
+        client.post(
+            "/api/donee/shortlist/",
+            json={"activity_id": activity_id},
+            headers=headers,
+        )
 
         db.expire_all()
         activity = db.query(FundraisingActivity).filter(
@@ -119,16 +134,19 @@ class TestDoneeSearchFavoritesList:
         activity_id1 = activity1.json()["id"]
         activity_id2 = activity2.json()["id"]
 
-        client.post("/api/donee/shortlist/", json={
-            "donee_id": donee.id,
-            "activity_id": activity_id1
-        })
-        client.post("/api/donee/shortlist/", json={
-            "donee_id": donee.id,
-            "activity_id": activity_id2
-        })
+        client.post(
+            "/api/donee/shortlist/", 
+            json={"activity_id": activity_id1},
+            headers=auth_headers(donee.id),
+        )
 
-        response = client.get(f"/api/donee/shortlist/?donee_id={donee.id}&keyword=School")
+        client.post(
+            "/api/donee/shortlist/", 
+            json={"activity_id": activity_id2},
+            headers=auth_headers(donee.id),
+        )
+
+        response = client.get(f"/api/donee/shortlist/?donee_id={donee.id}&keyword=School", headers=auth_headers(donee.id))
 
         assert response.status_code == 200
         body = response.json()
@@ -144,16 +162,19 @@ class TestDoneeSearchFavoritesList:
         activity_id1 = activity1.json()["id"]
         activity_id2 = activity2.json()["id"]
 
-        client.post("/api/donee/shortlist/", json={
-            "donee_id": donee.id,
-            "activity_id": activity_id1
-        })
-        client.post("/api/donee/shortlist/", json={
-            "donee_id": donee.id,
-            "activity_id": activity_id2
-        })
+        client.post(
+            "/api/donee/shortlist/", 
+            json={"activity_id": activity_id1},
+            headers=auth_headers(donee.id),
+        )
 
-        response = client.get(f"/api/donee/shortlist/?donee_id={donee.id}&keyword=Random")
+        client.post(
+            "/api/donee/shortlist/", 
+            json={"activity_id": activity_id2},
+            headers=auth_headers(donee.id),
+        )
+
+        response = client.get(f"/api/donee/shortlist/?donee_id={donee.id}&keyword=Random", headers=auth_headers(donee.id))
 
         assert response.status_code == 200
         body = response.json()
@@ -173,16 +194,19 @@ class TestDoneeViewFavoritesList:
         activity_id1 = activity1.json()["id"]
         activity_id2 = activity2.json()["id"]
 
-        client.post("/api/donee/shortlist/", json={
-            "donee_id": donee.id,
-            "activity_id": activity_id1
-        })
-        client.post("/api/donee/shortlist/", json={
-            "donee_id": donee.id,
-            "activity_id": activity_id2
-        })
+        client.post(
+            "/api/donee/shortlist/", 
+            json={"activity_id": activity_id1},
+            headers=auth_headers(donee.id),
+        )
 
-        response = client.get(f"/api/donee/shortlist/?donee_id={donee.id}")
+        client.post(
+            "/api/donee/shortlist/", 
+            json={"activity_id": activity_id2},
+            headers=auth_headers(donee.id),
+        )
+
+        response = client.get(f"/api/donee/shortlist/?donee_id={donee.id}", headers=auth_headers(donee.id))
 
         assert response.status_code == 200
         body = response.json()
@@ -195,7 +219,7 @@ class TestDoneeViewFavoritesList:
         create_test_activity(client, fundraiser.id, title = "Building a School")
         create_test_activity(client, fundraiser.id, title = "Building a Hospital")
 
-        response = client.get(f"/api/donee/shortlist/?donee_id={donee.id}")
+        response = client.get(f"/api/donee/shortlist/?donee_id={donee.id}", headers=auth_headers(donee.id))
 
         assert response.status_code == 200
         body = response.json()
@@ -229,7 +253,9 @@ class TestDoneeSearchCompletedActivities:
         db.add_all([completed1, completed2])
         db.commit()
 
-        response = client.get("/api/donee/fundraising_activity/completed?keyword=School")
+        headers = create_donee_headers(db)
+
+        response = client.get("/api/donee/fundraising_activity/completed?keyword=School", headers=headers)
         
         assert response.status_code == 200
         body = response.json()
@@ -255,7 +281,9 @@ class TestDoneeSearchCompletedActivities:
         db.add(completed)
         db.commit()
 
-        response = client.get("/api/donee/fundraising_activity/completed?keyword=Random")
+        headers = create_donee_headers(db)
+
+        response = client.get("/api/donee/fundraising_activity/completed?keyword=Random", headers=headers)
         
         assert response.status_code == 200
         body = response.json()
@@ -286,7 +314,9 @@ class TestDoneeViewCompletedActivities:
         db.commit()
         db.refresh(completed)
 
-        response = client.get(f"/api/donee/fundraising_activity/completed/{completed.id}")
+        headers = create_donee_headers(db)
+
+        response = client.get(f"/api/donee/fundraising_activity/completed/{completed.id}", headers=headers)
  
         assert response.status_code == 200
         body = response.json()

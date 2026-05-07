@@ -36,23 +36,22 @@ export function viewCompletedActivity(activityId) {
   return apiRequest(`/api/donee/fundraising_activity/completed/${activityId}`);
 }
 
-export function getFavoriteActivities(doneeId, keyword = "") {
+export function getFavoriteActivities(keyword = "") {
   const params = new URLSearchParams();
-
-  params.append("donee_id", doneeId);
 
   if (keyword) {
     params.append("keyword", keyword);
   }
 
-  return apiRequest(`/api/donee/shortlist/?${params.toString()}`);
+  const queryString = params.toString();
+
+  return apiRequest(`/api/donee/shortlist/${queryString ? `?${queryString}` : ""}`);
 }
 
-export function saveActivity(doneeId, activityId) {
+export function saveActivity(activityId) {
   return apiRequest("/api/donee/shortlist/", {
     method: "POST",
     body: JSON.stringify({
-      donee_id: Number(doneeId),
       activity_id: Number(activityId),
     }),
   });

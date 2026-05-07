@@ -4,7 +4,7 @@ from app.entities.FavoriteList import FavoriteList
 class doneeSearchFundraisingActivityController:
 
     def searchFundraisingActivity(self, keyword: str):
-        return FundraisingActivity.searchFundraisingActivity(keyword=keyword)
+        return FundraisingActivity.doneeSearchFundraisingActivity(keyword=keyword)
 
 class doneeViewFundraisingActivityController:
 

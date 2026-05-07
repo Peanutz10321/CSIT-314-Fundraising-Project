@@ -12,11 +12,6 @@ import {
 } from "../../api/doneeApi";
 import { getActiveCategories } from "../../api/categoryApi";
 
-function getDoneeId() {
-  return localStorage.getItem("userId");
-}
-
-
 function getActivityStatus(activity) {
   return String(activity.status || "").toUpperCase();
 }
@@ -53,8 +48,7 @@ function DoneeActivitiesPage({ mode = "browse", onLogout, setCurrentPage }) {
   const [keyword, setKeyword] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [error, setError] = useState("");
-  const [selectedActivity, setSelectedActivity] = useState(null);
-  const doneeId = getDoneeId();
+  const [selectedActivity, setSelectedActivity] = useState(null); 
 
   const activePage =
     mode === "favorites"
@@ -69,8 +63,7 @@ function DoneeActivitiesPage({ mode = "browse", onLogout, setCurrentPage }) {
 
       let result;
       if (mode === "favorites") {
-        if (!doneeId) throw new Error("Donee account ID not found. Please login again.");
-        result = await getFavoriteActivities(doneeId, searchKeyword);
+        result = await getFavoriteActivities(searchKeyword);
       } else if (mode === "completed") {
         result = await getCompletedActivities(searchKeyword);
       } else {
@@ -94,10 +87,9 @@ function DoneeActivitiesPage({ mode = "browse", onLogout, setCurrentPage }) {
   }
 
   async function loadFavorites() {
-    if (!doneeId) return;
 
     try {
-      const result = await getFavoriteActivities(doneeId);
+      const result = await getFavoriteActivities();
       setFavoriteIds((result.data || []).map(getActivityId).filter(Boolean));
     } catch {
       setFavoriteIds([]);
@@ -139,8 +131,6 @@ function DoneeActivitiesPage({ mode = "browse", onLogout, setCurrentPage }) {
       const previousViewCount = getViewCount(activity);
       const returnedViewCount = getViewCount(activityDetails);
 
-      // The backend may return the old value after incrementing.
-      // Keep the list stable and update only this card locally.
       const nextViewCount =
         mode === "completed"
           ? Math.max(previousViewCount, returnedViewCount)
@@ -168,11 +158,9 @@ function DoneeActivitiesPage({ mode = "browse", onLogout, setCurrentPage }) {
 
   async function handleSave(activity) {
     try {
-      if (!doneeId) throw new Error("Donee account ID not found. Please login again.");
 
       const activityId = String(activity.id);
 
-      // Update immediately so the SAVE button changes to SAVED without waiting for a reload.
       setFavoriteIds((previousIds) =>
         previousIds.includes(activityId) ? previousIds : [...previousIds, activityId]
       );
@@ -188,7 +176,7 @@ function DoneeActivitiesPage({ mode = "browse", onLogout, setCurrentPage }) {
         )
       );
 
-      await saveActivity(doneeId, activity.id);
+      await saveActivity(activity.id);
 
       if (mode === "favorites") {
         await loadActivities(keyword);

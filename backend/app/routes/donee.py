@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Depends
 from app.schemas.donee import (
     ShortlistCreate,
     ShortlistResponse,
@@ -17,12 +17,16 @@ from app.controllers.donee import (
     doneeViewCompletedController,
 )
 
+from app.middleware.access_control import require_roles
+
+require_donee = require_roles("DONEE")
+
 router = APIRouter(prefix="/api/donee", tags=["Donee"])
 
 
 
 @router.get("/fundraising_activity/completed", response_model=FundraisingActivitySearchResponse)
-def donee_search_completed_activities(keyword: str | None = Query(default=None)):
+def donee_search_completed_activities(keyword: str | None = Query(default=None), current_user = Depends(require_donee)):
     controller = doneeSearchCompletedActivitiesController()
     activities = controller.searchCompletedActivity(keyword)
     return {
@@ -32,7 +36,7 @@ def donee_search_completed_activities(keyword: str | None = Query(default=None))
 
 
 @router.get("/fundraising_activity/completed/{activity_id}", response_model=FundraisingActivityResponse)
-def donee_view_completed_activity(activity_id: int):
+def donee_view_completed_activity(activity_id: int, current_user = Depends(require_donee)):
     controller = doneeViewCompletedController()
     result = controller.doneeGetCompletedActivities(activity_id)
 
@@ -43,7 +47,7 @@ def donee_view_completed_activity(activity_id: int):
 
 
 @router.get("/fundraising_activity/", response_model=FundraisingActivitySearchResponse)
-def donee_search_activities(keyword: str | None = Query(default=None)):
+def donee_search_activities(keyword: str | None = Query(default=None), current_user = Depends(require_donee)):
     controller = doneeSearchFundraisingActivityController()
     activities = controller.searchFundraisingActivity(keyword)
     return {
@@ -53,7 +57,7 @@ def donee_search_activities(keyword: str | None = Query(default=None)):
 
 
 @router.get("/fundraising_activity/{activity_id}", response_model=FundraisingActivityResponse)
-def donee_view_activity(activity_id: int):
+def donee_view_activity(activity_id: int, current_user = Depends(require_donee)):
     controller = doneeViewFundraisingActivityController()
     result = controller.doneeViewFundraisingActivity(activity_id)
 
@@ -64,9 +68,9 @@ def donee_view_activity(activity_id: int):
 
 
 @router.post("/shortlist/", response_model=ShortlistResponse, status_code=201)
-def save_activity(payload: ShortlistCreate):
+def save_activity(payload: ShortlistCreate, current_user = Depends(require_donee)):
     controller = saveFundraisingActivityController()
-    result = controller.saveFundraisingActivity(payload.donee_id, payload.activity_id)
+    result = controller.saveFundraisingActivity(current_user.id, payload.activity_id)
 
     if result == "activity_not_found":
         raise HTTPException(status_code=404, detail="Activity not found")
@@ -78,11 +82,11 @@ def save_activity(payload: ShortlistCreate):
 
 @router.get("/shortlist/", response_model=FavoritesSearchResponse)
 def get_favorites(
-    donee_id: int = Query(...),
     keyword: str | None = Query(default=None),
+    current_user = Depends(require_donee),
 ):
     controller = searchFavoriteListController()
-    activities = controller.searchFavoriteList(donee_id, keyword)
+    activities = controller.searchFavoriteList(current_user.id, keyword)
     return {
         "total": len(activities),
         "data": activities,
