@@ -49,14 +49,17 @@ class Report:
                 .count()
             )
 
+            from app.entities.FundraisingCategory import FundraisingCategory
+
             raised_by_category_rows = (
                 db.query(
-                    FundraisingActivity.category,
+                    FundraisingCategory.name,
                     func.coalesce(func.sum(FundraisingActivity.current_amount), 0),
-                    func.count(FundraisingActivity.id)
+                    func.count(FundraisingActivity.id),
                 )
+                .join(FundraisingCategory, FundraisingActivity.category_id == FundraisingCategory.id)
                 .filter(*period_filter)
-                .group_by(FundraisingActivity.category)
+                .group_by(FundraisingCategory.name)
                 .all()
             )
 
@@ -107,7 +110,7 @@ class Report:
             db.close()
 
     @staticmethod
-    def generate_daily_report(date: str):
+    def generateDailyReport(date: str):
         try:
             start_date = datetime.strptime(date, "%Y-%m-%d")
         except ValueError:
@@ -117,7 +120,7 @@ class Report:
         return Report._build_report(start_date, end_date, "daily")
 
     @staticmethod
-    def generate_weekly_report(week_start: str):
+    def generateWeeklyReport(week_start: str):
         try:
             start_date = datetime.strptime(week_start, "%Y-%m-%d")
         except ValueError:
@@ -127,7 +130,7 @@ class Report:
         return Report._build_report(start_date, end_date, "weekly")
 
     @staticmethod
-    def generate_monthly_report(month: str):
+    def generateMonthlyReport(month: str):
         try:
             start_date = datetime.strptime(month, "%Y-%m")
         except ValueError:

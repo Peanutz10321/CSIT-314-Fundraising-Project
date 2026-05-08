@@ -1,4 +1,4 @@
-from conftest import create_test_activity, create_fundraiser, auth_headers
+from conftest import create_test_activity, create_fundraiser, auth_headers, create_completed_activity, get_or_create_category
 from app.entities.FundraisingActivity import FundraisingActivity
 
 #55 Creating Fundraising Activity
@@ -79,6 +79,8 @@ class TestUpdateFundraisingActivity:
         created = create_test_activity(client, fundraiser.id)
         activity_id = created.json()["id"]
 
+        get_or_create_category(db, "Health")
+        
         response = client.patch(
             f"/api/fundraising_activity/{activity_id}",
             json={
@@ -219,17 +221,8 @@ class TestSearchCompletedFundraisingActivities:
     def test_search_completed_activities_return_only_completed_activities(self, db, client):
         fundraiser = create_fundraiser(db, email="john11@test.com")
 
-        completed = FundraisingActivity(
-            fundraiser_id=fundraiser.id,
-            title="Building a School",
-            currency="SGD",
-            goal_amount=5000.0,
-            status="COMPLETED",
-            category="Education",
-        )
-        db.add(completed)
-        db.commit()
-        active = create_test_activity(client, fundraiser.id, title ="Building a Hospital")
+        create_completed_activity(db, fundraiser.id)
+        create_test_activity(client, fundraiser.id, title ="Building a Hospital")
 
         response = client.get(
             f"/api/fundraising_activity/completed",
@@ -265,21 +258,7 @@ class TestViewCompletedFundraisingActivity:
     def test_view_completed_activity_details_success(self, db, client):
         fundraiser = create_fundraiser(db, email="john13@test.com")
         
-        completed = FundraisingActivity(
-            fundraiser_id=fundraiser.id,
-            title="Building a School",
-            description="Raising funds to help build a primary school",
-            currency="SGD",
-            goal_amount=5000.0,
-            status="COMPLETED",
-            category="Education",
-            location="Singapore",
-            beneficiaryName="Bob",
-            fundraiserName="John",
-            deadline="29-05-2026"
-        )
-        db.add(completed)
-        db.commit()
+        completed = create_completed_activity(db, fundraiser.id)
         db.refresh(completed)
         activity_id = completed.id
 

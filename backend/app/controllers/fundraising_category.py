@@ -1,26 +1,26 @@
 from app.entities.FundraisingCategory import FundraisingCategory
 
 
-class createFundraisingCategoryController:
+class createCategoryController:
     def createFundraisingCategory(self, name: str, description: str = None):
         return FundraisingCategory.createFundraisingCategory(name, description)
 
 
 class viewFundraisingCategoryController:
-    def viewFundraisingCategory(self, category_id: int):
-        return FundraisingCategory.viewFundraisingCategory(category_id)
+    def getCategory(self, categoryID: int):
+        return FundraisingCategory.getCategory(categoryID)
 
 
-class updateFundraisingCategoryController:
-    def updateFundraisingCategory(self, category_id: int, name: str = None, description: str = None):
-        return FundraisingCategory.updateFundraisingCategory(category_id, name, description)
+class updateCategoryController:
+    def updateCategory(self, categoryID: int, name: str = None, description: str = None):
+        return FundraisingCategory.updateCategory(categoryID, name, description)
 
 
-class suspendFundraisingCategoryController:
-    def suspendFundraisingCategory(self, category_id: int):
-        return FundraisingCategory.suspendFundraisingCategory(category_id)
+class suspendCategoryController:
+    def suspendCategory(self, categoryID: int):
+        return FundraisingCategory.suspendCategory(categoryID)
 
 
 class searchFundraisingCategoryController:
-    def searchFundraisingCategory(self, keyword: str = None):
-        return FundraisingCategory.searchFundraisingCategory(keyword)
+    def searchCategory(self, keyword: str = None):
+        return FundraisingCategory.searchCategory(keyword)

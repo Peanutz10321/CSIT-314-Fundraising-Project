@@ -1,12 +1,14 @@
 from app.entities.Report import Report
 
 
-class ReportController:
-    def get_daily_report(self, date: str):
-        return Report.generate_daily_report(date)
+class dailyReportController:
+    def generateDailyReport(self, date: str):
+        return Report.generateDailyReport(date)
 
-    def get_weekly_report(self, week_start: str):
-        return Report.generate_weekly_report(week_start)
+class weeklyReportController:
+    def generateWeeklyReport(self, week_start: str):
+        return Report.generateWeeklyReport(week_start)
 
-    def get_monthly_report(self, month: str):
-        return Report.generate_monthly_report(month)
+class monthlyReportController:
+    def generateMonthlyReport(self, month: str):
+        return Report.generateMonthlyReport(month)

@@ -14,7 +14,9 @@ from app.controllers.donee import (
     saveFundraisingActivityController,
     searchFavoriteListController,
     doneeSearchCompletedActivitiesController,
-    doneeViewCompletedController,
+    viewCompletedFundraisingActivitiesController,
+    viewFavoriteListController,
+    doneeViewCompletedController
 )
 
 from app.middleware.access_control import require_roles
@@ -27,8 +29,14 @@ router = APIRouter(prefix="/api/donee", tags=["Donee"])
 
 @router.get("/fundraising_activity/completed", response_model=FundraisingActivitySearchResponse)
 def donee_search_completed_activities(keyword: str | None = Query(default=None), current_user = Depends(require_donee)):
-    controller = doneeSearchCompletedActivitiesController()
-    activities = controller.searchCompletedActivity(keyword)
+    if keyword:
+        controller = doneeSearchCompletedActivitiesController()
+        activities = controller.searchCompletedActivity(keyword)
+
+    else:
+        controller = viewCompletedFundraisingActivitiesController()
+        activities = controller.viewCompletedFundraisingActivities()
+    
     return {
         "total": len(activities),
         "data": activities,
@@ -84,9 +92,15 @@ def save_activity(payload: ShortlistCreate, current_user = Depends(require_donee
 def get_favorites(
     keyword: str | None = Query(default=None),
     current_user = Depends(require_donee),
-):
-    controller = searchFavoriteListController()
-    activities = controller.searchFavoriteList(current_user.id, keyword)
+):  
+    if keyword:
+        
+        controller = searchFavoriteListController()
+        activities = controller.searchFavoriteList(current_user.id, keyword)
+    else:
+        controller = viewFavoriteListController()
+        activities = controller.viewFavoriteList(current_user.id)
+        
     return {
         "total": len(activities),
         "data": activities,

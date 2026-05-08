@@ -29,4 +29,14 @@ class doneeSearchCompletedActivitiesController:
 class doneeViewCompletedController:
     def doneeGetCompletedActivities(self, activityID: int):
         return FundraisingActivity.getCompletedActivities(activityID)
+
+class viewFavoriteListController:
+    def viewFavoriteList(self, doneeID: int):
+        return FavoriteList.viewFavoriteList(doneeID)
+
+class viewCompletedFundraisingActivitiesController:
+    def viewCompletedFundraisingActivities(self):
+        return FundraisingActivity.viewCompletedFundraisingActivities()
+    
+
     

@@ -12,7 +12,7 @@ from app.main import app
 from app.database import Base, get_db
 from app.entities.UserProfile import UserProfile
 from app.entities.UserAccount import UserAccount
-
+from app.entities.FundraisingCategory import FundraisingCategory
 
 
 TEST_DATABASE_URL = "sqlite:///./test.db"
@@ -89,6 +89,33 @@ def get_or_create_profile(db, role_name: str):
 
     return profile
 
+def get_or_create_category(db, name: str = "Education", description: str = None, status: str = "ACTIVE"):
+    category = db.query(FundraisingCategory).filter(
+        FundraisingCategory.name == name
+    ).first()
+
+    if not category:
+        category = FundraisingCategory(
+            name=name,
+            description=description or f"{name} category",
+            status=status,
+        )
+        db.add(category)
+        db.commit()
+        db.refresh(category)
+    else:
+        changed = False
+        if category.status != status:
+            category.status = status
+            changed = True
+        if description is not None and category.description != description:
+            category.description = description
+            changed = True
+        if changed:
+            db.commit()
+            db.refresh(category)
+
+    return category
 
 def create_test_user(db,name: str, email: str,  password: str,  role_name: str, status: str = "ACTIVE", phone_no: str = None, address: str = None, dob: str = None):
     profile = get_or_create_profile(db, role_name)
@@ -121,10 +148,52 @@ def create_test_activity(client, fundraiser_id: int, title: str = "Building a Sc
         "deadline": "29-05-2026",
     }
     payload.update(overrides)
+
+    db = TestingSessionLocal()
+    try:
+        get_or_create_category(db, payload["category"])
+    finally:
+        db.close()
+    
     return client.post("/api/fundraising_activity/", 
                        json=payload,
                        headers=auth_headers(fundraiser_id),
                        )
+
+def create_completed_activity(
+    db,
+    fundraiser_id: int,
+    title: str = "Building a School",
+    category_name: str = "Education",
+    **overrides
+):
+    from app.entities.FundraisingActivity import FundraisingActivity
+
+    category = get_or_create_category(db, category_name)
+
+    activity_data = {
+        "fundraiser_id": fundraiser_id,
+        "title": title,
+        "description": "Raising funds to help build a primary school",
+        "currency": "SGD",
+        "goal_amount": 5000.0,
+        "category_id": category.id,
+        "location": "Singapore",
+        "beneficiaryName": "Bob",
+        "fundraiserName": "John",
+        "deadline": "29-05-2026",
+        "status": "COMPLETED",
+        "current_amount": 0.0,
+        "view_count": 0,
+        "shortlist_count": 0,
+    }
+    activity_data.update(overrides)
+
+    activity = FundraisingActivity(**activity_data)
+    db.add(activity)
+    db.commit()
+    db.refresh(activity)
+    return activity
 
 def create_fundraiser(db, name = "John", email = "john@test.com", password = "pass123", role_name = "FUNDRAISER"):
     return create_test_user(

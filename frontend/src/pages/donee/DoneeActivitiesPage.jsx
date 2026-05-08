@@ -78,11 +78,10 @@ function DoneeActivitiesPage({ mode = "browse", onLogout, setCurrentPage }) {
 
   function getActivityId(activity) {
     return String(
-      activity?.id ??
-        activity?.activity_id ??
-        activity?.fundraising_activity_id ??
-        activity?.fundraisingActivityId ??
-        ""
+      activity.activity_id ??
+      activity.fundraising_activity_id ??
+      activity.fundraisingActivityId ??
+      activity.id
     );
   }
 

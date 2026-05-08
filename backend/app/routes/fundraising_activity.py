@@ -86,6 +86,9 @@ def create_fundraising_activity(
     if result == "fundraiser_not_found":
         raise HTTPException(status_code=404, detail="Fundraiser not found")
     
+    if result == "category_not_found":
+        raise HTTPException(status_code=400, detail="Category not found or inactive")
+    
     if result == "invalid_amount":
         raise HTTPException(status_code=400, detail="goal_amount must be greater than 0")
 
@@ -141,6 +144,9 @@ def update_fundraising_activity(
 
     if result == "not_found":
         raise HTTPException(status_code=404, detail="Activity not found")
+    
+    if result == "category_not_found":
+        raise HTTPException(status_code=400, detail="Category not found or inactive")
     
     if result == "invalid_amount":
         raise HTTPException(status_code=400, detail="goal_amount must be greater than 0")

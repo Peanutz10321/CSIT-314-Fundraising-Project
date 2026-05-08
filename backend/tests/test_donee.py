@@ -1,4 +1,4 @@
-from conftest import create_test_activity, create_fundraiser, create_donee, create_donee_headers, auth_headers
+from conftest import create_test_activity, create_fundraiser, create_donee, create_donee_headers, auth_headers, create_completed_activity
 from app.entities.FundraisingActivity import FundraisingActivity
 
 #66 SearchFundraisingActivity
@@ -146,7 +146,7 @@ class TestDoneeSearchFavoritesList:
             headers=auth_headers(donee.id),
         )
 
-        response = client.get(f"/api/donee/shortlist/?donee_id={donee.id}&keyword=School", headers=auth_headers(donee.id))
+        response = client.get("/api/donee/shortlist/?keyword=School", headers=auth_headers(donee.id))
 
         assert response.status_code == 200
         body = response.json()
@@ -174,7 +174,7 @@ class TestDoneeSearchFavoritesList:
             headers=auth_headers(donee.id),
         )
 
-        response = client.get(f"/api/donee/shortlist/?donee_id={donee.id}&keyword=Random", headers=auth_headers(donee.id))
+        response = client.get("/api/donee/shortlist/?keyword=Random", headers=auth_headers(donee.id))
 
         assert response.status_code == 200
         body = response.json()
@@ -206,7 +206,7 @@ class TestDoneeViewFavoritesList:
             headers=auth_headers(donee.id),
         )
 
-        response = client.get(f"/api/donee/shortlist/?donee_id={donee.id}", headers=auth_headers(donee.id))
+        response = client.get("/api/donee/shortlist/", headers=auth_headers(donee.id))
 
         assert response.status_code == 200
         body = response.json()
@@ -219,7 +219,7 @@ class TestDoneeViewFavoritesList:
         create_test_activity(client, fundraiser.id, title = "Building a School")
         create_test_activity(client, fundraiser.id, title = "Building a Hospital")
 
-        response = client.get(f"/api/donee/shortlist/?donee_id={donee.id}", headers=auth_headers(donee.id))
+        response = client.get(f"/api/donee/shortlist/", headers=auth_headers(donee.id))
 
         assert response.status_code == 200
         body = response.json()
@@ -233,23 +233,20 @@ class TestDoneeSearchCompletedActivities:
     def test_search_completed_returns_only_completed_activities_with_matching_keyword(self, db, client):
         fundraiser = create_fundraiser(db)
 
-        completed1 = FundraisingActivity(
+        completed1 = create_completed_activity(
+            db,
             fundraiser_id=fundraiser.id,
             title="Building a School",
-            currency="SGD",
-            goal_amount=5000.0,
-            category="Education",
-            status="COMPLETED",
+            category_name="Education",
         )
 
-        completed2 = FundraisingActivity(
+        completed2 = create_completed_activity(
+            db,
             fundraiser_id=fundraiser.id,
-            title="Building a Hospital",
-            currency="SGD",
-            goal_amount=5000.0,
-            category="Healthcare",
-            status="COMPLETED",
+            title="Building a School",
+            category_name="Medical",
         )
+
         db.add_all([completed1, completed2])
         db.commit()
 
@@ -267,13 +264,11 @@ class TestDoneeSearchCompletedActivities:
     def test_search_completed_returns_no_match_if_no_matching_activities(self, db, client):
         fundraiser = create_fundraiser(db)
 
-        completed = FundraisingActivity(
+        completed = create_completed_activity(
+            db,
             fundraiser_id=fundraiser.id,
             title="Building a School",
-            currency="SGD",
-            goal_amount=5000.0,
-            category="Education",
-            status="COMPLETED",
+            category_name="Education",
         )
 
         create_test_activity(client, fundraiser.id, title = "Building a Hospital")
@@ -296,18 +291,11 @@ class TestDoneeViewCompletedActivities:
     def test_view_completed_activities_success(self, db, client):
         fundraiser = create_fundraiser(db)
 
-        completed = FundraisingActivity(
+        completed = create_completed_activity(
+            db,
             fundraiser_id=fundraiser.id,
             title="Building a School",
-            description="Raising funds to help build a primary school",
-            currency="SGD",
-            goal_amount=5000.0,
-            category="Education",
-            location="Singapore",
-            beneficiaryName="Bob",
-            fundraiserName="John",
-            deadline="29-05-2026",
-            status="COMPLETED",
+            category_name="Education",
         )
 
         db.add(completed)

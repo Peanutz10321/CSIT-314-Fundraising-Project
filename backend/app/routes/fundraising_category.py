@@ -8,10 +8,10 @@ from app.schemas.fundraising_category import (
     FundraisingCategorySearchResponse,
 )
 from app.controllers.fundraising_category import (
-    createFundraisingCategoryController,
+    createCategoryController,
     viewFundraisingCategoryController,
-    updateFundraisingCategoryController,
-    suspendFundraisingCategoryController,
+    updateCategoryController,
+    suspendCategoryController,
     searchFundraisingCategoryController,
 )
 
@@ -26,8 +26,11 @@ def create_category(
     payload: FundraisingCategoryCreate,
     _: None = Depends(require_platform_manager),
 ):
-    controller = createFundraisingCategoryController()
+    controller = createCategoryController()
     result = controller.createFundraisingCategory(payload.name, payload.description)
+
+    if result == "category_not_found":
+        raise HTTPException(status_code=400, detail="Category not found or inactive")
 
     if result == "duplicate_name":
         raise HTTPException(status_code=400, detail="A category with that name already exists")
@@ -41,7 +44,7 @@ def search_categories(
     _: None = Depends(require_platform_fundraiser_or_donee),
 ):
     controller = searchFundraisingCategoryController()
-    categories = controller.searchFundraisingCategory(keyword)
+    categories = controller.searchCategory(keyword)
 
     return {"total": len(categories), "data": categories}
 
@@ -52,7 +55,7 @@ def get_category(
     _: None = Depends(require_platform_manager),
 ):
     controller = viewFundraisingCategoryController()
-    result = controller.viewFundraisingCategory(category_id)
+    result = controller.getCategory(category_id)
 
     if result == "not_found":
         raise HTTPException(status_code=404, detail="Category not found")
@@ -66,8 +69,8 @@ def update_category(
     payload: FundraisingCategoryUpdate,
     _: None = Depends(require_platform_manager),
 ):
-    controller = updateFundraisingCategoryController()
-    result = controller.updateFundraisingCategory(category_id, payload.name, payload.description)
+    controller = updateCategoryController()
+    result = controller.updateCategory(category_id, payload.name, payload.description)
 
     if result == "not_found":
         raise HTTPException(status_code=404, detail="Category not found")
@@ -83,8 +86,8 @@ def suspend_category(
     category_id: int,
     _: None = Depends(require_platform_manager),
 ):
-    controller = suspendFundraisingCategoryController()
-    success = controller.suspendFundraisingCategory(category_id)
+    controller = suspendCategoryController()
+    success = controller.suspendCategory(category_id)
 
     if not success:
         raise HTTPException(status_code=404, detail="Category not found")

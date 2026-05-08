@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, func
+from sqlalchemy import Column, Integer, String, Text, DateTime
+from sqlalchemy.orm import relationship
 from app.database import Base, SessionLocal
 from datetime import datetime
 
@@ -12,6 +13,8 @@ class FundraisingCategory(Base):
     status = Column(String(20), default="ACTIVE", nullable=False)
     date_created = Column(DateTime, default=datetime.now, nullable=False)
 
+    activities = relationship("FundraisingActivity", back_populates="category_ref")
+
     def suspend(self):
         self.status = "SUSPENDED"
 
@@ -20,11 +23,17 @@ class FundraisingCategory(Base):
         return SessionLocal()
 
     @staticmethod
-    def _activity_count(db, category_name: str) -> int:
+    def _activity_count(db, category_id: int) -> int:
         from app.entities.FundraisingActivity import FundraisingActivity
+
         return db.query(FundraisingActivity).filter(
-            FundraisingActivity.category == category_name
+            FundraisingActivity.category_id == category_id
         ).count()
+    
+    @staticmethod
+    def _attach_activity_count(db, category):
+        category.activity_count = FundraisingCategory._activity_count(db, category.id)
+        return category
 
     @staticmethod
     def createFundraisingCategory(name: str, description: str = None):
@@ -45,45 +54,32 @@ class FundraisingCategory(Base):
             db.add(category)
             db.commit()
             db.refresh(category)
-            result = {
-                "id": category.id,
-                "name": category.name,
-                "description": category.description,
-                "status": category.status,
-                "date_created": category.date_created,
-                "activity_count": 0,
-            }
-            return result
+
+            return FundraisingCategory._attach_activity_count(db, category)
         finally:
             db.close()
 
     @staticmethod
-    def viewFundraisingCategory(category_id: int):
+    def getCategory(categoryID: int):
         db = FundraisingCategory._open_db()
         try:
             category = db.query(FundraisingCategory).filter(
-                FundraisingCategory.id == category_id
+                FundraisingCategory.id == categoryID
             ).first()
             if not category:
                 return "not_found"
-            count = FundraisingCategory._activity_count(db, category.name)
-            return {
-                "id": category.id,
-                "name": category.name,
-                "description": category.description,
-                "status": category.status,
-                "date_created": category.date_created,
-                "activity_count": count,
-            }
+            
+            return FundraisingCategory._attach_activity_count(db, category)
+        
         finally:
             db.close()
 
     @staticmethod
-    def updateFundraisingCategory(category_id: int, name: str = None, description: str = None):
+    def updateCategory(categoryID: int, name: str = None, description: str = None):
         db = FundraisingCategory._open_db()
         try:
             category = db.query(FundraisingCategory).filter(
-                FundraisingCategory.id == category_id
+                FundraisingCategory.id == categoryID
             ).first()
             if not category:
                 return "not_found"
@@ -91,7 +87,7 @@ class FundraisingCategory(Base):
             if name is not None and name != category.name:
                 duplicate = db.query(FundraisingCategory).filter(
                     FundraisingCategory.name == name,
-                    FundraisingCategory.id != category_id,
+                    FundraisingCategory.id != categoryID,
                 ).first()
                 if duplicate:
                     return "duplicate_name"
@@ -102,24 +98,17 @@ class FundraisingCategory(Base):
 
             db.commit()
             db.refresh(category)
-            count = FundraisingCategory._activity_count(db, category.name)
-            return {
-                "id": category.id,
-                "name": category.name,
-                "description": category.description,
-                "status": category.status,
-                "date_created": category.date_created,
-                "activity_count": count,
-            }
+
+            return FundraisingCategory._attach_activity_count(db, category)
         finally:
             db.close()
 
     @staticmethod
-    def suspendFundraisingCategory(category_id: int) -> bool:
+    def suspendCategory(categoryID: int) -> bool:
         db = FundraisingCategory._open_db()
         try:
             category = db.query(FundraisingCategory).filter(
-                FundraisingCategory.id == category_id
+                FundraisingCategory.id == categoryID
             ).first()
             if not category:
                 return False
@@ -130,24 +119,17 @@ class FundraisingCategory(Base):
             db.close()
 
     @staticmethod
-    def searchFundraisingCategory(keyword: str = None):
+    def searchCategory(keyword: str = None):
         db = FundraisingCategory._open_db()
         try:
             query = db.query(FundraisingCategory)
             if keyword:
                 query = query.filter(FundraisingCategory.name.ilike(f"%{keyword}%"))
             categories = query.all()
-            result = []
-            for c in categories:
-                count = FundraisingCategory._activity_count(db, c.name)
-                result.append({
-                    "id": c.id,
-                    "name": c.name,
-                    "description": c.description,
-                    "status": c.status,
-                    "date_created": c.date_created,
-                    "activity_count": count,
-                })
-            return result
+        
+            return [
+                FundraisingCategory._attach_activity_count(db, category)
+                for category in categories
+            ]
         finally:
             db.close()

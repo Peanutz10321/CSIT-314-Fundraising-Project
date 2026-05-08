@@ -28,8 +28,8 @@ class updateUserAccountController:
 
 class suspendUserAccountController:
 
-    def suspendUserAccount(self, profileID: int):
-        return UserAccount.suspendUserAccount(profileID)
+    def suspendUserAccount(self, accountID: int):
+        return UserAccount.suspendUserAccount(accountID)
 
 class searchUserAccountController:
     

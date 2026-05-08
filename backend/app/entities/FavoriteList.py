@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, joinedload
 from app.database import Base, SessionLocal
 from datetime import datetime
 
@@ -57,10 +57,11 @@ class FavoriteList(Base):
         from app.entities.FundraisingActivity import FundraisingActivity
         db = FavoriteList._open_db()
         try:
-            query = db.query(FundraisingActivity).join(
-                FavoriteList, FavoriteList.activity_id == FundraisingActivity.id
-            ).filter(
-                FavoriteList.donee_id == doneeID
+            query = (
+                db.query(FundraisingActivity)
+                .options(joinedload(FundraisingActivity.category_ref))
+                .join(FavoriteList, FavoriteList.activity_id == FundraisingActivity.id)
+                .filter(FavoriteList.donee_id == doneeID)
             )
             if keyword:
                 query = query.filter(
@@ -69,3 +70,7 @@ class FavoriteList(Base):
             return query.all()
         finally:
             db.close()
+    
+    @staticmethod
+    def viewFavoriteList(doneeID: int):
+        return FavoriteList.searchFavoriteList(doneeID)

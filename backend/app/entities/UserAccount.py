@@ -195,12 +195,12 @@ class UserAccount(Base):
             db.close()
     
     @staticmethod
-    def suspendUserAccount(profileID: int):
+    def suspendUserAccount(accountID: int):
         db = UserAccount._open_db()
         
         try:
 
-            user = db.query(UserAccount).filter(UserAccount.id == profileID).first()
+            user = db.query(UserAccount).filter(UserAccount.id == accountID).first()
             if not user:
                 return False
             

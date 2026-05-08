@@ -4,6 +4,7 @@ import FundraisingActivityViewModal from "../../components/fundraiser/Fundraisin
 import {
   getCompletedFundraisingActivities,
 } from "../../api/fundraisingActivityApi";
+import { getActiveCategories } from "../../api/categoryApi";
 
 
 function getCurrentUserId() {
@@ -36,6 +37,7 @@ function CompletedFundraisingActivityPage({ onLogout, setCurrentPage }) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [error, setError] = useState("");
   const [selectedActivity, setSelectedActivity] = useState(null);
+  const [availableCategories, setAvailableCategories] = useState([]);
 
   async function loadCompletedActivities(searchKeyword = "") {
     try {
@@ -49,6 +51,12 @@ function CompletedFundraisingActivityPage({ onLogout, setCurrentPage }) {
 
   useEffect(() => {
     loadCompletedActivities();
+
+    getActiveCategories()
+      .then((res) =>
+        setAvailableCategories((res.data || []).filter((c) => c.status === "ACTIVE"))
+      )
+      .catch(() => {});
   }, []);
 
   function handleSearchChange(e) {
@@ -107,12 +115,11 @@ function CompletedFundraisingActivityPage({ onLogout, setCurrentPage }) {
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
-            <option value="">All categories</option>
-            <option value="Community">Community</option>
-            <option value="Education">Education</option>
-            <option value="Medical">Medical</option>
-            <option value="Healthcare">Healthcare</option>
-            <option value="Emergency">Emergency</option>
+            {availableCategories.map((c) => (
+              <option key={c.id} value={c.name}>
+                {c.name}
+              </option>
+            ))}
           </select>
         </div>
 
