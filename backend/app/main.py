@@ -6,6 +6,9 @@ from app.seeds.seed_user_profiles import seed_user_profiles
 from app.seeds.seed_test_admin import seed_test_admin
 from app.seeds.seed_categories import seed_categories
 from app.seeds.seed_platform_manager import seed_platform_manager
+from app.seeds.seed_fake_data import seed_fake_data
+from app.seeds.seed_test_fundraiser import seed_test_fundraiser
+from app.seeds.seed_test_donee import seed_test_donee
 from fastapi.middleware.cors import CORSMiddleware
 
 Base.metadata.create_all(bind=engine)
@@ -27,6 +30,9 @@ def run_startup_seeds():
         seed_test_admin(db)
         seed_categories(db)
         seed_platform_manager(db)
+        seed_fake_data(db)
+        seed_test_donee(db)
+        seed_test_fundraiser(db)
     finally:
         db.close()
 
