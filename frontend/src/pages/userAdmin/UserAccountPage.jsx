@@ -137,12 +137,17 @@ function UserAccountPage({ onLogout, setCurrentPage }) {
 
       <div className="divider" />
 
-      <input
-        className="search-input"
-        placeholder="search accounts..."
-        value={keyword}
-        onChange={handleSearchChange}
-      />
+      <div className="fundraising-toolbar">
+        <div className="fundraising-search-wrapper">
+          <span className="search-icon">🔍</span>
+          <input
+            className="fundraising-search-input"
+            placeholder="search accounts..."
+            value={keyword}
+            onChange={handleSearchChange}
+          />
+        </div>
+      </div>
 
       {error && <p className="error-message">{error}</p>}
 
