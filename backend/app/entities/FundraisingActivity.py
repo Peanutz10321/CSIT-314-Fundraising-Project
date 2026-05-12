@@ -61,7 +61,7 @@ class FundraisingActivity(Base):
         fundraiserID: int,
         title: str,
         currency: str,
-        goal_amount: float,
+        goalAmount: float,
         category: str,
         description: str = None,
         location: str = None,
@@ -92,14 +92,14 @@ class FundraisingActivity(Base):
             if not fundraiser:
                 return "fundraiser_not_found"
  
-            if goal_amount <= 0:
+            if goalAmount <= 0:
                 return "invalid_amount"
 
             activity = FundraisingActivity(
                 fundraiser_id=fundraiserID,
                 title=title,
                 currency=currency,
-                goal_amount=goal_amount,
+                goal_amount=goalAmount,
                 category_id=category_obj.id,
                 description=description,
                 location=location,
@@ -177,7 +177,7 @@ class FundraisingActivity(Base):
         fundraiserID: int,
         title: str = None,
         currency: str = None,
-        goal_amount: float = None,
+        goalAmount: float = None,
         category: str = None,
         description: str = None,
         location: str = None,
@@ -196,7 +196,7 @@ class FundraisingActivity(Base):
             if not activity:
                 return "not_found"
 
-            if goal_amount is not None and goal_amount <= 0:
+            if goalAmount is not None and goalAmount <= 0:
                 return "invalid_amount"
             
             if title is not None:
@@ -205,8 +205,8 @@ class FundraisingActivity(Base):
             if currency is not None:
                 activity.currency = currency
 
-            if goal_amount is not None:
-                activity.goal_amount = goal_amount
+            if goalAmount is not None:
+                activity.goal_amount = goalAmount
 
             if description is not None:
                 activity.description = description

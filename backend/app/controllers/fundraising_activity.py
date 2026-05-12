@@ -7,7 +7,7 @@ class createFundraisingActivityController:
         fundraiserID: int,
         title: str,
         currency: str,
-        goal_amount: float,
+        goalAmount: float,
         category: str,
         description: str = None,
         location: str = None,
@@ -16,7 +16,7 @@ class createFundraisingActivityController:
         deadline: str = None,
     ):
         return FundraisingActivity.createFundraisingActivity(
-            fundraiserID, title, currency, goal_amount,
+            fundraiserID, title, currency, goalAmount,
             category, description, location,
             beneficiaryName, fundraiserName, deadline,
         )
@@ -34,7 +34,7 @@ class updateFundraisingActivityController:
         fundraiserID: int,
         title: str = None,
         currency: str = None,
-        goal_amount: float = None,
+        goalAmount: float = None,
         category: str = None,
         description: str = None,
         location: str = None,
@@ -43,7 +43,7 @@ class updateFundraisingActivityController:
         deadline: str = None,
     ):
         return FundraisingActivity.updateFundraisingActivity(
-            activityID, fundraiserID, title, currency, goal_amount,
+            activityID, fundraiserID, title, currency, goalAmount,
             category, description, location,
             beneficiaryName, fundraiserName, deadline,
         )

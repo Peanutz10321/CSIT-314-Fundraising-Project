@@ -29,20 +29,20 @@ class UserProfile(Base):
         return SessionLocal()
 
     @staticmethod
-    def createUserProfile(name_of_role: str, description: str, status: str = "ACTIVE"):
+    def createUserProfile(name: str, description: str, status: str = "ACTIVE"):
         db = UserProfile._open_db()
 
         try:
 
             existing = db.query(UserProfile).filter(
-                UserProfile.name_of_role == name_of_role
+                UserProfile.name_of_role == name
             ).first()
 
             if existing:
                 return "duplicate_name"
 
             profile = UserProfile(
-                name_of_role=name_of_role,
+                name_of_role=name,
                 description=description,
                 status=status,
             )
@@ -57,12 +57,12 @@ class UserProfile(Base):
             db.close()
 
     @staticmethod
-    def getUserProfileByID(profile_id: int):
+    def getUserProfileByID(profileID: int):
         db = UserProfile._open_db()
 
         try:
 
-            profile = db.query(UserProfile).filter(UserProfile.id == profile_id).first()
+            profile = db.query(UserProfile).filter(UserProfile.id == profileID).first()
             if not profile:
                 return "not_found"
             return profile
@@ -70,19 +70,19 @@ class UserProfile(Base):
             db.close()
 
     @staticmethod
-    def updateUserProfile(profile_id: int, name: str, description: str, status: str = "ACTIVE"):
+    def updateUserProfile(profileID: int, name: str, description: str, status: str = "ACTIVE"):
         db = UserProfile._open_db()
 
         try:
 
-            profile = db.query(UserProfile).filter(UserProfile.id == profile_id).first()
+            profile = db.query(UserProfile).filter(UserProfile.id == profileID).first()
 
             if not profile:
                 return "not_found"
 
             duplicate = db.query(UserProfile).filter(
                 UserProfile.name_of_role == name,
-                UserProfile.id != profile_id
+                UserProfile.id != profileID
             ).first()
 
             if duplicate:
@@ -100,12 +100,12 @@ class UserProfile(Base):
             db.close()
 
     @staticmethod
-    def suspendUserProfile(profile_id: int) -> bool:
+    def suspendUserProfile(profileID: int) -> bool:
         db = UserProfile._open_db()
 
         try:
 
-            profile = db.query(UserProfile).filter(UserProfile.id == profile_id).first()
+            profile = db.query(UserProfile).filter(UserProfile.id == profileID).first()
 
             if not profile:
                 return False

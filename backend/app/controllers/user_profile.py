@@ -2,23 +2,23 @@ from app.entities.UserProfile import UserProfile
 
 class createUserProfileController:
 
-    def createUserProfile(self, name_of_role: str, description: str, status: str = "ACTIVE"):
-        return UserProfile.createUserProfile(name_of_role, description, status)
+    def createUserProfile(self, name: str, description: str, status: str = "ACTIVE"):
+        return UserProfile.createUserProfile(name, description, status)
 
 class viewUserProfileController:
 
-    def getUserProfileByID(self, profile_id: int):
-        return UserProfile.getUserProfileByID(profile_id)
+    def getUserProfileByID(self, profileID: int):
+        return UserProfile.getUserProfileByID(profileID)
 
 class updateUserProfileController:
 
-    def updateUserProfile(self, profile_id: int, name: str, description: str, status: str = "ACTIVE"):
-        return UserProfile.updateUserProfile(profile_id, name, description, status)
+    def updateUserProfile(self, profileID: int, name: str, description: str, status: str = "ACTIVE"):
+        return UserProfile.updateUserProfile(profileID, name, description, status)
 
 class suspendUserProfileController:
 
-    def suspendUserProfile(self, profile_id: int):
-        return UserProfile.suspendUserProfile(profile_id)
+    def suspendUserProfile(self, profileID: int):
+        return UserProfile.suspendUserProfile(profileID)
 
 class searchUserProfileController:
 

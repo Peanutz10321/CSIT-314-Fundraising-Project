@@ -90,7 +90,7 @@ class UserAccount(Base):
             db.close()
     
     @staticmethod
-    def createUserAccount(name: str, email: str, password: str, user_profile: str, phone_no: str = None, address: str = None, dob: str = None, status: str = "ACTIVE"):
+    def createUserAccount(name: str, email: str, password: str, userProfile: str, phoneNo: str = None, address: str = None, dob: str = None, status: str = "ACTIVE"):
         from app.entities.UserProfile import UserProfile
         db = UserAccount._open_db()
 
@@ -101,7 +101,7 @@ class UserAccount(Base):
             if existing:
                 return "duplicate_email"
             
-            profile = db.query(UserProfile).filter(UserProfile.name_of_role == user_profile).first()
+            profile = db.query(UserProfile).filter(UserProfile.name_of_role == userProfile).first()
 
             if not profile:
                 return "invalid_profile"
@@ -111,7 +111,7 @@ class UserAccount(Base):
                 email=email,
                 password_hash=hash_password(password),
                 user_profile_id=profile.id,
-                phone_no=phone_no,
+                phone_no=phoneNo,
                 address=address,
                 dob=dob,
                 status=status
@@ -146,7 +146,7 @@ class UserAccount(Base):
             db.close()
 
     @staticmethod
-    def updateUserAccount(accountID: int, name: str = None, password: str = None, user_profile: str = None, phone_no: str = None, address: str = None, dob: str = None, status: str = None):
+    def updateUserAccount(accountID: int, name: str = None, password: str = None, userProfile: str = None, phone_no: str = None, address: str = None, dob: str = None, status: str = None):
         from app.entities.UserProfile import UserProfile
         db = UserAccount._open_db()
 
@@ -156,8 +156,8 @@ class UserAccount(Base):
             if not user:
                 return "not_found"
             
-            if user_profile is not None:
-                profile = db.query(UserProfile).filter(UserProfile.name_of_role == user_profile).first()
+            if userProfile is not None:
+                profile = db.query(UserProfile).filter(UserProfile.name_of_role == userProfile).first()
 
                 if not profile:
                     return "invalid_profile"
