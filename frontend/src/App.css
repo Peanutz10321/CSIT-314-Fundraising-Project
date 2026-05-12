@@ -160,6 +160,7 @@ button:disabled {
    Dashboard Layout
 ========================= */
 .dashboard-page {
+  margin-left: 220px;
   min-height: 100vh;
   display: flex;
   background: var(--color-bg);
@@ -167,11 +168,16 @@ button:disabled {
 
 .sidebar {
   width: 220px;
+  height: 100vh;
   background: var(--color-primary-dark);
   color: white;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
 }
 
 .brand {

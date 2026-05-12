@@ -6,11 +6,13 @@ function getProgress(activity) {
 }
 
 function formatCurrency(currency, amount) {
-  if (currency === "SGD") return `$${Number(amount || 0)}`;
-  if (currency === "USD") return `$${Number(amount || 0)}`;
-  return `${currency || "$"}${Number(amount || 0)}`;
-}
+  const value = Number(amount || 0).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
+  return `${currency || "$"} ${value}`;
+}
 function DoneeActivityCard({ activity, mode = "browse", onView, onSave, isSaved }) {
   const current = Number(activity.current_amount || 0);
   const goal = Number(activity.goal_amount || 0);

@@ -1,6 +1,17 @@
 import Modal from "../common/Modal";
 import StatusBadge from "../common/StatusBadge";
 
+function formatCurrency(currency, amount) {
+  const code = currency || "SGD";
+  const value = Number(amount || 0).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  return `${code} ${value}`;
+}
+
+
 function FundraisingActivityViewModal({ activity, onClose }) {
   if (!activity) return null;
 
@@ -32,7 +43,7 @@ function FundraisingActivityViewModal({ activity, onClose }) {
         <div className="activity-stats-grid">
           <div>
             <span>RAISED</span>
-            <strong>${currentAmount}</strong>
+            <strong>{formatCurrency(activity.currency, currentAmount)}</strong>
             <p>
               {goalAmount > 0 ? Math.round((currentAmount / goalAmount) * 100) : 0}
               % of goal
@@ -57,7 +68,7 @@ function FundraisingActivityViewModal({ activity, onClose }) {
         </div>
 
         <p className="activity-goal-line">
-          Goal ${goalAmount} · Deadline {activity.deadline || "-"}
+          Goal {formatCurrency(activity.currency, goalAmount)} · Deadline {activity.deadline || "-"}
         </p>
 
         <div className="modal-divider" />
