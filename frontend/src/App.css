@@ -1412,3 +1412,53 @@ button:disabled {
   opacity: 1;
   cursor: default;
 }
+
+/* =========================
+   Recommendation Cards
+========================= */
+
+.recommendation-section {
+  margin-bottom: 34px;
+}
+
+.recommendation-header {
+  margin-bottom: 18px;
+}
+
+.recommendation-header h2 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 26px;
+  letter-spacing: 0.04em;
+}
+
+.recommendation-header p {
+  margin: 8px 0 0;
+  color: #666;
+  font-size: 14px;
+  font-family: var(--font-ui);
+}
+
+.recommendation-list {
+  gap: 18px;
+}
+
+.recommendation-card-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.recommendation-reason {
+  border: 1px solid var(--color-border);
+  border-top: 0;
+  background: #fbf7e8;
+  padding: 12px 18px;
+  font-size: 13px;
+  color: #4f4f4f;
+  font-family: var(--font-ui);
+}
+
+.recommendation-reason strong {
+  color: #0a3f23;
+}

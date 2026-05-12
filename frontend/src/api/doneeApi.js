@@ -56,3 +56,7 @@ export function saveActivity(activityId) {
     }),
   });
 }
+
+export function getRecommendedActivities(limit = 5) {
+  return apiRequest(`/api/donee/recommendations/?limit=${limit}`);
+}

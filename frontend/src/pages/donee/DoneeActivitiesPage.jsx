@@ -6,6 +6,7 @@ import {
   getBrowseActivities,
   getCompletedActivities,
   getFavoriteActivities,
+  getRecommendedActivities,
   saveActivity,
   viewActivity,
   viewCompletedActivity,
@@ -49,6 +50,8 @@ function DoneeActivitiesPage({ mode = "browse", onLogout, setCurrentPage }) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [error, setError] = useState("");
   const [selectedActivity, setSelectedActivity] = useState(null); 
+  const [recommendedActivities, setRecommendedActivities] = useState([]);
+  const [recommendationError, setRecommendationError] = useState("");
 
   const activePage =
     mode === "favorites"
@@ -96,12 +99,36 @@ function DoneeActivitiesPage({ mode = "browse", onLogout, setCurrentPage }) {
   }
 
   useEffect(() => {
+    setActivities([]);
+    setSelectedActivity(null);
+    setError("");
+    setKeyword("");
+    setSelectedCategory("");
+
     loadActivities("");
     loadFavorites();
+    loadRecommendations();
+
     getActiveCategories()
-      .then((res) => setCategories((res.data || []).filter((c) => c.status === "ACTIVE")))
+      .then((res) =>
+        setCategories((res.data || []).filter((c) => c.status === "ACTIVE"))
+      )
       .catch(() => {});
   }, [mode]);
+
+  async function loadRecommendations() {
+    if (mode !== "browse") return;
+
+    try {
+      setRecommendationError("");
+
+      const result = await getRecommendedActivities(5);
+      setRecommendedActivities(result.data || []);
+    } catch (err) {
+      setRecommendationError(err.message);
+      setRecommendedActivities([]);
+    }
+  }
 
   function handleSearchChange(e) {
     const value = e.target.value;
@@ -245,6 +272,56 @@ function DoneeActivitiesPage({ mode = "browse", onLogout, setCurrentPage }) {
       </div>
 
       {error && <p className="error-message">{error}</p>}
+      
+        {mode === "browse" && (
+        <section className="recommendation-section">
+          <div className="recommendation-header">
+            <div>
+              <h2>Recommended Activities</h2>
+              <p>
+                Suggested using the recommendation prototype based on your saved activities,
+                views, and shortlist interest.
+              </p>
+            </div>
+          </div>
+
+          {recommendationError && (
+            <p className="error-message">{recommendationError}</p>
+          )}
+
+          {!recommendationError && recommendedActivities.length === 0 && (
+            <div className="empty-card-state">
+              No recommendations available yet.
+            </div>
+          )}
+
+          {recommendedActivities.length > 0 && (
+            <div className="activity-card-list recommendation-list">
+              {recommendedActivities.map((activity) => (
+                <div className="recommendation-card-wrap" key={activity.id}>
+                  <DoneeActivityCard
+                    activity={activity}
+                    mode="browse"
+                    onView={handleView}
+                    onSave={handleSave}
+                    isSaved={favoriteIds.includes(String(activity.id))}
+                  />
+
+                  <div className="recommendation-reason">
+                    <strong>Recommendation Score:</strong>{" "}
+                    {activity.recommendation_score ?? "-"}
+                    <br />
+                    <span>
+                      {activity.recommendation_reason ||
+                        "Recommended based on your activity interests."}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       <div className="activity-card-list">
         {filteredActivities.length === 0 ? (

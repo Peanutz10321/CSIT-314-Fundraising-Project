@@ -18,6 +18,7 @@ from app.controllers.donee import (
     viewFavoriteListController,
     doneeViewCompletedController
 )
+from app.controllers.recommendation import recommendActivitiesController
 
 from app.middleware.access_control import require_roles
 
@@ -104,4 +105,17 @@ def get_favorites(
     return {
         "total": len(activities),
         "data": activities,
+    }
+
+@router.get("/recommendations/")
+def get_recommendations(
+    limit: int = 5,
+    current_user=Depends(require_donee),
+):
+    controller = recommendActivitiesController()
+    recommendations = controller.recommendActivities(current_user.id, limit)
+
+    return {
+        "total": len(recommendations),
+        "data": recommendations,
     }
