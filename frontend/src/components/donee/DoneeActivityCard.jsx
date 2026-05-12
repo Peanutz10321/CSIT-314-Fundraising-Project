@@ -11,6 +11,8 @@ function formatCurrency(currency, amount) {
     maximumFractionDigits: 2,
   });
 
+  if (currency === "SGD") return `$ ${value}`;
+
   return `${currency || "$"} ${value}`;
 }
 function DoneeActivityCard({ activity, mode = "browse", onView, onSave, isSaved }) {

@@ -61,8 +61,6 @@ _LOCATIONS = [
     "Singapore", "Jakarta, Indonesia", "Manila, Philippines", "Cape Town, South Africa",
 ]
 
-_CURRENCIES = ["USD", "EUR", "GBP", "AUD", "CAD", "MYR", "SGD"]
-
 _BENEFICIARIES = [
     "Children", "Families", "Seniors", "Veterans", "Students", "Refugees",
     "Communities", "Local Farmers", "Young Women", "Disabled Individuals",
@@ -179,7 +177,7 @@ def _seed_fake_activities(db: Session, fundraisers, categories, count: int = 100
             fundraiser_id=fundraiser.id,
             title=f"{word} for {beneficiary} #{i}",
             description=f"A fundraising campaign to support {beneficiary.lower()} in {location}.",
-            currency=rng.choice(_CURRENCIES),
+            currency="SGD",
             goal_amount=goal,
             current_amount=current,
             category_id=category.id,

@@ -7,6 +7,7 @@ function formatCurrency(currency, amount) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+  if (code === "SGD") return `$ ${value}`;
 
   return `${code} ${value}`;
 }
