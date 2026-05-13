@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from sqlalchemy import func
-from app.database import SessionLocal
+from app.database import get_session
 from app.entities.FundraisingActivity import FundraisingActivity
 from app.entities.UserAccount import UserAccount
 
@@ -9,9 +9,7 @@ class Report:
 
     @staticmethod
     def _build_report(start_date, end_date, period: str):
-        db = SessionLocal()
-
-        try:
+        with get_session() as db:
             period_filter = [
                 FundraisingActivity.date_created >= start_date,
                 FundraisingActivity.date_created < end_date,
@@ -105,9 +103,6 @@ class Report:
                 "raised_by_category": raised_by_category,
                 "most_viewed_activities": most_viewed_activities,
             }
-
-        finally:
-            db.close()
 
     @staticmethod
     def generateDailyReport(date: str):

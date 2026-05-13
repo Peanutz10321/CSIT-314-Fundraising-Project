@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, joinedload
-from app.database import Base, SessionLocal
+from app.database import Base, get_session
 from app.middleware.auth import verify_password, decode_access_token, create_access_token, hash_password
 
 
@@ -42,15 +42,8 @@ class UserAccount(Base):
         }
 
     @staticmethod
-    def _open_db():
-        return SessionLocal()
-
-    @staticmethod
     def validateCredentials(email: str, password: str):
-        db = UserAccount._open_db()
-
-        try:
-
+        with get_session() as db:
             user = db.query(UserAccount).filter(UserAccount.email == email).first()
 
             if not user:
@@ -69,8 +62,6 @@ class UserAccount(Base):
                 "token": token,
                 "role": role,
             }
-        finally:
-            db.close()
 
     @staticmethod
     def invalidateSession(token: str) -> bool:
@@ -80,27 +71,19 @@ class UserAccount(Base):
         if not user_id:
             return False
 
-        db = UserAccount._open_db()
-
-        try:
-
+        with get_session() as db:
             user = db.query(UserAccount).filter(UserAccount.id == int(user_id)).first()
             return user is not None
-        finally:
-            db.close()
-    
+
     @staticmethod
     def createUserAccount(name: str, email: str, password: str, userProfile: str, phoneNo: str = None, address: str = None, dob: str = None, status: str = "ACTIVE"):
         from app.entities.UserProfile import UserProfile
-        db = UserAccount._open_db()
-
-        try:
-
+        with get_session() as db:
             existing = db.query(UserAccount).filter(UserAccount.email == email).first()
 
             if existing:
                 return "duplicate_email"
-            
+
             profile = db.query(UserProfile).filter(UserProfile.name_of_role == userProfile).first()
 
             if not profile:
@@ -127,41 +110,31 @@ class UserAccount(Base):
                 .first()
             )
             return user
-        finally:
-            db.close()
-    
+
     @staticmethod
     def viewUserAccount(accountID: int):
-        db = UserAccount._open_db()
-
-        try:
-
+        with get_session() as db:
             return (
                 db.query(UserAccount)
                 .options(joinedload(UserAccount.user_profile))
                 .filter(UserAccount.id == accountID)
                 .first()
             )
-        finally:
-            db.close()
 
     @staticmethod
     def updateUserAccount(accountID: int, name: str = None, password: str = None, userProfile: str = None, phone_no: str = None, address: str = None, dob: str = None, status: str = None):
         from app.entities.UserProfile import UserProfile
-        db = UserAccount._open_db()
-
-        try:
-
+        with get_session() as db:
             user = db.query(UserAccount).filter(UserAccount.id == accountID).first()
             if not user:
                 return "not_found"
-            
+
             if userProfile is not None:
                 profile = db.query(UserProfile).filter(UserProfile.name_of_role == userProfile).first()
 
                 if not profile:
                     return "invalid_profile"
-                
+
                 user.user_profile_id = profile.id
 
             if name is not None:
@@ -191,38 +164,26 @@ class UserAccount(Base):
                 .first()
             )
             return user
-        finally:
-            db.close()
-    
+
     @staticmethod
     def suspendUserAccount(accountID: int):
-        db = UserAccount._open_db()
-        
-        try:
-
+        with get_session() as db:
             user = db.query(UserAccount).filter(UserAccount.id == accountID).first()
             if not user:
                 return False
-            
+
             user.suspend()
             db.commit()
             db.refresh(user)
             return True
-        finally:
-            db.close()
 
     @staticmethod
     def searchUserAccount(keyword: str):
-        db = UserAccount._open_db()
-
-        try:
-
+        with get_session() as db:
             query = db.query(UserAccount).options(joinedload(UserAccount.user_profile))
             if keyword:
                 query = query.filter(
                     (UserAccount.name.ilike(f"%{keyword}%")) |
                     (UserAccount.email.ilike(f"%{keyword}%"))
                 )
-            return query.all()
-        finally:
-            db.close()
+            return query.order_by(UserAccount.name).all()

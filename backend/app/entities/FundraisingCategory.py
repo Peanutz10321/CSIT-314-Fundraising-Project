@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime
 from sqlalchemy.orm import relationship
-from app.database import Base, SessionLocal
+from app.database import Base, get_session
 from datetime import datetime
 
 
@@ -19,17 +19,13 @@ class FundraisingCategory(Base):
         self.status = "SUSPENDED"
 
     @staticmethod
-    def _open_db():
-        return SessionLocal()
-
-    @staticmethod
     def _activity_count(db, category_id: int) -> int:
         from app.entities.FundraisingActivity import FundraisingActivity
 
         return db.query(FundraisingActivity).filter(
             FundraisingActivity.category_id == category_id
         ).count()
-    
+
     @staticmethod
     def _attach_activity_count(db, category):
         category.activity_count = FundraisingCategory._activity_count(db, category.id)
@@ -37,8 +33,7 @@ class FundraisingCategory(Base):
 
     @staticmethod
     def createFundraisingCategory(name: str, description: str = None):
-        db = FundraisingCategory._open_db()
-        try:
+        with get_session() as db:
             existing = db.query(FundraisingCategory).filter(
                 FundraisingCategory.name == name
             ).first()
@@ -56,28 +51,21 @@ class FundraisingCategory(Base):
             db.refresh(category)
 
             return FundraisingCategory._attach_activity_count(db, category)
-        finally:
-            db.close()
 
     @staticmethod
     def getCategory(categoryID: int):
-        db = FundraisingCategory._open_db()
-        try:
+        with get_session() as db:
             category = db.query(FundraisingCategory).filter(
                 FundraisingCategory.id == categoryID
             ).first()
             if not category:
                 return "not_found"
-            
+
             return FundraisingCategory._attach_activity_count(db, category)
-        
-        finally:
-            db.close()
 
     @staticmethod
     def updateCategory(categoryID: int, name: str = None, description: str = None):
-        db = FundraisingCategory._open_db()
-        try:
+        with get_session() as db:
             category = db.query(FundraisingCategory).filter(
                 FundraisingCategory.id == categoryID
             ).first()
@@ -100,13 +88,10 @@ class FundraisingCategory(Base):
             db.refresh(category)
 
             return FundraisingCategory._attach_activity_count(db, category)
-        finally:
-            db.close()
 
     @staticmethod
     def suspendCategory(categoryID: int) -> bool:
-        db = FundraisingCategory._open_db()
-        try:
+        with get_session() as db:
             category = db.query(FundraisingCategory).filter(
                 FundraisingCategory.id == categoryID
             ).first()
@@ -115,21 +100,16 @@ class FundraisingCategory(Base):
             category.suspend()
             db.commit()
             return True
-        finally:
-            db.close()
 
     @staticmethod
-    def searchCategory(keyword: str = None):
-        db = FundraisingCategory._open_db()
-        try:
-            query = db.query(FundraisingCategory)
-            if keyword:
-                query = query.filter(FundraisingCategory.name.ilike(f"%{keyword}%"))
-            categories = query.all()
-        
+    def searchCategory(query: str = None):
+        with get_session() as db:
+            dbquery = db.query(FundraisingCategory)
+            if query:
+                dbquery = dbquery.filter(FundraisingCategory.name.ilike(f"%{query}%"))
+            categories = dbquery.order_by(FundraisingCategory.name).all()
+
             return [
                 FundraisingCategory._attach_activity_count(db, category)
                 for category in categories
             ]
-        finally:
-            db.close()

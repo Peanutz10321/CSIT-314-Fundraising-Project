@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, joinedload
-from app.database import Base, SessionLocal
+from app.database import Base, get_session
 from datetime import datetime
 
 
@@ -16,15 +16,9 @@ class FavoriteList(Base):
     activity = relationship("FundraisingActivity", back_populates="shortlists")
 
     @staticmethod
-    def _open_db():
-        return SessionLocal()
-
-    @staticmethod
     def saveFundraisingActivity(doneeID: int, activityID: int):
         from app.entities.FundraisingActivity import FundraisingActivity
-        db = FavoriteList._open_db()
-        try:
-
+        with get_session() as db:
             activity = db.query(FundraisingActivity).filter(
                 FundraisingActivity.id == activityID
             ).first()
@@ -49,14 +43,11 @@ class FavoriteList(Base):
             db.commit()
             db.refresh(shortlist)
             return shortlist
-        finally:
-            db.close()
 
     @staticmethod
     def searchFavoriteList(doneeID: int, keyword: str = None):
         from app.entities.FundraisingActivity import FundraisingActivity
-        db = FavoriteList._open_db()
-        try:
+        with get_session() as db:
             query = (
                 db.query(FundraisingActivity)
                 .options(joinedload(FundraisingActivity.category_ref))
@@ -68,8 +59,6 @@ class FavoriteList(Base):
                     FundraisingActivity.title.ilike(f"%{keyword}%")
                 )
             return query.all()
-        finally:
-            db.close()
     
     @staticmethod
     def viewFavoriteList(doneeID: int):

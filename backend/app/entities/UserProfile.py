@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text
 from sqlalchemy.orm import relationship
-from app.database import Base, SessionLocal
+from app.database import Base, get_session
 
 
 class UserProfile(Base):
@@ -25,15 +25,8 @@ class UserProfile(Base):
         }
 
     @staticmethod
-    def _open_db():
-        return SessionLocal()
-
-    @staticmethod
     def createUserProfile(name: str, description: str, status: str = "ACTIVE"):
-        db = UserProfile._open_db()
-
-        try:
-
+        with get_session() as db:
             existing = db.query(UserProfile).filter(
                 UserProfile.name_of_role == name
             ).first()
@@ -52,29 +45,18 @@ class UserProfile(Base):
             db.refresh(profile)
 
             return profile
-        
-        finally:
-            db.close()
 
     @staticmethod
     def getUserProfileByID(profileID: int):
-        db = UserProfile._open_db()
-
-        try:
-
+        with get_session() as db:
             profile = db.query(UserProfile).filter(UserProfile.id == profileID).first()
             if not profile:
                 return "not_found"
             return profile
-        finally:
-            db.close()
 
     @staticmethod
     def updateUserProfile(profileID: int, name: str, description: str, status: str = "ACTIVE"):
-        db = UserProfile._open_db()
-
-        try:
-
+        with get_session() as db:
             profile = db.query(UserProfile).filter(UserProfile.id == profileID).first()
 
             if not profile:
@@ -95,16 +77,10 @@ class UserProfile(Base):
             db.commit()
             db.refresh(profile)
             return profile
-        
-        finally:
-            db.close()
 
     @staticmethod
     def suspendUserProfile(profileID: int) -> bool:
-        db = UserProfile._open_db()
-
-        try:
-
+        with get_session() as db:
             profile = db.query(UserProfile).filter(UserProfile.id == profileID).first()
 
             if not profile:
@@ -113,21 +89,13 @@ class UserProfile(Base):
             profile.suspend()
             db.commit()
             return True
-        
-        finally:
-            db.close()
 
     @staticmethod
     def searchUserProfile(keyword: str | None = None):
-        db = UserProfile._open_db()
-
-        try:
-            
+        with get_session() as db:
             query = db.query(UserProfile)
 
             if keyword:
                 query = query.filter(UserProfile.name_of_role.ilike(f"%{keyword}%"))
 
             return query.all()
-        finally:
-            db.close()

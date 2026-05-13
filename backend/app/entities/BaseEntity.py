@@ -1,12 +1,7 @@
-from contextlib import contextmanager
-from app.database import SessionLocal
+from app.database import get_session
 
 
 class BaseEntity:
-    @contextmanager
-    def session_scope(self):
-        db = SessionLocal()
-        try:
-            yield db
-        finally:
-            db.close()
+    @staticmethod
+    def open_session():
+        return get_session()

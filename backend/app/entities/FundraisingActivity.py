@@ -1,11 +1,11 @@
 from sqlalchemy import Column, Integer, String, Text, Float, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, joinedload
-from app.database import Base, SessionLocal
+from app.database import Base, get_session
 from datetime import datetime
 
 class FundraisingActivity(Base):
     __tablename__ = "fundraising_activities"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
@@ -22,7 +22,7 @@ class FundraisingActivity(Base):
     shortlist_count = Column(Integer, default=0)
     fundraiser_id = Column(Integer, ForeignKey("user_accounts.id"), nullable=False)
     date_created = Column(DateTime, default=datetime.now, nullable=False)
-    
+
     category_ref = relationship("FundraisingCategory", back_populates="activities")
     fundraiser = relationship("UserAccount", back_populates="activities")
     shortlists = relationship("FavoriteList", back_populates="activity")
@@ -51,10 +51,6 @@ class FundraisingActivity(Base):
             "shortlist count": self.shortlist_count,
             "status": self.status,
         }
-    
-    @staticmethod
-    def _open_db():
-        return SessionLocal()
 
     @staticmethod
     def createFundraisingActivity(
@@ -72,14 +68,10 @@ class FundraisingActivity(Base):
         from app.entities.UserAccount import UserAccount
         from app.entities.FundraisingCategory import FundraisingCategory
 
-        db = FundraisingActivity._open_db()
-        try:
-
+        with get_session() as db:
             fundraiser = db.query(UserAccount).filter(
                 UserAccount.id == fundraiserID
             ).first()
-
-            
 
             category_obj = db.query(FundraisingCategory).filter(
                 FundraisingCategory.name == category,
@@ -91,7 +83,7 @@ class FundraisingActivity(Base):
 
             if not fundraiser:
                 return "fundraiser_not_found"
- 
+
             if goalAmount <= 0:
                 return "invalid_amount"
 
@@ -110,7 +102,7 @@ class FundraisingActivity(Base):
                 view_count=0,
                 shortlist_count=0,
                 current_amount=0.0,
-                date_created= datetime.now()
+                date_created=datetime.now()
             )
 
             db.add(activity)
@@ -125,15 +117,10 @@ class FundraisingActivity(Base):
             )
 
             return activity
-        finally:
-            db.close()
-    
+
     @staticmethod
     def viewFundraisingActivity(activityID: int, fundraiserID: int):
-
-        db = FundraisingActivity._open_db()
-        try:
-
+        with get_session() as db:
             activity = (db.query(FundraisingActivity)
             .options(joinedload(FundraisingActivity.category_ref))
             .filter(
@@ -143,16 +130,12 @@ class FundraisingActivity(Base):
             )
             if not activity:
                 return "not_found"
-            
+
             return activity
-        finally:
-            db.close()
-    
+
     @staticmethod
     def doneeViewFundraisingActivity(activityID: int):
-        db = FundraisingActivity._open_db()
-        try:
-
+        with get_session() as db:
             activity = (db.query(FundraisingActivity)
             .options(joinedload(FundraisingActivity.category_ref))
             .filter(
@@ -162,15 +145,13 @@ class FundraisingActivity(Base):
             )
             if not activity:
                 return "not_found"
-        
+
             activity.view_count += 1
             db.commit()
             db.refresh(activity)
-            
+
             return activity
-        finally:
-            db.close()
-    
+
     @staticmethod
     def updateFundraisingActivity(
         activityID: int,
@@ -185,20 +166,18 @@ class FundraisingActivity(Base):
         fundraiserName: str = None,
         deadline: str = None,
     ):
-        db = FundraisingActivity._open_db()
-        try:
-
+        with get_session() as db:
             activity = db.query(FundraisingActivity).filter(
                 FundraisingActivity.id == activityID,
                 FundraisingActivity.fundraiser_id == fundraiserID
                 ).first()
-            
+
             if not activity:
                 return "not_found"
 
             if goalAmount is not None and goalAmount <= 0:
                 return "invalid_amount"
-            
+
             if title is not None:
                 activity.title = title
 
@@ -235,7 +214,7 @@ class FundraisingActivity(Base):
                     return "category_not_found"
 
                 activity.category_id = category_obj.id
- 
+
             db.commit()
             db.refresh(activity)
 
@@ -247,37 +226,26 @@ class FundraisingActivity(Base):
             )
 
             return activity
-        
-        finally:
-            db.close()
 
     @staticmethod
     def suspendFundraisingActivity(activityID: int, fundraiserID: int):
-        db = FundraisingActivity._open_db()
-
-        try:
-
+        with get_session() as db:
             activity = db.query(FundraisingActivity).filter(
                 FundraisingActivity.id == activityID,
                 FundraisingActivity.fundraiser_id == fundraiserID
                 ).first()
-            
+
             if not activity:
                 return False
-            
+
             activity.suspend()
             db.commit()
             db.refresh(activity)
             return True
-        finally:
-            db.close()
 
     @staticmethod
     def searchFundraisingActivity(fundraiserID: int = None, keyword: str = None):
-        db = FundraisingActivity._open_db()
-
-        try:
-
+        with get_session() as db:
             query = (db.query(FundraisingActivity)
             .options(joinedload(FundraisingActivity.category_ref))
             .filter(
@@ -289,16 +257,12 @@ class FundraisingActivity(Base):
 
             if keyword:
                 query = query.filter(FundraisingActivity.title.ilike(f"%{keyword}%"))
-            results = query.all()
 
-            return results
-        finally:
-            db.close()
+            return query.order_by(FundraisingActivity.title).all()
 
     @staticmethod
     def doneeSearchFundraisingActivity(keyword: str = None):
-        db = FundraisingActivity._open_db()
-        try:
+        with get_session() as db:
             query = (db.query(FundraisingActivity)
             .options(joinedload(FundraisingActivity.category_ref))
             .filter(
@@ -308,14 +272,11 @@ class FundraisingActivity(Base):
             if keyword:
                 query = query.filter(FundraisingActivity.title.ilike(f"%{keyword}%"))
 
-            return query.all()
-        finally:
-            db.close()
+            return query.order_by(FundraisingActivity.title).all()
 
     @staticmethod
     def searchCompletedActivity(fundraiserID: int = None, query: str = None):
-        db = FundraisingActivity._open_db()
-        try:
+        with get_session() as db:
             dbquery = (db.query(FundraisingActivity)
             .options(joinedload(FundraisingActivity.category_ref))
             .filter(FundraisingActivity.status == "COMPLETED")
@@ -326,18 +287,11 @@ class FundraisingActivity(Base):
             if query:
                 dbquery = dbquery.filter(FundraisingActivity.title.ilike(f"%{query}%"))
 
-            results = dbquery.all()
-
-            return results
-        finally:
-            db.close()
+            return dbquery.order_by(FundraisingActivity.title).all()
 
     @staticmethod
     def getCompletedActivities(activityID: int, fundraiserID: int = None):
-        db = FundraisingActivity._open_db()
-
-        try:
-            
+        with get_session() as db:
             query = (db.query(FundraisingActivity)
             .options(joinedload(FundraisingActivity.category_ref))
             .filter(
@@ -351,11 +305,9 @@ class FundraisingActivity(Base):
 
             if not activity:
                 return "not_found"
-            
+
             return activity
-        finally:
-            db.close()
-    
+
     @staticmethod
     def viewCompletedFundraisingActivities():
         return FundraisingActivity.searchCompletedActivity()

@@ -22,5 +22,5 @@ class suspendCategoryController:
 
 
 class searchFundraisingCategoryController:
-    def searchCategory(self, keyword: str = None):
-        return FundraisingCategory.searchCategory(keyword)
+    def searchCategory(self, query: str = None):
+        return FundraisingCategory.searchCategory(query)

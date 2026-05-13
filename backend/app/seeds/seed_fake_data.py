@@ -188,7 +188,7 @@ def _seed_fake_activities(db: Session, fundraisers, categories, count: int = 100
             status=status,
             view_count=rng.randint(0, 500),
             shortlist_count=0,
-            date_created=datetime.now() - timedelta(days=rng.randint(0, 365)),
+            date_created=datetime.now() - timedelta(days=rng.randint(0, 30)),
         )
         db.add(activity)
 
