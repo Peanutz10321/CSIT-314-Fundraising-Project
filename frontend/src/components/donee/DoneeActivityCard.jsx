@@ -35,10 +35,10 @@ function DoneeActivityCard({ activity, mode = "browse", onView, onSave, isSaved 
 
             <span
               className={`activity-status-badge ${
-                completed ? "completed" : "active"
+                completed ? "completed" : "ongoing"
               }`}
             >
-              {completed ? "COMPLETED" : activity.status || "ONGOING"}
+              {completed ? "COMPLETED" : "ONGOING"}
             </span>
           </div>
 

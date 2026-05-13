@@ -104,7 +104,7 @@ function CompletedFundraisingActivityPage({ onLogout, setCurrentPage }) {
             <span className="search-icon">🔍</span>
             <input
               className="fundraising-search-input"
-              placeholder="search completed activities..."
+              placeholder="search activities..."
               value={keyword}
               onChange={handleSearchChange}
             />

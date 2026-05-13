@@ -363,9 +363,10 @@ button:disabled {
 }
 
 .actions .danger-btn:disabled {
-  background: var(--color-suspended-bg);
-  border-color: var(--color-suspended-border);
-  opacity: 0.85;
+  background: #6c757d;
+  border-color: #6c757d;
+  color: #ffffff;
+  opacity: 1;
 }
 
 /* =========================
@@ -380,7 +381,7 @@ button:disabled {
   font-weight: 700;
   letter-spacing: 0.4px;
   text-transform: uppercase;
-  border-radius: 20px;
+  border-radius: 0;
 }
 
 .active-status {
@@ -637,6 +638,25 @@ button:disabled {
   margin-bottom: 5px;
 }
 
+.input-prefix-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-prefix {
+  position: absolute;
+  left: 10px;
+  font-size: 14px;
+  color: #555;
+  pointer-events: none;
+}
+
+.input-prefix-wrapper input {
+  padding-left: 26px !important;
+  width: 100%;
+}
+
 .fundraising-form .form-field input,
 .fundraising-form .form-field select,
 .fundraising-form .date-picker-input {
@@ -680,17 +700,17 @@ button:disabled {
 
 .category-badge {
   min-width: 110px;
-  padding: 5px 14px;
-  border: 1px solid var(--color-active-border);
-  background: var(--color-active-bg);
-  color: var(--color-active-text);
+  padding: 4px 12px;
+  border: 1px solid #c8be9a;
+  background: #fffbde;
+  color: #47703d;
   text-align: center;
   font-size: 11px;
   font-family: var(--font-ui);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
-  border-radius: 20px;
+  letter-spacing: 0.4px;
+  border-radius: 0;
 }
 
 .beneficiary-name {
@@ -762,6 +782,10 @@ button:disabled {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 18px;
+}
+
+.donee-meta-grid {
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .activity-meta-grid strong {
@@ -870,7 +894,7 @@ button:disabled {
   border: 1px solid var(--color-border);
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  border-radius: 20px;
+  border-radius: 0;
 }
 
 .activity-category-badge {
@@ -880,9 +904,15 @@ button:disabled {
 }
 
 .activity-status-badge.active {
-  background: #cfeac7;
-  color: #597852;
-  border-color: #8cb483;
+  background: var(--color-active-bg);
+  color: var(--color-active-text);
+  border-color: var(--color-active-border);
+}
+
+.activity-status-badge.ongoing {
+  background: #FCF5A3;
+  color: #456D31;
+  border-color: #A28D16;
 }
 
 .activity-status-badge.suspended {
@@ -892,9 +922,9 @@ button:disabled {
 }
 
 .activity-status-badge.completed {
-  background: #e7e3d1;
-  color: #5f5841;
-  border-color: #bcb49a;
+  background: #CCF6CB;
+  color: #456D31;
+  border-color: #59815E;
 }
 
 .activity-beneficiary {
@@ -954,9 +984,10 @@ button:disabled {
 }
 
 .activity-actions .danger-btn:disabled {
-  background: var(--color-suspended-bg);
-  border-color: var(--color-suspended-border);
-  opacity: 0.85;
+  background: #6b7280;
+  border-color: #4b5563;
+  color: #fff;
+  opacity: 1;
 }
 
 .raised-label {

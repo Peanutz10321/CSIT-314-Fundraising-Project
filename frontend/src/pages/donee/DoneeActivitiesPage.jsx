@@ -60,6 +60,7 @@ function DoneeActivitiesPage({ mode = "browse", onLogout, setCurrentPage }) {
   async function loadActivities(searchKeyword = keyword) {
     try {
       setError("");
+      setActivities([]);
 
       let result;
       if (mode === "favorites") {
@@ -257,7 +258,7 @@ function DoneeActivitiesPage({ mode = "browse", onLogout, setCurrentPage }) {
               mode={mode}
               onView={handleView}
               onSave={handleSave}
-              isSaved={favoriteIds.includes(String(activity.id)) || mode === "favorites"}
+              isSaved={favoriteIds.includes(String(activity.id))}
             />
           ))
         )}
@@ -267,6 +268,7 @@ function DoneeActivitiesPage({ mode = "browse", onLogout, setCurrentPage }) {
         <FundraisingActivityViewModal
           activity={selectedActivity}
           onClose={closeViewModal}
+          role="DONEE"
         />
       )}
     </DashboardLayout>

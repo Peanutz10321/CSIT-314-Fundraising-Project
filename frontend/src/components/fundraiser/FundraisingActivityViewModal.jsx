@@ -13,16 +13,22 @@ function formatCurrency(currency, amount) {
 }
 
 
-function FundraisingActivityViewModal({ activity, onClose }) {
+function FundraisingActivityViewModal({ activity, onClose, role }) {
   if (!activity) return null;
 
   const currentAmount = Number(activity.current_amount || 0);
   const goalAmount = Number(activity.goal_amount || 0);
   const viewCount = activity.view_count || 0;
   const shortlistCount = activity.shortlist_count || 0;
-  
+
   const progress =
     goalAmount > 0 ? Math.min((currentAmount / goalAmount) * 100, 100) : 0;
+
+  const rawStatus = String(activity.status || "").toUpperCase();
+  const displayStatus =
+    role === "DONEE" && (rawStatus === "ACTIVE" || rawStatus === "ONGOING")
+      ? "ONGOING"
+      : rawStatus;
 
   return (
     <Modal title={activity.title} onClose={onClose} width="680px">
@@ -32,7 +38,7 @@ function FundraisingActivityViewModal({ activity, onClose }) {
             {activity.category || "CATEGORY"}
           </span>
 
-          <StatusBadge status={activity.status} />
+          <StatusBadge status={displayStatus} variant={role === "DONEE" ? "donee" : "fundraiser"} />
 
           <strong className="beneficiary-name">
             {activity.beneficiaryName || "-"}
@@ -74,7 +80,7 @@ function FundraisingActivityViewModal({ activity, onClose }) {
 
         <div className="modal-divider" />
 
-        <div className="activity-meta-grid">
+        <div className={`activity-meta-grid${role === "DONEE" ? " donee-meta-grid" : ""}`}>
           <div>
             <span>DATE CREATED</span>
             <strong>{activity.date_created
@@ -82,10 +88,12 @@ function FundraisingActivityViewModal({ activity, onClose }) {
             : "-"}</strong>
           </div>
 
-          <div>
-            <span>ACTIVITY ID</span>
-            <strong>{activity.activity_id || activity.id}</strong>
-          </div>
+          {role !== "DONEE" && (
+            <div>
+              <span>ACTIVITY ID</span>
+              <strong>{activity.activity_id || activity.id}</strong>
+            </div>
+          )}
 
           <div>
             <span>ORGANIZER</span>

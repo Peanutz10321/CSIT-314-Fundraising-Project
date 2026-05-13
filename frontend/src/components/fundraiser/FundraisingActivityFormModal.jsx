@@ -121,13 +121,16 @@ useEffect(() => {
 
           <div className="form-field">
             <label>GOAL AMOUNT</label>
-            <input
-              type="number"
-              min="0"
-              value={goalAmount}
-              onChange={(e) => setGoalAmount(e.target.value)}
-              required
-            />
+            <div className="input-prefix-wrapper">
+              <span className="input-prefix">$</span>
+              <input
+                type="number"
+                min="0"
+                value={goalAmount}
+                onChange={(e) => setGoalAmount(e.target.value)}
+                required
+              />
+            </div>
           </div>
 
           <div className="form-field">
