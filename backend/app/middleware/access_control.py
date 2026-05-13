@@ -3,6 +3,7 @@ from sqlalchemy.orm import joinedload
 
 from app.entities.UserAccount import UserAccount
 from app.middleware.auth import decode_access_token
+from app.database import get_session
 
 
 def get_current_user(authorization: str | None = Header(default=None)):
@@ -25,10 +26,7 @@ def get_current_user(authorization: str | None = Header(default=None)):
             detail="Invalid token",
         )
 
-    db = UserAccount._open_db()
-
-    try:
-
+    with get_session() as db:
         user = (
             db.query(UserAccount)
             .options(joinedload(UserAccount.user_profile))
@@ -49,9 +47,6 @@ def get_current_user(authorization: str | None = Header(default=None)):
             )
 
         return user
-
-    finally:
-        db.close()
 
 
 def require_roles(*allowed_roles: str):

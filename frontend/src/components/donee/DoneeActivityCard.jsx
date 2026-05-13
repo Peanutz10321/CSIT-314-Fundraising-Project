@@ -43,7 +43,7 @@ function DoneeActivityCard({ activity, mode = "browse", onView, onSave, isSaved 
           </div>
 
           <div className="activity-beneficiary">
-            {activity.fundraiserName || activity.beneficiaryName || "-"}
+            {activity.beneficiaryName || "-"}
           </div>
         </div>
 
