@@ -118,16 +118,18 @@ function BarChart({ data }) {
     );
   }
 
-  const maxViews = Math.max(...data.map((d) => d.views), 1);
+  const MAX_VALUE = 100;
+  const axisLabels = [10, 30, 50, 70, 90, "100+"];
+  const gridPositions = [10, 30, 50, 70, 90, 100];
 
   return (
     <>
-      <p className="report-chart-title">MOST VIEWED ACTIVITIES</p>
+      <p className="report-chart-title">MOST VIEWS ACTIVITIES</p>
 
       <div className="bar-chart">
         {data.map((d, i) => {
           const views = Number(d.views || 0);
-          const pct = (views / maxViews) * 100;
+          const pct = Math.min((views / MAX_VALUE) * 100, 100);
           const label = d.title.length > 16 ? d.title.slice(0, 14) + "..." : d.title;
 
           return (
@@ -135,23 +137,19 @@ function BarChart({ data }) {
               <span className="bar-label">{label}</span>
 
               <div className="bar-track">
-                <div
-                  className="bar-fill"
-                  style={{ width: `${pct}%` }}
-                />
+                {gridPositions.map((pos, gi) => (
+                  <div key={gi} className="bar-gridline" style={{ left: `${pos}%` }} />
+                ))}
+                <div className="bar-fill" style={{ width: `${pct}%` }} />
               </div>
-
-              <span className="bar-value">{views}</span>
             </div>
           );
         })}
 
         <div className="bar-axis">
-          {[0, maxViews * 0.25, maxViews * 0.5, maxViews * 0.75, maxViews].map(
-            (v, i) => (
-              <span key={i}>{Math.round(v)}</span>
-            )
-          )}
+          {axisLabels.map((label, i) => (
+            <span key={i}>{label}</span>
+          ))}
         </div>
       </div>
     </>

@@ -1297,7 +1297,7 @@ button:disabled {
 
 .bar-row {
   display: grid;
-  grid-template-columns: 120px 1fr 36px;
+  grid-template-columns: 120px 1fr;
   align-items: center;
   column-gap: 12px;
   margin-bottom: 14px;
@@ -1315,36 +1315,36 @@ button:disabled {
 
 .bar-track {
   width: 100%;
-  height: 22px;
+  height: 24px;
   background: #f0ece0;
+  position: relative;
+}
+
+.bar-gridline {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #c8c4b4;
+  z-index: 1;
 }
 
 .bar-fill {
   height: 100%;
   background: #c8a84b;
   transition: width 0.3s;
-}
-
-.bar-value {
-  font-size: 12px;
-  font-family: var(--font-ui);
-  color: #555;
-  text-align: left;
+  position: relative;
+  z-index: 2;
 }
 
 .bar-axis {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  display: flex;
+  justify-content: space-between;
   margin-left: 132px;
-  margin-right: 48px;
   margin-top: 4px;
   font-size: 10px;
   font-family: var(--font-ui);
   color: #999;
-}
-
-.bar-axis span {
-  text-align: center;
 }
 
 /* =========================
