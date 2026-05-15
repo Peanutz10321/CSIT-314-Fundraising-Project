@@ -67,10 +67,10 @@ def update_user_account(
         user_id,
         payload.name,
         payload.password,
-        payload.user_profile,
         payload.phone_no,
         payload.address,
         payload.dob,
+        payload.user_profile,
         payload.status,
     )
 

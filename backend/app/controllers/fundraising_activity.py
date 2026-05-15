@@ -30,8 +30,8 @@ class updateFundraisingActivityController:
 
     def updateFundraisingActivity(
         self,
-        activityID: int,
         fundraiserID: int,
+        activityID: int,
         title: str = None,
         currency: str = None,
         goalAmount: float = None,
@@ -43,7 +43,7 @@ class updateFundraisingActivityController:
         deadline: str = None,
     ):
         return FundraisingActivity.updateFundraisingActivity(
-            activityID, fundraiserID, title, currency, goalAmount,
+            fundraiserID, activityID, title, currency, goalAmount,
             category, description, location,
             beneficiaryName, fundraiserName, deadline,
         )

@@ -23,8 +23,8 @@ class viewUserAccountController:
 
 class updateUserAccountController:
 
-    def updateUserAccount(self, accountID: int, name: str = None, password: str = None, userProfile: str = None, phone_no: str = None, address: str = None, dob: str = None, status: str = None):
-        return UserAccount.updateUserAccount(accountID, name, password, userProfile, phone_no, address, dob, status)
+    def updateUserAccount(self, accountID: int, name: str = None, password: str = None, phone_no: str = None, address: str = None, dob: str = None, userProfile: str = None,  status: str = None):
+        return UserAccount.updateUserAccount(accountID, name, password, phone_no, address, dob, userProfile, status)
 
 class suspendUserAccountController:
 

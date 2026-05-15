@@ -122,7 +122,7 @@ class UserAccount(Base):
             )
 
     @staticmethod
-    def updateUserAccount(accountID: int, name: str = None, password: str = None, userProfile: str = None, phone_no: str = None, address: str = None, dob: str = None, status: str = None):
+    def updateUserAccount(accountID: int, name: str = None, password: str = None, phone_no: str = None, address: str = None, dob: str = None, userProfile: str = None,  status: str = None):
         from app.entities.UserProfile import UserProfile
         with get_session() as db:
             user = db.query(UserAccount).filter(UserAccount.id == accountID).first()

@@ -154,8 +154,8 @@ class FundraisingActivity(Base):
 
     @staticmethod
     def updateFundraisingActivity(
-        activityID: int,
         fundraiserID: int,
+        activityID: int,
         title: str = None,
         currency: str = None,
         goalAmount: float = None,
