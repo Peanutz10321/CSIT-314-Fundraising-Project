@@ -397,9 +397,9 @@ button:disabled {
 }
 
 .completed-status {
-  background: #e7e3d1;
-  border: 1px solid #bcb49a;
-  color: #5f5841;
+  background: #CCF6CB;
+  border: 1px solid #59815E;
+  color: #456D31;
 }
 
 /* =========================

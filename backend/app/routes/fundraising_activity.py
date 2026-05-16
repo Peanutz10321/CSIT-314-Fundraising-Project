@@ -129,8 +129,8 @@ def update_fundraising_activity(
 ):
     controller = updateFundraisingActivityController()
     result = controller.updateFundraisingActivity(
-        activity_id,
         current_user.id,
+        activity_id,
         payload.title,
         payload.currency,
         payload.goal_amount,

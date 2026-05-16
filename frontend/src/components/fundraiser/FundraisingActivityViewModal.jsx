@@ -97,7 +97,7 @@ function FundraisingActivityViewModal({ activity, onClose, role }) {
 
           <div>
             <span>ORGANIZER</span>
-            <strong>{activity.beneficiaryName || "-"}</strong>
+            <strong>{activity.fundraiserName || "-"}</strong>
           </div>
 
           <div>
