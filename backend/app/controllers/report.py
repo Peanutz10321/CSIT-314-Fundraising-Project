@@ -6,8 +6,8 @@ class dailyReportController:
         return Report.generateDailyReport(date)
 
 class weeklyReportController:
-    def generateWeeklyReport(self, week_start: str):
-        return Report.generateWeeklyReport(week_start)
+    def generateWeeklyReport(self, startDate: str, endDate: str):
+        return Report.generateWeeklyReport(startDate, endDate)
 
 class monthlyReportController:
     def generateMonthlyReport(self, month: str):

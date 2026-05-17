@@ -184,7 +184,7 @@ class TestGenerateWeeklyReport:
         create_test_activity(client, fundraiser.id)
 
         headers = create_platform_manager_headers(db)
-        response = client.get("/api/report/weekly?week_start=2026-05-10", headers=headers)
+        response = client.get("/api/report/weekly?startDate=2026-05-10&endDate=2026-05-16", headers=headers)
  
         assert response.status_code == 200
         body = response.json()

@@ -1,0 +1,155 @@
+import { useEffect, useMemo, useState } from "react";
+import { searchCompletedActivity } from "../../../api/fundraisingActivityApi";
+import { getActiveCategories } from "../../../api/categoryApi";
+
+function getCurrentUserId() {
+  return localStorage.getItem("userId");
+}
+
+function activityBelongsToCurrentFundraiser(activity) {
+  const currentUserId = getCurrentUserId();
+  if (!currentUserId) return true;
+  const possibleOwnerIds = [
+    activity.fundraiser_id, activity.fundraiserId,
+    activity.user_account_id, activity.userAccountId,
+    activity.created_by, activity.owner_id,
+  ].filter((v) => v !== undefined && v !== null);
+  if (possibleOwnerIds.length === 0) return true;
+  return possibleOwnerIds.some((id) => String(id) === String(currentUserId));
+}
+
+function getProgress(activity) {
+  const current = Number(activity.current_amount || 0);
+  const goal = Number(activity.goal_amount || 0);
+  if (goal <= 0) return 0;
+  return Math.min((current / goal) * 100, 100);
+}
+
+function searchCompletedActivitiesPage({ onView, refreshKey }) {
+  const [activities, setActivities] = useState([]);
+  const [keyword, setKeyword] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [availableCategories, setAvailableCategories] = useState([]);
+  const [error, setError] = useState("");
+
+  async function displayResults(searchKeyword = "") {
+    try {
+      setError("");
+      const result = await searchCompletedActivity(searchKeyword);
+      setActivities((result.data || result || []).filter(activityBelongsToCurrentFundraiser));
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  function displayNoData() {
+    return <div className="empty-card-state">No matching records found.</div>;
+  }
+
+  useEffect(() => {
+    displayResults();
+    getActiveCategories()
+      .then((res) => setAvailableCategories((res.data || []).filter((c) => c.status === "ACTIVE")))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (refreshKey > 0) displayResults(keyword);
+  }, [refreshKey]);
+
+  function onClick(e) {
+    const value = e.target.value;
+    setKeyword(value);
+    displayResults(value);
+  }
+
+  const filteredActivities = useMemo(() => {
+    if (!selectedCategory) return activities;
+    return activities.filter(
+      (a) => (a.category || "").toLowerCase() === selectedCategory.toLowerCase()
+    );
+  }, [activities, selectedCategory]);
+
+  return (
+    <>
+      <div className="page-header">
+        <div><h1>Completed Activities</h1></div>
+      </div>
+
+      <div className="divider" />
+
+      <div className="fundraising-toolbar">
+        <div className="fundraising-search-wrapper">
+          <span className="search-icon">🔍</span>
+          <input
+            className="fundraising-search-input"
+            placeholder="search activities..."
+            value={keyword}
+            onChange={onClick}
+          />
+        </div>
+        <select
+          className="fundraising-category-filter"
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+          {availableCategories.map((c) => (
+            <option key={c.id} value={c.name}>{c.name}</option>
+          ))}
+        </select>
+      </div>
+
+      {error && <p className="error-message">{error}</p>}
+
+      <div className="activity-card-list">
+        {filteredActivities.length === 0 ? displayNoData() : (
+          filteredActivities.map((activity) => {
+            const current = Number(activity.current_amount || 0);
+            const goal = Number(activity.goal_amount || 0);
+            const progress = getProgress(activity);
+            return (
+              <div className="activity-card" key={activity.id}>
+                <div className="activity-card-main">
+                  <div className="activity-card-top">
+                    <div className="activity-badges">
+                      <span className="activity-category-badge">{activity.category || "CATEGORY"}</span>
+                      <span className="activity-status-badge completed">COMPLETED</span>
+                    </div>
+                    <div className="activity-beneficiary">{activity.beneficiaryName || "-"}</div>
+                  </div>
+                  <h3 className="activity-title">{activity.title}</h3>
+                  <p className="activity-description-text">{activity.description || "-"}</p>
+                  <div className="activity-meta-row">
+                    <span>Ended {activity.deadline || "-"}</span>
+                    <span>{activity.view_count || 0} views</span>
+                    <span>{activity.shortlist_count || 0} shortlisted</span>
+                  </div>
+                  <div className="activity-actions">
+                    <button onClick={() => onView(activity)}>View</button>
+                  </div>
+                </div>
+                <div className="activity-card-side">
+                  <p className="raised-label">RAISED</p>
+                  <h3 className="raised-amount">{activity.currency || "$"}{current}</h3>
+                  <p className="raised-goal-text">of {activity.currency || "$"}{goal} goal</p>
+                  <div className="activity-progress-wrap">
+                    <div className="activity-progress-track">
+                      <div className="activity-progress-fill" style={{ width: `${progress}%` }} />
+                    </div>
+                    <div className="activity-progress-labels">
+                      <span>{Math.round(progress)}%</span>
+                      <span>COMPLETED</span>
+                    </div>
+                  </div>
+                  <p className="activity-location">{activity.location || "-"}</p>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </>
+  );
+}
+
+export default searchCompletedActivitiesPage;

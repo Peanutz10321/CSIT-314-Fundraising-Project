@@ -4,14 +4,14 @@ export function getActiveCategories() {
   return apiRequest("/api/category/");
 }
 
-export function getCategories(keyword = "") {
+export function searchCategory(keyword = "") {
   const params = new URLSearchParams();
   if (keyword) params.append("keyword", keyword);
   const qs = params.toString();
   return apiRequest(`/api/category/${qs ? `?${qs}` : ""}`);
 }
 
-export function createCategory(payload) {
+export function createFundraisingCategory(payload) {
   return apiRequest("/api/category/", {
     method: "POST",
     body: JSON.stringify(payload),

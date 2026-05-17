@@ -23,12 +23,12 @@ router = APIRouter(prefix="/api/fundraising_activity", tags=["Fundraising Activi
 require_fundraiser = require_roles("FUNDRAISER")
 
 @router.get("/", response_model=FundraisingActivitySearchResponse)
-def search_fundraising_activities(
+def searchFundraisingActivities(
     keyword: str = Query(default=None),
     current_user = Depends(require_fundraiser)
 ):
     controller = searchFundraisingActivityController()
-    activities = controller.searchFundraisingActivity(current_user.id, keyword)
+    activities = controller.searchFundraisingActivities(current_user.id, keyword)
 
     return {
         "total": len(activities),
@@ -37,7 +37,7 @@ def search_fundraising_activities(
 
 
 @router.get("/completed", response_model=FundraisingActivitySearchResponse)
-def search_completed_activities(
+def searchCompletedActivity(
     keyword: str = Query(default=None),
     current_user = Depends(require_fundraiser)
 ):
@@ -51,7 +51,7 @@ def search_completed_activities(
 
 
 @router.get("/completed/{activity_id}", response_model=FundraisingActivityResponse)
-def get_completed_activity(
+def getCompletedActivities(
     activity_id: int,
     current_user = Depends(require_fundraiser)
 ):
@@ -65,7 +65,7 @@ def get_completed_activity(
 
 
 @router.post("/", response_model=FundraisingActivityResponse, status_code=201)
-def create_fundraising_activity(
+def createFundraisingActivity(
     payload: FundraisingActivityCreate,
     current_user = Depends(require_fundraiser)
 ):
@@ -95,12 +95,12 @@ def create_fundraising_activity(
     return result
 
 @router.get("/{activity_id}", response_model=FundraisingActivityResponse)
-def get_fundraising_activity(
+def viewFundraisingActivity(
     activity_id: int,
     current_user = Depends(require_fundraiser)
 ):
     controller = viewFundraisingActivityController()
-    result = controller.viewFundraisingActivity(activity_id, current_user.id)
+    result = controller.viewFundraisingActivity(current_user.id, activity_id)
 
     if result == "not_found":
         raise HTTPException(status_code=404, detail="Activity not found")
@@ -108,7 +108,7 @@ def get_fundraising_activity(
     return result
 
 @router.patch("/{activity_id}/suspend")
-def suspend_fundraising_activity(
+def suspendFundraisingActivity(
     activity_id: int,
     current_user = Depends(require_fundraiser)
 ):
@@ -122,7 +122,7 @@ def suspend_fundraising_activity(
 
 
 @router.patch("/{activity_id}", response_model=FundraisingActivityResponse)
-def update_fundraising_activity(
+def updateFundraisingActivity(
     activity_id: int, 
     payload: FundraisingActivityUpdate,
     current_user = Depends(require_fundraiser)

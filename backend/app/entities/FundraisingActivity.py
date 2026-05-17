@@ -119,7 +119,7 @@ class FundraisingActivity(Base):
             return activity
 
     @staticmethod
-    def viewFundraisingActivity(activityID: int, fundraiserID: int):
+    def viewFundraisingActivity(fundraiserID: int, activityID: int):
         with get_session() as db:
             activity = (db.query(FundraisingActivity)
             .options(joinedload(FundraisingActivity.category_ref))
@@ -244,7 +244,7 @@ class FundraisingActivity(Base):
             return True
 
     @staticmethod
-    def searchFundraisingActivity(fundraiserID: int = None, keyword: str = None):
+    def searchFundraisingActivities(fundraiserID: int = None, keyword: str = None):
         with get_session() as db:
             query = (db.query(FundraisingActivity)
             .options(joinedload(FundraisingActivity.category_ref))

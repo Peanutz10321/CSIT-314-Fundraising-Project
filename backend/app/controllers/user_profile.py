@@ -12,7 +12,7 @@ class viewUserProfileController:
 
 class updateUserProfileController:
 
-    def updateUserProfile(self, profileID: int, name: str, description: str, status: str = "ACTIVE"):
+    def updateUserProfile(self, profileID: int, name: str, description: str, status: str | None = None):
         return UserProfile.updateUserProfile(profileID, name, description, status)
 
 class suspendUserProfileController:

@@ -115,13 +115,13 @@ class Report:
         return Report._build_report(start_date, end_date, "daily")
 
     @staticmethod
-    def generateWeeklyReport(week_start: str):
+    def generateWeeklyReport(startDate: str, endDate: str):
         try:
-            start_date = datetime.strptime(week_start, "%Y-%m-%d")
+            start_date = datetime.strptime(startDate, "%Y-%m-%d")
+            end_date = datetime.strptime(endDate, "%Y-%m-%d")
         except ValueError:
             return "invalid_date"
 
-        end_date = start_date + timedelta(days=7)
         return Report._build_report(start_date, end_date, "weekly")
 
     @staticmethod

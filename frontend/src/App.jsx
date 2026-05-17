@@ -1,12 +1,15 @@
 import { useState } from "react";
-import LoginPage from "./pages/auth/LoginPage";
+import LoginPage from "./pages/auth/loginPage";
+import logoutPage from "./pages/auth/logoutPage";
 import UserProfilePage from "./pages/userAdmin/UserProfilePage";
 import UserAccountPage from "./pages/userAdmin/UserAccountPage";
 import FundraisingActivityPage from "./pages/fundraiser/FundraisingActivityPage";
 import CompletedFundraisingActivityPage from "./pages/fundraiser/CompletedFundraisingActivityPage";
 import CategoriesPage from "./pages/platformManagement/CategoriesPage";
 import ReportsPage from "./pages/platformManagement/ReportsPage";
-import DoneeActivitiesPage from "./pages/donee/DoneeActivitiesPage";
+import DoneeBrowseActivitiesPage from "./pages/donee/DoneeBrowseActivitiesPage";
+import DoneeFavoritesPage from "./pages/donee/DoneeFavoritesPage";
+import DoneeCompletedActivitiesPage from "./pages/donee/DoneeCompletedActivitiesPage";
 import "./App.css";
 
 function App() {
@@ -36,11 +39,10 @@ function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    localStorage.removeItem("userId");
-    setRole(null);
-    setIsLoggedIn(false);
+    logoutPage.onClick(() => {
+      setRole(null);
+      setIsLoggedIn(false);
+    });
   };
 
   
@@ -89,8 +91,7 @@ function App() {
   if (role === "DONEE") {
     if (currentPage === "doneeFavorites") {
       return (
-        <DoneeActivitiesPage
-          mode="favorites"
+        <DoneeFavoritesPage
           onLogout={handleLogout}
           setCurrentPage={setCurrentPage}
         />
@@ -99,8 +100,7 @@ function App() {
 
     if (currentPage === "doneeCompleted") {
       return (
-        <DoneeActivitiesPage
-          mode="completed"
+        <DoneeCompletedActivitiesPage
           onLogout={handleLogout}
           setCurrentPage={setCurrentPage}
         />
@@ -108,8 +108,7 @@ function App() {
     }
 
     return (
-      <DoneeActivitiesPage
-        mode="browse"
+      <DoneeBrowseActivitiesPage
         onLogout={handleLogout}
         setCurrentPage={setCurrentPage}
       />

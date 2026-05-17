@@ -14,7 +14,7 @@ from app.controllers.donee import (
     saveFundraisingActivityController,
     searchFavoriteListController,
     doneeSearchCompletedActivitiesController,
-    viewCompletedFundraisingActivitiesController,
+    viewCompletedFundraisingActivityController,
     viewFavoriteListController,
     doneeViewCompletedController
 )
@@ -28,13 +28,13 @@ router = APIRouter(prefix="/api/donee", tags=["Donee"])
 
 
 @router.get("/fundraising_activity/completed", response_model=FundraisingActivitySearchResponse)
-def donee_search_completed_activities(keyword: str | None = Query(default=None), current_user = Depends(require_donee)):
+def searchCompletedActivity(keyword: str | None = Query(default=None), current_user = Depends(require_donee)):
     if keyword:
         controller = doneeSearchCompletedActivitiesController()
         activities = controller.searchCompletedActivity(keyword)
 
     else:
-        controller = viewCompletedFundraisingActivitiesController()
+        controller = viewCompletedFundraisingActivityController()
         activities = controller.viewCompletedFundraisingActivities()
     
     return {
@@ -44,7 +44,7 @@ def donee_search_completed_activities(keyword: str | None = Query(default=None),
 
 
 @router.get("/fundraising_activity/completed/{activity_id}", response_model=FundraisingActivityResponse)
-def donee_view_completed_activity(activity_id: int, current_user = Depends(require_donee)):
+def doneeGetCompletedActivities(activity_id: int, current_user = Depends(require_donee)):
     controller = doneeViewCompletedController()
     result = controller.doneeGetCompletedActivities(activity_id)
 
@@ -55,9 +55,9 @@ def donee_view_completed_activity(activity_id: int, current_user = Depends(requi
 
 
 @router.get("/fundraising_activity/", response_model=FundraisingActivitySearchResponse)
-def donee_search_activities(keyword: str | None = Query(default=None), current_user = Depends(require_donee)):
+def doneeSearchFundraisingActivity(keyword: str | None = Query(default=None), current_user = Depends(require_donee)):
     controller = doneeSearchFundraisingActivityController()
-    activities = controller.searchFundraisingActivity(keyword)
+    activities = controller.doneeSearchFundraisingActivity(keyword)
     return {
         "total": len(activities),
         "data": activities,
@@ -65,7 +65,7 @@ def donee_search_activities(keyword: str | None = Query(default=None), current_u
 
 
 @router.get("/fundraising_activity/{activity_id}", response_model=FundraisingActivityResponse)
-def donee_view_activity(activity_id: int, current_user = Depends(require_donee)):
+def doneeViewFundraisingActivity(activity_id: int, current_user = Depends(require_donee)):
     controller = doneeViewFundraisingActivityController()
     result = controller.doneeViewFundraisingActivity(activity_id)
 
@@ -76,7 +76,7 @@ def donee_view_activity(activity_id: int, current_user = Depends(require_donee))
 
 
 @router.post("/shortlist/", response_model=ShortlistResponse, status_code=201)
-def save_activity(payload: ShortlistCreate, current_user = Depends(require_donee)):
+def saveFundraisingActivity(payload: ShortlistCreate, current_user = Depends(require_donee)):
     controller = saveFundraisingActivityController()
     result = controller.saveFundraisingActivity(current_user.id, payload.activity_id)
 
@@ -89,7 +89,7 @@ def save_activity(payload: ShortlistCreate, current_user = Depends(require_donee
 
 
 @router.get("/shortlist/", response_model=FavoritesSearchResponse)
-def get_favorites(
+def searchFavoriteList(
     keyword: str | None = Query(default=None),
     current_user = Depends(require_donee),
 ):  

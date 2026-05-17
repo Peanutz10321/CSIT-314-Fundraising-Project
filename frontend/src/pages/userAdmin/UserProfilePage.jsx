@@ -1,118 +1,23 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
-import StatusBadge from "../../components/common/StatusBadge";
-import UserProfileFormModal from "../../components/userAdmin/UserProfileFormModal";
-import UserProfileViewModal from "../../components/userAdmin/UserProfileViewModal";
-import ConfirmModal from "../../components/userAdmin/ConfirmModal";
-import {
-  getUserProfiles,
-  createUserProfile,
-  updateUserProfile,
-  suspendUserProfile,
-} from "../../api/userProfileApi";
+import SearchUserProfilePage from "./userProfile/searchUserProfilePage";
+import CreateUserProfilePage from "./userProfile/createUserProfilePage";
+import ViewUserProfilePage from "./userProfile/viewUserProfilePage";
+import UpdateUserProfilePage from "./userProfile/updateUserProfilePage";
+import SuspendUserProfilePage from "./userProfile/suspendUserProfilePage";
 
-function UserProfilePage({ onLogout , setCurrentPage}) {
-  const [profiles, setProfiles] = useState([]);
-  const [keyword, setKeyword] = useState("");
-  const [error, setError] = useState("");
-
+function UserProfilePage({ onLogout, setCurrentPage }) {
+  const [modalType, setModalType] = useState(null);
   const [selectedProfile, setSelectedProfile] = useState(null);
-  const [modalType, setModalType] = useState(null); 
-  const [modalError, setModalError] = useState("");
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  async function loadProfiles(searchKeyword = "") {
-    try {
-      setError("");
-      const result = await getUserProfiles(searchKeyword);
-      setProfiles(result.data || result || []);
-    } catch (err) {
-      setError(err.message);
-    }
-  }
-
-  useEffect(() => {
-    loadProfiles();
-  }, []);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   function closeModal() {
     setModalType(null);
     setSelectedProfile(null);
-    setModalError("");
   }
 
-  function openCreateModal() {
-    setSelectedProfile(null);
-    setModalError("");
-    setModalType("create");
-  }
-
-  function openViewModal(profile) {
-    setSelectedProfile(profile);
-    setModalError("");
-    setModalType("view");
-  }
-
-  function openEditModal(profile) {
-    setSelectedProfile(profile);
-    setModalError("");
-    setModalType("edit");
-  }
-
-  function openSuspendModal(profile) {
-    setSelectedProfile(profile);
-    setModalError("");
-    setModalType("suspend");
-  }
-
-  async function handleCreate(payload) {
-    try {
-      setIsSubmitting(true);
-      setModalError("");
-
-      await createUserProfile(payload);
-      closeModal();
-      loadProfiles(keyword);
-    } catch (err) {
-      setModalError(err.message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  async function handleEdit(payload) {
-    try {
-      setIsSubmitting(true);
-      setModalError("");
-      await updateUserProfile(selectedProfile.id, payload);
-      closeModal();
-      loadProfiles(keyword);
-    } catch (err) {
-      setModalError(err.message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  async function handleSuspend() {
-    try {
-      setIsSubmitting(true);
-      setModalError("");
-      await suspendUserProfile(selectedProfile.id);
-      closeModal();
-      loadProfiles(keyword);
-    } catch (err) {
-      setModalError(err.message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  function handleSearchChange(e) {
-    const value = e.target.value;
-    setKeyword(value);
-    loadProfiles(value);
+  function handleSuccess() {
+    setRefreshKey((k) => k + 1);
   }
 
   return (
@@ -122,117 +27,28 @@ function UserProfilePage({ onLogout , setCurrentPage}) {
       setCurrentPage={setCurrentPage}
       role="USER_ADMIN"
     >
-      <div className="page-header">
-        <div>
-          <h1>User Profiles</h1>
-        </div>
-
-        <button
-          className="primary-btn small-btn"
-          onClick={openCreateModal}
-        >
-          +New Profile
-        </button>
-      </div>
-
-      <div className="divider" />
-
-      <div className="fundraising-toolbar">
-        <div className="fundraising-search-wrapper">
-          <span className="search-icon">🔍</span>
-          <input
-            className="fundraising-search-input"
-            placeholder="search profiles..."
-            value={keyword}
-            onChange={handleSearchChange}
-          />
-        </div>
-      </div>
-
-      {error && <p className="error-message">{error}</p>}
-
-      <table className="data-table">
-        <thead>
-          <tr>
-            <th>PROFILE</th>
-            <th>DESCRIPTION</th>
-            <th>STATUS</th>
-            <th>ACTIONS</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {profiles.length === 0 ? (
-            <tr>
-              <td colSpan="4" className="empty-table-message">
-                No matching records found.
-              </td>
-            </tr>
-          ) : (
-            profiles.map((profile) => (
-              <tr key={profile.id}>
-                <td>{profile.name_of_role}</td>
-                <td>{profile.description || "-"}</td>
-                <td>
-                  <StatusBadge status={profile.status} />
-                </td>
-                <td>
-                  <div className="actions">
-                    <button onClick={() => openViewModal(profile)}>View</button>
-                    <button onClick={() => openEditModal(profile)}>EDIT</button>
-                    <button
-                      className="danger-btn"
-                      onClick={() => openSuspendModal(profile)}
-                      disabled={profile.status !== "ACTIVE"}
-                    >
-                      {profile.status === "ACTIVE" ? "SUSPEND" : "SUSPENDED"}
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+      <SearchUserProfilePage
+        onCreate={() => setModalType("create")}
+        onView={(p) => { setSelectedProfile(p); setModalType("view"); }}
+        onEdit={(p) => { setSelectedProfile(p); setModalType("edit"); }}
+        onSuspend={(p) => { setSelectedProfile(p); setModalType("suspend"); }}
+        refreshKey={refreshKey}
+      />
 
       {modalType === "create" && (
-        <UserProfileFormModal
-          mode="create"
-          onClose={closeModal}
-          onSubmit={handleCreate}
-          error={modalError}
-          isSubmitting={isSubmitting}
-        />
-      )}
-
-      {modalType === "edit" && selectedProfile && (
-        <UserProfileFormModal
-          mode="edit"
-          profile={selectedProfile}
-          onClose={closeModal}
-          onSubmit={handleEdit}
-          error={modalError}
-          isSubmitting={isSubmitting}
-        />
+        <CreateUserProfilePage onClose={closeModal} onSuccess={handleSuccess} />
       )}
 
       {modalType === "view" && selectedProfile && (
-        <UserProfileViewModal
-          profile={selectedProfile}
-          onClose={closeModal}
-        />
+        <ViewUserProfilePage profileId={selectedProfile.id} onClose={closeModal} />
+      )}
+
+      {modalType === "edit" && selectedProfile && (
+        <UpdateUserProfilePage profile={selectedProfile} onClose={closeModal} onSuccess={handleSuccess} />
       )}
 
       {modalType === "suspend" && selectedProfile && (
-        <ConfirmModal
-          title="Suspend"
-          message={`Are you sure you want to suspend the profile ${selectedProfile.name_of_role}?`}
-          confirmText="SUSPEND"
-          onClose={closeModal}
-          onConfirm={handleSuspend}
-          error={modalError}
-          isSubmitting={isSubmitting}
-        />
+        <SuspendUserProfilePage profile={selectedProfile} onClose={closeModal} onSuccess={handleSuccess} />
       )}
     </DashboardLayout>
   );

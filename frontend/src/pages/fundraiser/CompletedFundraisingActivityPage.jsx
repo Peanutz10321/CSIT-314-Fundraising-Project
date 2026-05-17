@@ -1,87 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
-import FundraisingActivityViewModal from "../../components/fundraiser/FundraisingActivityViewModal";
-import {
-  getCompletedFundraisingActivities,
-} from "../../api/fundraisingActivityApi";
-import { getActiveCategories } from "../../api/categoryApi";
-
-
-function getCurrentUserId() {
-  return localStorage.getItem("userId");
-}
-
-function activityBelongsToCurrentFundraiser(activity) {
-  const currentUserId = getCurrentUserId();
-  if (!currentUserId) return true;
-
-  const possibleOwnerIds = [
-    activity.fundraiser_id,
-    activity.fundraiserId,
-    activity.user_account_id,
-    activity.userAccountId,
-    activity.created_by,
-    activity.owner_id,
-  ].filter((value) => value !== undefined && value !== null);
-
-  if (possibleOwnerIds.length === 0) return true;
-
-  return possibleOwnerIds.some(
-    (ownerId) => String(ownerId) === String(currentUserId)
-  );
-}
+import SearchCompletedActivitiesPage from "./completedActivity/searchCompletedActivitiesPage";
+import ViewCompletedActivityPage from "./completedActivity/viewCompletedActivityPage";
 
 function CompletedFundraisingActivityPage({ onLogout, setCurrentPage }) {
-  const [activities, setActivities] = useState([]);
-  const [keyword, setKeyword] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [error, setError] = useState("");
-  const [selectedActivity, setSelectedActivity] = useState(null);
-  const [availableCategories, setAvailableCategories] = useState([]);
-
-  async function loadCompletedActivities(searchKeyword = "") {
-    try {
-      setError("");
-      const result = await getCompletedFundraisingActivities(searchKeyword);
-      setActivities((result.data || result || []).filter(activityBelongsToCurrentFundraiser));
-    } catch (err) {
-      setError(err.message);
-    }
-  }
-
-  useEffect(() => {
-    loadCompletedActivities();
-
-    getActiveCategories()
-      .then((res) =>
-        setAvailableCategories((res.data || []).filter((c) => c.status === "ACTIVE"))
-      )
-      .catch(() => {});
-  }, []);
-
-  function handleSearchChange(e) {
-    const value = e.target.value;
-    setKeyword(value);
-    loadCompletedActivities(value);
-  }
-
-  const filteredActivities = useMemo(() => {
-    if (!selectedCategory) return activities;
-
-    return activities.filter(
-      (activity) =>
-        (activity.category || "").toLowerCase() === selectedCategory.toLowerCase()
-    );
-  }, [activities, selectedCategory]);
-
-  function getProgress(activity) {
-    const current = Number(activity.current_amount || 0);
-    const goal = Number(activity.goal_amount || 0);
-
-    if (goal <= 0) return 0;
-
-    return Math.min((current / goal) * 100, 100);
-  }
+  const [selectedActivityId, setSelectedActivityId] = useState(null);
 
   return (
     <DashboardLayout
@@ -91,130 +14,15 @@ function CompletedFundraisingActivityPage({ onLogout, setCurrentPage }) {
       role="FUNDRAISER"
     >
       <div className="fundraising-page-content">
-        <div className="page-header">
-          <div>
-            <h1>Completed Activities</h1>
-          </div>
-        </div>
+        <SearchCompletedActivitiesPage
+          onView={(a) => setSelectedActivityId(a.id)}
+          refreshKey={0}
+        />
 
-        <div className="divider" />
-
-        <div className="fundraising-toolbar">
-          <div className="fundraising-search-wrapper">
-            <span className="search-icon">🔍</span>
-            <input
-              className="fundraising-search-input"
-              placeholder="search activities..."
-              value={keyword}
-              onChange={handleSearchChange}
-            />
-          </div>
-
-          <select
-            className="fundraising-category-filter"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            {availableCategories.map((c) => (
-              <option key={c.id} value={c.name}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {error && <p className="error-message">{error}</p>}
-
-        <div className="activity-card-list">
-          {filteredActivities.length === 0 ? (
-            <div className="empty-card-state">
-              No matching records found.
-            </div>
-          ) : (
-            filteredActivities.map((activity) => {
-              const current = Number(activity.current_amount || 0);
-              const goal = Number(activity.goal_amount || 0);
-              const progress = getProgress(activity);
-
-              return (
-                <div className="activity-card" key={activity.id}>
-                  <div className="activity-card-main">
-                    <div className="activity-card-top">
-                      <div className="activity-badges">
-                        <span className="activity-category-badge">
-                          {activity.category || "CATEGORY"}
-                        </span>
-
-                        <span className="activity-status-badge completed">
-                          COMPLETED
-                        </span>
-                      </div>
-
-                      <div className="activity-beneficiary">
-                        {activity.beneficiaryName || "-"}
-                      </div>
-                    </div>
-
-                    <h3 className="activity-title">{activity.title}</h3>
-
-                    <p className="activity-description-text">
-                      {activity.description || "-"}
-                    </p>
-
-                    <div className="activity-meta-row">
-                      <span>Ended {activity.deadline || "-"}</span>
-                      <span>{activity.view_count || 0} views</span>
-                      <span>{activity.shortlist_count || 0} shortlisted</span>
-                    </div>
-
-                    <div className="activity-actions">
-                      <button onClick={() => setSelectedActivity(activity)}>
-                        View
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="activity-card-side">
-                    <p className="raised-label">RAISED</p>
-
-                    <h3 className="raised-amount">
-                      {activity.currency || "$"}
-                      {current}
-                    </h3>
-
-                    <p className="raised-goal-text">
-                      of {activity.currency || "$"}
-                      {goal} goal
-                    </p>
-
-                    <div className="activity-progress-wrap">
-                      <div className="activity-progress-track">
-                        <div
-                          className="activity-progress-fill"
-                          style={{ width: `${progress}%` }}
-                        />
-                      </div>
-
-                      <div className="activity-progress-labels">
-                        <span>{Math.round(progress)}%</span>
-                        <span>COMPLETED</span>
-                      </div>
-                    </div>
-
-                    <p className="activity-location">
-                      {activity.location || "-"}
-                    </p>
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-
-        {selectedActivity && (
-          <FundraisingActivityViewModal
-            activity={selectedActivity}
-            onClose={() => setSelectedActivity(null)}
+        {selectedActivityId && (
+          <ViewCompletedActivityPage
+            activityId={selectedActivityId}
+            onClose={() => setSelectedActivityId(null)}
           />
         )}
       </div>

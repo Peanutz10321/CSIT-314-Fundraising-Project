@@ -21,7 +21,7 @@ require_user_admin = require_roles("USER_ADMIN")
 
 
 @router.post("/", response_model=UserAccountResponse, status_code=201)
-def create_user_account(
+def createUserAccount(
     payload: UserAccountCreate,
     _: None = Depends(require_user_admin)
 ):
@@ -43,7 +43,7 @@ def create_user_account(
     return result
 
 @router.get("/{user_id}", response_model=UserAccountResponse)
-def view_user_account(
+def viewUserAccount(
     user_id: int,
     _: None = Depends(require_user_admin)
 ):
@@ -57,7 +57,7 @@ def view_user_account(
 
 
 @router.patch("/{user_id}", response_model=UserAccountResponse)
-def update_user_account(
+def updateUserAccount(
     user_id: int,
     payload: UserAccountUpdate,
     _: None = Depends(require_user_admin)
@@ -86,7 +86,7 @@ def update_user_account(
     return result
 
 @router.patch("/{user_id}/suspend")
-def suspend_user_account(
+def suspendUserAccount(
     user_id: int,
     _: None = Depends(require_user_admin)
 ):
@@ -99,7 +99,7 @@ def suspend_user_account(
     return {"success": True}
 
 @router.get("/", response_model=UserAccountSearchResponse)
-def search_user_accounts(
+def searchUserAccount(
     keyword: str | None = Query(default=None),
     _: None = Depends(require_user_admin)
 ):

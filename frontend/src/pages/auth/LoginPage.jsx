@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { apiRequest } from "../../api/apiClient";
+import { validateCredentials } from "../../api/userAccountApi";
 
 function getUserIdFromToken(token) {
   try {
@@ -10,32 +10,31 @@ function getUserIdFromToken(token) {
   }
 }
 
-function LoginPage({ onLogin }) {
+function loginPage({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  async function handleSubmit(e) {
+  function displaySuccess(data) {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("role", data.role);
+    const userId = data.user_id || getUserIdFromToken(data.token);
+    if (userId) localStorage.setItem("userId", userId);
+    onLogin(data.role);
+  }
+
+  function displayError(message) {
+    setError(message);
+  }
+
+  async function onClick(e) {
     e.preventDefault();
     setError("");
-
     try {
-      const data = await apiRequest("/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify({ email, password }),
-      });
-
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("role", data.role);
-
-      const userId = data.user_id || getUserIdFromToken(data.token);
-      if (userId) {
-        localStorage.setItem("userId", userId);
-      }
-
-      onLogin(data.role);
+      const data = await validateCredentials(email, password);
+      displaySuccess(data);
     } catch (err) {
-      setError(err.message);
+      displayError(err.message);
     }
   }
 
@@ -44,7 +43,7 @@ function LoginPage({ onLogin }) {
       <div className="login-box">
         <h1>Sign in</h1>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={onClick}>
           <label>Email</label>
           <input
             type="email"
@@ -72,4 +71,4 @@ function LoginPage({ onLogin }) {
   );
 }
 
-export default LoginPage;
+export default loginPage;

@@ -55,7 +55,7 @@ class UserProfile(Base):
             return profile
 
     @staticmethod
-    def updateUserProfile(profileID: int, name: str, description: str, status: str = "ACTIVE"):
+    def updateUserProfile(profileID: int, name: str, description: str, status: str | None = None):
         with get_session() as db:
             profile = db.query(UserProfile).filter(UserProfile.id == profileID).first()
 
@@ -72,7 +72,8 @@ class UserProfile(Base):
 
             profile.name_of_role = name
             profile.description = description
-            profile.status = status
+            if status is not None:
+                profile.status = status
 
             db.commit()
             db.refresh(profile)

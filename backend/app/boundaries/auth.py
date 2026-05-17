@@ -6,7 +6,7 @@ router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
 
 @router.post("/login", response_model=LoginResponse)
-def login(payload: LoginRequest):
+def validateCredentials(payload: LoginRequest):
 
     controller = loginController()
     result = controller.validateCredentials(payload.email, payload.password)
@@ -27,7 +27,7 @@ def login(payload: LoginRequest):
 
 
 @router.post("/logout", response_model=LogoutResponse)
-def logout(authorization: str | None = Header(default=None)):
+def invalidateSession(authorization: str | None = Header(default=None)):
     
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(

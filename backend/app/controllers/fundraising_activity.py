@@ -23,8 +23,8 @@ class createFundraisingActivityController:
     
 class viewFundraisingActivityController:
 
-    def viewFundraisingActivity(self, activityID: int, fundraiserID: int):
-        return FundraisingActivity.viewFundraisingActivity(activityID, fundraiserID)
+    def viewFundraisingActivity(self, fundraiserID: int, activityID: int):
+        return FundraisingActivity.viewFundraisingActivity(fundraiserID, activityID)
 
 class updateFundraisingActivityController:
 
@@ -55,8 +55,8 @@ class suspendFundraisingActivityController:
 
 class searchFundraisingActivityController:
 
-    def searchFundraisingActivity(self, fundraiserID: int = None, keyword: str = None):
-        return FundraisingActivity.searchFundraisingActivity(fundraiserID, keyword)
+    def searchFundraisingActivities(self, fundraiserID: int = None, keyword: str = None):
+        return FundraisingActivity.searchFundraisingActivities(fundraiserID, keyword)
 
 class searchCompletedActivitiesController:
 

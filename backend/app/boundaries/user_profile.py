@@ -22,12 +22,12 @@ require_user_admin = require_roles("USER_ADMIN")
 
 
 @router.post("/", response_model=UserProfileResponse, status_code=201)
-def create_user_profile(
+def createUserProfile(
     payload: UserProfileCreate,
     _: None = Depends(require_user_admin)
 ):
     controller = createUserProfileController()
-    result = controller.createUserProfile(payload.name_of_role, payload.description)
+    result = controller.createUserProfile(payload.name_of_role, payload.description, payload.status)
 
     if result == "duplicate_name":
         raise HTTPException(status_code=400, detail="The name already exists")
@@ -36,7 +36,7 @@ def create_user_profile(
 
 
 @router.get("/{profile_id}", response_model=UserProfileResponse)
-def get_user_profile(
+def getUserProfileByID(
     profile_id: int,
     _: None = Depends(require_user_admin)
 ):
@@ -50,7 +50,7 @@ def get_user_profile(
 
 
 @router.patch("/{profile_id}", response_model=UserProfileResponse)
-def update_user_profile(
+def updateUserProfile(
     profile_id: int,
     payload: UserProfileUpdate,
     _: None = Depends(require_user_admin)
@@ -60,6 +60,7 @@ def update_user_profile(
         profile_id,
         payload.name_of_role,
         payload.description,
+        payload.status,
     )
 
     if result == "not_found":
@@ -72,7 +73,7 @@ def update_user_profile(
 
 
 @router.patch("/{profile_id}/suspend")
-def suspend_user_profile(
+def suspendUserProfile(
     profile_id: int,
     _: None = Depends(require_user_admin)
 ):
@@ -86,7 +87,7 @@ def suspend_user_profile(
 
 
 @router.get("/", response_model=UserProfileSearchResponse)
-def search_user_profiles(
+def searchUserProfile(
     keyword: str | None = Query(default=None),
     _: None = Depends(require_user_admin)
 ):

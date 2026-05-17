@@ -3,7 +3,7 @@ from app.entities.FavoriteList import FavoriteList
 
 class doneeSearchFundraisingActivityController:
 
-    def searchFundraisingActivity(self, keyword: str):
+    def doneeSearchFundraisingActivity(self, keyword: str):
         return FundraisingActivity.doneeSearchFundraisingActivity(keyword=keyword)
 
 class doneeViewFundraisingActivityController:
@@ -34,7 +34,7 @@ class viewFavoriteListController:
     def viewFavoriteList(self, doneeID: int):
         return FavoriteList.viewFavoriteList(doneeID)
 
-class viewCompletedFundraisingActivitiesController:
+class viewCompletedFundraisingActivityController:
     def viewCompletedFundraisingActivities(self):
         return FundraisingActivity.viewCompletedFundraisingActivities()
     

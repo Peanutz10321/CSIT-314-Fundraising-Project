@@ -22,7 +22,7 @@ require_platform_fundraiser_or_donee = require_roles("PLATFORM_MANAGER", "FUNDRA
 
 
 @router.post("/", response_model=FundraisingCategoryResponse, status_code=201)
-def create_category(
+def createFundraisingCategory(
     payload: FundraisingCategoryCreate,
     _: None = Depends(require_platform_manager),
 ):
@@ -39,7 +39,7 @@ def create_category(
 
 
 @router.get("/", response_model=FundraisingCategorySearchResponse)
-def search_categories(
+def searchCategory(
     keyword: str | None = Query(default=None),
     _: None = Depends(require_platform_fundraiser_or_donee),
 ):
@@ -50,7 +50,7 @@ def search_categories(
 
 
 @router.get("/{category_id}", response_model=FundraisingCategoryResponse)
-def get_category(
+def getCategory(
     category_id: int,
     _: None = Depends(require_platform_manager),
 ):
@@ -64,7 +64,7 @@ def get_category(
 
 
 @router.patch("/{category_id}", response_model=FundraisingCategoryResponse)
-def update_category(
+def updateCategory(
     category_id: int,
     payload: FundraisingCategoryUpdate,
     _: None = Depends(require_platform_manager),
@@ -82,7 +82,7 @@ def update_category(
 
 
 @router.patch("/{category_id}/suspend")
-def suspend_category(
+def suspendCategory(
     category_id: int,
     _: None = Depends(require_platform_manager),
 ):

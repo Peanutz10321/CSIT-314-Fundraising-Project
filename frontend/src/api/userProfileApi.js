@@ -1,6 +1,6 @@
 import { apiRequest } from "./apiClient";
 
-export function getUserProfiles(keyword = "") {
+export function searchUserProfile(keyword = "") {
   const params = new URLSearchParams();
 
   if (keyword) {
@@ -10,6 +10,10 @@ export function getUserProfiles(keyword = "") {
   const queryString = params.toString();
 
   return apiRequest(`/api/user_profile/${queryString ? `?${queryString}` : ""}`);
+}
+
+export function getUserProfileByID(profileId) {
+  return apiRequest(`/api/user_profile/${profileId}`);
 }
 
 export function createUserProfile(payload) {

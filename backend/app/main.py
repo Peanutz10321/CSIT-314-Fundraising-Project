@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from sqlalchemy.orm import Session
 from app.database import Base, engine, SessionLocal
-from app.routes import user_profile, user_account, auth, fundraising_activity, donee, fundraising_category, reports
+from app.boundaries import user_profile, user_account, auth, fundraising_activity, donee, fundraising_category, reports
 from app.seeds.seed_user_profiles import seed_user_profiles
 from app.seeds.seed_test_admin import seed_test_admin
 from app.seeds.seed_categories import seed_categories

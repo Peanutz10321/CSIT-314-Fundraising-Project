@@ -1,31 +1,25 @@
 import { apiRequest } from "./apiClient";
 
-export function getFundraisingActivities(keyword = "") {
+export function searchFundraisingActivities(keyword = "") {
   const params = new URLSearchParams();
-
-  if (keyword) {
-    params.append("keyword", keyword);
-  }
-
+  if (keyword) params.append("keyword", keyword);
   const queryString = params.toString();
-
-  return apiRequest(
-    `/api/fundraising_activity/${queryString ? `?${queryString}` : ""}`
-  );
+  return apiRequest(`/api/fundraising_activity/${queryString ? `?${queryString}` : ""}`);
 }
 
-export function getCompletedFundraisingActivities(keyword = "") {
+export function viewFundraisingActivity(activityId) {
+  return apiRequest(`/api/fundraising_activity/${activityId}`);
+}
+
+export function searchCompletedActivity(keyword = "") {
   const params = new URLSearchParams();
-
-  if (keyword) {
-    params.append("keyword", keyword);
-  }
-
+  if (keyword) params.append("keyword", keyword);
   const queryString = params.toString();
+  return apiRequest(`/api/fundraising_activity/completed${queryString ? `?${queryString}` : ""}`);
+}
 
-  return apiRequest(
-    `/api/fundraising_activity/completed${queryString ? `?${queryString}` : ""}`
-  );
+export function getCompletedActivities(activityId) {
+  return apiRequest(`/api/fundraising_activity/completed/${activityId}`);
 }
 
 export function createFundraisingActivity(payload) {
