@@ -13,8 +13,8 @@ class logoutController:
 
 class createUserAccountController:
 
-    def createUserAccount(self, name: str, email: str, password: str, userProfile: str, phoneNo: str = None, address: str = None, dob: str = None, status: str = "ACTIVE"):
-        return UserAccount.createUserAccount(name, email, password, userProfile, phoneNo, address, dob, status)
+    def createUserAccount(self, name: str, email: str, password: str, status: str, userProfile: str, phoneNo: str = None, address: str = None, dob: str = None):
+        return UserAccount.createUserAccount(name, email, password, status, userProfile, phoneNo, address, dob)
 
 class viewUserAccountController:
 
@@ -23,8 +23,8 @@ class viewUserAccountController:
 
 class updateUserAccountController:
 
-    def updateUserAccount(self, accountID: int, name: str = None, password: str = None, phone_no: str = None, address: str = None, dob: str = None, userProfile: str = None,  status: str = None):
-        return UserAccount.updateUserAccount(accountID, name, password, phone_no, address, dob, userProfile, status)
+    def updateUserAccount(self, accountID: int, name: str = None, password: str = None, phoneNo: str = None, address: str = None, DOB: str = None, userProfile: str = None, status: str = None):
+        return UserAccount.updateUserAccount(accountID, name, password, phoneNo, address, DOB, userProfile, status)
 
 class suspendUserAccountController:
 

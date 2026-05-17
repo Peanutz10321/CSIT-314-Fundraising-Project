@@ -50,18 +50,17 @@ def searchCompletedActivity(
     }
 
 
-@router.get("/completed/{activity_id}", response_model=FundraisingActivityResponse)
+@router.get("/completed/all", response_model=FundraisingActivitySearchResponse)
 def getCompletedActivities(
-    activity_id: int,
     current_user = Depends(require_fundraiser)
 ):
     controller = viewCompletedActivityController()
-    result = controller.getCompletedActivities(activity_id, current_user.id)
+    activities = controller.getCompletedActivities(current_user.id)
 
-    if result == "not_found":
-        raise HTTPException(status_code=404, detail="Completed activity not found")
-    
-    return result
+    return {
+        "total": len(activities),
+        "data": activities,
+    }
 
 
 @router.post("/", response_model=FundraisingActivityResponse, status_code=201)

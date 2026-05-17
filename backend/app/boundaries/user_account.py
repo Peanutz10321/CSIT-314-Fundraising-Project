@@ -30,11 +30,11 @@ def createUserAccount(
         payload.name,
         payload.email,
         payload.password,
+        payload.status,
         payload.user_profile,
         payload.phone_no,
         payload.address,
         payload.dob,
-        payload.status,
     )
 
     if result == "duplicate_email":
@@ -42,13 +42,13 @@ def createUserAccount(
 
     return result
 
-@router.get("/{user_id}", response_model=UserAccountResponse)
+@router.get("/{accountID}", response_model=UserAccountResponse)
 def viewUserAccount(
-    user_id: int,
+    accountID: int,
     _: None = Depends(require_user_admin)
 ):
     controller = viewUserAccountController()
-    result = controller.viewUserAccount(user_id)
+    result = controller.viewUserAccount(accountID)
 
     if result is None:
         raise HTTPException(status_code=404, detail="User account not found")
@@ -85,13 +85,13 @@ def updateUserAccount(
 
     return result
 
-@router.patch("/{user_id}/suspend")
+@router.patch("/{accountID}/suspend")
 def suspendUserAccount(
-    user_id: int,
+    accountID: int,
     _: None = Depends(require_user_admin)
 ):
     controller = suspendUserAccountController()
-    success = controller.suspendUserAccount(user_id)
+    success = controller.suspendUserAccount(accountID)
 
     if not success:
         raise HTTPException(status_code=404, detail="User account not found")

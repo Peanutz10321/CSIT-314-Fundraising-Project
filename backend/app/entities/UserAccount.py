@@ -76,7 +76,7 @@ class UserAccount(Base):
             return user is not None
 
     @staticmethod
-    def createUserAccount(name: str, email: str, password: str, userProfile: str, phoneNo: str = None, address: str = None, dob: str = None, status: str = "ACTIVE"):
+    def createUserAccount(name: str, email: str, password: str, status: str, userProfile: str, phoneNo: str = None, address: str = None, dob: str = None):
         from app.entities.UserProfile import UserProfile
         with get_session() as db:
             existing = db.query(UserAccount).filter(UserAccount.email == email).first()
@@ -122,7 +122,7 @@ class UserAccount(Base):
             )
 
     @staticmethod
-    def updateUserAccount(accountID: int, name: str = None, password: str = None, phone_no: str = None, address: str = None, dob: str = None, userProfile: str = None,  status: str = None):
+    def updateUserAccount(accountID: int, name: str = None, password: str = None, phoneNo: str = None, address: str = None, DOB: str = None, userProfile: str = None, status: str = None):
         from app.entities.UserProfile import UserProfile
         with get_session() as db:
             user = db.query(UserAccount).filter(UserAccount.id == accountID).first()
@@ -143,14 +143,14 @@ class UserAccount(Base):
             if password is not None:
                 user.password_hash = hash_password(password)
 
-            if phone_no is not None:
-                user.phone_no = phone_no
+            if phoneNo is not None:
+                user.phone_no = phoneNo
 
             if address is not None:
                 user.address = address
 
-            if dob is not None:
-                user.dob = dob
+            if DOB is not None:
+                user.dob = DOB
 
             if status is not None:
                 user.status = status

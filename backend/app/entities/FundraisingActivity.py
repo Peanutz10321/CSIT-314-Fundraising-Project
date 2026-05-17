@@ -290,23 +290,8 @@ class FundraisingActivity(Base):
             return dbquery.order_by(FundraisingActivity.title).all()
 
     @staticmethod
-    def getCompletedActivities(activityID: int, fundraiserID: int = None):
-        with get_session() as db:
-            query = (db.query(FundraisingActivity)
-            .options(joinedload(FundraisingActivity.category_ref))
-            .filter(
-                FundraisingActivity.id == activityID,
-                FundraisingActivity.status == "COMPLETED"
-            )
-            )
-            if fundraiserID is not None:
-                query = query.filter(FundraisingActivity.fundraiser_id == fundraiserID)
-            activity = query.first()
-
-            if not activity:
-                return "not_found"
-
-            return activity
+    def getCompletedActivities(fundraiserID: int):
+        return FundraisingActivity.searchCompletedActivity(fundraiserID)
 
     @staticmethod
     def viewCompletedFundraisingActivities():

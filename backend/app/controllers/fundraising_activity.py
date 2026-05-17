@@ -65,5 +65,5 @@ class searchCompletedActivitiesController:
 
 class viewCompletedActivityController:
 
-    def getCompletedActivities(self, activityID: int, fundraiserID: int):
-        return FundraisingActivity.getCompletedActivities(activityID, fundraiserID)
+    def getCompletedActivities(self, fundraiserID: int):
+        return FundraisingActivity.getCompletedActivities(fundraiserID)
