@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import FundraisingActivityViewModal from "../../../components/fundraiser/FundraisingActivityViewModal";
-import { getCompletedActivities } from "../../../api/fundraisingActivityApi";
+import { viewFundraisingActivity } from "../../../api/fundraisingActivityApi";
 
 function viewCompletedActivityPage({ activityId, onClose }) {
   const [activity, setActivity] = useState(null);
@@ -16,7 +16,7 @@ function viewCompletedActivityPage({ activityId, onClose }) {
 
   async function onClick(activityID) {
     try {
-      const result = await getCompletedActivities(activityID);
+      const result = await viewFundraisingActivity(activityID);
       if (result) {
         displayCompletedActivities(result);
       } else {

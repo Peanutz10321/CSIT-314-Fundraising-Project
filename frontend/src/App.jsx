@@ -1,15 +1,15 @@
 import { useState } from "react";
-import LoginPage from "./pages/auth/loginPage";
-import logoutPage from "./pages/auth/logoutPage";
-import UserProfilePage from "./pages/userAdmin/UserProfilePage";
-import UserAccountPage from "./pages/userAdmin/UserAccountPage";
-import FundraisingActivityPage from "./pages/fundraiser/FundraisingActivityPage";
-import CompletedFundraisingActivityPage from "./pages/fundraiser/CompletedFundraisingActivityPage";
-import CategoriesPage from "./pages/platformManagement/CategoriesPage";
-import ReportsPage from "./pages/platformManagement/ReportsPage";
-import DoneeBrowseActivitiesPage from "./pages/donee/DoneeBrowseActivitiesPage";
-import DoneeFavoritesPage from "./pages/donee/DoneeFavoritesPage";
-import DoneeCompletedActivitiesPage from "./pages/donee/DoneeCompletedActivitiesPage";
+import LoginPage from "./boundary/auth/loginPage";
+import logoutPage from "./boundary/auth/logoutPage";
+import UserProfilePage from "./boundary/userAdmin/UserProfilePage";
+import UserAccountPage from "./boundary/userAdmin/UserAccountPage";
+import FundraisingActivityPage from "./boundary/fundraiser/FundraisingActivityPage";
+import CompletedFundraisingActivityPage from "./boundary/fundraiser/CompletedFundraisingActivityPage";
+import CategoriesPage from "./boundary/platformManagement/CategoriesPage";
+import ReportsPage from "./boundary/platformManagement/ReportsPage";
+import DoneeBrowseActivitiesPage from "./boundary/donee/DoneeBrowseActivitiesPage";
+import DoneeFavoritesPage from "./boundary/donee/DoneeFavoritesPage";
+import DoneeCompletedActivitiesPage from "./boundary/donee/DoneeCompletedActivitiesPage";
 import "./App.css";
 
 function App() {

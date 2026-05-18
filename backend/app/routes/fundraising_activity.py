@@ -16,6 +16,7 @@ from app.controllers.fundraising_activity import (
     searchFundraisingActivityController,
     searchCompletedActivitiesController,
     viewCompletedActivityController,
+    viewSingleCompletedActivityController,
 )
 
 router = APIRouter(prefix="/api/fundraising_activity", tags=["Fundraising Activities"])
@@ -92,6 +93,20 @@ def createFundraisingActivity(
         raise HTTPException(status_code=400, detail="goal_amount must be greater than 0")
 
     return result
+
+@router.get("/completed/{activity_id}", response_model=FundraisingActivityResponse)
+def viewCompletedActivity(
+    activity_id: int,
+    current_user = Depends(require_fundraiser)
+):
+    controller = viewSingleCompletedActivityController()
+    result = controller.viewCompletedActivity(current_user.id, activity_id)
+
+    if result == "not_found":
+        raise HTTPException(status_code=404, detail="Completed activity not found")
+
+    return result
+
 
 @router.get("/{activity_id}", response_model=FundraisingActivityResponse)
 def viewFundraisingActivity(

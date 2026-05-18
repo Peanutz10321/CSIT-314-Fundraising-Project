@@ -93,6 +93,7 @@ function searchCompletedActivitiesPage({ onView, refreshKey }) {
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
         >
+          <option value="">All categories</option>
           {availableCategories.map((c) => (
             <option key={c.id} value={c.name}>{c.name}</option>
           ))}

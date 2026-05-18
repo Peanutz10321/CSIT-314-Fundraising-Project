@@ -294,5 +294,38 @@ class FundraisingActivity(Base):
         return FundraisingActivity.searchCompletedActivity(fundraiserID)
 
     @staticmethod
+    def viewCompletedActivity(fundraiserID: int, activityID: int):
+        with get_session() as db:
+            activity = (
+                db.query(FundraisingActivity)
+                .options(joinedload(FundraisingActivity.category_ref))
+                .filter(
+                    FundraisingActivity.id == activityID,
+                    FundraisingActivity.fundraiser_id == fundraiserID,
+                    FundraisingActivity.status == "COMPLETED",
+                )
+                .first()
+            )
+            if not activity:
+                return "not_found"
+            return activity
+
+    @staticmethod
+    def doneeViewCompletedActivity(activityID: int):
+        with get_session() as db:
+            activity = (
+                db.query(FundraisingActivity)
+                .options(joinedload(FundraisingActivity.category_ref))
+                .filter(
+                    FundraisingActivity.id == activityID,
+                    FundraisingActivity.status == "COMPLETED",
+                )
+                .first()
+            )
+            if not activity:
+                return "not_found"
+            return activity
+
+    @staticmethod
     def viewCompletedFundraisingActivities():
         return FundraisingActivity.searchCompletedActivity()

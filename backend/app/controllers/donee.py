@@ -28,7 +28,7 @@ class doneeSearchCompletedActivitiesController:
     
 class doneeViewCompletedController:
     def doneeGetCompletedActivities(self, activityID: int):
-        return FundraisingActivity.getCompletedActivities(activityID)
+        return FundraisingActivity.doneeViewCompletedActivity(activityID)
 
 class viewFavoriteListController:
     def viewFavoriteList(self, doneeID: int):

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import SearchFundraisingActivityPage from "./browseActivity/searchFundraisingActivityPage";
 import ViewFundraisingActivityPage from "./browseActivity/viewFundraisingActivityPage";
@@ -11,7 +11,7 @@ function DoneeBrowseActivitiesPage({ onLogout, setCurrentPage }) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [favoriteIds, setFavoriteIds] = useState([]);
 
-  useState(() => {
+  useEffect(() => {
     viewFavoriteList()
       .then((res) => setFavoriteIds((res.data || []).map((a) => String(a.id)).filter(Boolean)))
       .catch(() => {});
@@ -20,6 +20,11 @@ function DoneeBrowseActivitiesPage({ onLogout, setCurrentPage }) {
   function closeModal() {
     setModalType(null);
     setSelectedActivity(null);
+  }
+
+  function handleViewClose() {
+    closeModal();
+    setRefreshKey((k) => k + 1);
   }
 
   function handleSaveSuccess() {
@@ -44,7 +49,7 @@ function DoneeBrowseActivitiesPage({ onLogout, setCurrentPage }) {
       />
 
       {modalType === "view" && selectedActivity && (
-        <ViewFundraisingActivityPage activityId={selectedActivity.id} onClose={closeModal} />
+        <ViewFundraisingActivityPage activityId={selectedActivity.id} onClose={handleViewClose} />
       )}
 
       {modalType === "save" && selectedActivity && (

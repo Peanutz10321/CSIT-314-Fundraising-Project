@@ -2,7 +2,7 @@ import { useState } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import ViewCompletedFundraisingActivityPage from "./completedActivity/viewCompletedFundraisingActivityPage";
 import SearchCompletedFundraisingActivityPage from "./completedActivity/searchCompletedFundraisingActivityPage";
-import ViewFundraisingActivityPage from "./browseActivity/viewFundraisingActivityPage";
+import ViewSingleCompletedActivityPage from "./completedActivity/viewSingleCompletedActivityPage";
 
 function DoneeCompletedActivitiesPage({ onLogout, setCurrentPage }) {
   const [keyword, setKeyword] = useState("");
@@ -39,7 +39,7 @@ function DoneeCompletedActivitiesPage({ onLogout, setCurrentPage }) {
       }
 
       {selectedActivity && (
-        <ViewFundraisingActivityPage
+        <ViewSingleCompletedActivityPage
           activityId={selectedActivity.id}
           onClose={() => setSelectedActivity(null)}
         />

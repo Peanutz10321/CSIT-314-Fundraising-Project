@@ -8,7 +8,7 @@ require_platform_manager = require_roles("PLATFORM_MANAGER")
 
 
 @router.get("/daily")
-def dailyReportPage(
+def generateDailyReport(
     date: str = Query(..., description="Date in YYYY-MM-DD format"),
     _: None = Depends(require_platform_manager),
 ):
@@ -22,7 +22,7 @@ def dailyReportPage(
 
 
 @router.get("/weekly")
-def weeklyReportPage(
+def generateWeeklyReport(
     startDate: str = Query(..., description="Week start date in YYYY-MM-DD format"),
     endDate: str = Query(..., description="Week end date in YYYY-MM-DD format"),
     _: None = Depends(require_platform_manager),
@@ -37,7 +37,7 @@ def weeklyReportPage(
 
 
 @router.get("/monthly")
-def monthlyReportPage(
+def generateMonthlyReport(
     month: str = Query(..., description="Month in YYYY-MM format"),
     _: None = Depends(require_platform_manager),
 ):

@@ -1,22 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import FundraisingActivityViewModal from "../../../components/fundraiser/FundraisingActivityViewModal";
 import { doneeViewFundraisingActivity } from "../../../api/doneeApi";
 
 function viewFundraisingActivityPage({ activityId, onClose }) {
   const [activity, setActivity] = useState(null);
   const [error, setError] = useState("");
-
-  async function onClick(activityID) {
-    try {
-      const result = await doneeViewFundraisingActivity(activityID);
-      setActivity(result);
-    } catch (err) {
-      setError(err.message);
-    }
-  }
+  const hasFetched = useRef(false);
 
   useEffect(() => {
-    onClick(activityId);
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
+    doneeViewFundraisingActivity(activityId)
+      .then((result) => setActivity(result))
+      .catch((err) => setError(err.message));
   }, [activityId]);
 
   if (error) return <p className="error-message">{error}</p>;

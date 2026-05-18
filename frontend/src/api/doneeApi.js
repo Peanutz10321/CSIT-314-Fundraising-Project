@@ -43,3 +43,7 @@ export function searchCompletedActivity(query = "") {
 export function viewCompletedFundraisingActivities() {
   return apiRequest("/api/donee/fundraising_activity/completed");
 }
+
+export function doneeGetCompletedActivity(activityId) {
+  return apiRequest(`/api/donee/fundraising_activity/completed/${activityId}`);
+}
